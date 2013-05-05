@@ -18,7 +18,7 @@ enum AmfMarker {
 	AMF_ARRAY,         // unsupported
 	AMF_OBJECT,        // unsupported
 	AMF_XML,           // unsupported
-	AMF_BYTEARRAY,     // unsupported
+	AMF_BYTEARRAY,
 	AMF_VECTOR_INT,    // unsupported
 	AMF_VECTOR_UINT,   // unsupported
 	AMF_VECTOR_DOUBLE, // unsupported
