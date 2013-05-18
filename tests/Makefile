@@ -10,7 +10,7 @@ CPPFLAGS += -I..
 # Tests produced by this Makefile
 TESTS = main
 # Tests used by the main test
-SUBTESTS = double bool integer
+SUBTESTS = bool double integer null undefined
 
 all : $(TESTS)
 
