@@ -6,6 +6,7 @@
 #include <endian.h>
 
 typedef unsigned char u8;
+typedef std::vector<u8> v8;
 
 // lololololololol
 template <typename T>

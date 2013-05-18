@@ -15,7 +15,8 @@ public:
 
 	Serializer& operator<<(const AmfItem& item);
 
-	std::vector<u8> const data() { return buf; }
+	const std::vector<u8> data() const { return buf; }
+	void clear() { buf.clear(); }
 
 private:
 	std::vector<u8> buf;

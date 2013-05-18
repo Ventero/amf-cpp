@@ -2,6 +2,8 @@
 *.slo
 *.lo
 *.o
+*.out
+tests/main
 
 # Compiled Dynamic libraries
 *.so
@@ -11,3 +13,7 @@
 *.lai
 *.la
 *.a
+
+# Sublime Files
+*.sublime-project
+*.sublime-workspace
