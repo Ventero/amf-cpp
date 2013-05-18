@@ -3,6 +3,7 @@
 #define AMFINTEGER_HPP
 
 #include "amfitem.hpp"
+#include "amfdouble.hpp"
 
 class AmfInteger : public AmfItem {
 public:
@@ -14,7 +15,7 @@ public:
 		// If the value of an unsigned integer (uint) or signed integer (int)
 		// is greater than or equal to 2^28, or if a signed integer (int) is
 		// less than -2^28, it will be serialized using the AMF 3 double type
-		if (value < -0x10000000 || value >= 10000000)
+		if (value < -0x10000000 || value >= 0x10000000)
 			return AmfDouble(value).serialize();
 
 		// TODO: range checking here? if out of range, serialize as double or throw?
