@@ -1,5 +1,4 @@
 GTEST_DIR = googletest
-USER_DIR = .
 CXX = g++-4.7
 
 # Set Google Test's header directory as a system directory, such that
