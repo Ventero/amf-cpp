@@ -1,15 +1,11 @@
-GTEST_DIR = googletest
 CXX = g++-4.7
+CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.
 CPPFLAGS += -isystem $(GTEST_DIR)/include
-
-# include AMF libs
+# and include AMF libs
 CPPFLAGS += -I..
-
-# Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 
 # Tests produced by this Makefile
 TESTS = main
@@ -21,6 +17,7 @@ all : $(TESTS)
 clean :
 	rm -f $(TESTS) gtest.a gtest_main.a *.o
 
+GTEST_DIR = googletest
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
