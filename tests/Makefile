@@ -30,6 +30,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TESTS = main
+SUBTESTS = double
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -75,15 +76,11 @@ CPPFLAGS += -I..
 CXXFLAGS += -std=c++11
 CXX = g++-4.7
 
-main.o : $(USER_DIR)/main.cpp $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $^
-
-double.o : $(USER_DIR)/double.cpp $(GTEST_HEADERS)
+main.o : main.cpp $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-main : main.o double.o ../serializer.o gtest.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+$(addsuffix .o,$(SUBTESTS)) : %.o : %.cpp $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-sample1_unittest.o : $(USER_DIR)/sample1_unittest.cc \
-                     $(USER_DIR)/sample1.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/sample1_unittest.cc
+main : main.o $(addsuffix .o,$(SUBTESTS)) ../serializer.o gtest.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
