@@ -19,9 +19,11 @@ T swap_endian(T x) {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define hton(x) swap_endian(x)
 #define ntoh(x) swap_endian(x)
-#else
+#elif __BYTE_ORDER == __BIG_ENDIAN
 #define hton(x) (x)
 #define ntoh(x) (x)
+#else
+#error Endianness not supported
 #endif
 
 #endif
