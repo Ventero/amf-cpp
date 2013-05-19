@@ -9,7 +9,7 @@ class AmfNull : public AmfItem {
 public:
 	AmfNull() { }
 
-	std::vector<u8> serialize() const override {
+	std::vector<u8> serialize() const {
 		return std::vector<u8>{ AMF_NULL };
 	}
 };

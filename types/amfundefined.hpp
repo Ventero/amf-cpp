@@ -9,7 +9,7 @@ class AmfUndefined : public AmfItem {
 public:
 	AmfUndefined() {}
 
-	std::vector<u8> serialize() const override {
+	std::vector<u8> serialize() const {
 		return std::vector<u8>{ AMF_UNDEFINED };
 	}
 };

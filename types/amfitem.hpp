@@ -5,7 +5,7 @@
 #include <vector>
 #include "amf.hpp"
 
-enum AmfMarker {
+enum AmfMarker : unsigned char {
 	AMF_UNDEFINED,
 	AMF_NULL,
 	AMF_FALSE,

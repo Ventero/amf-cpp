@@ -8,7 +8,7 @@ class AmfByteArray : public AmfItem {
 public:
 	AmfByteArray(std::vector<u8> v) : value(v) { };
 
-	std::vector<u8> serialize() const override {
+	std::vector<u8> serialize() const {
 		std::vector<u8> buf {
 			AMF_BYTEARRAY,
 			u8(value.size() << 1 | 1)

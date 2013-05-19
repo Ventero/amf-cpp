@@ -10,7 +10,7 @@ public:
 	AmfString(std::string v) : value(v) { };
 	operator std::string() const { return value; }
 
-	std::vector<u8> serialize() const override {
+	std::vector<u8> serialize() const {
 		return std::vector<u8>{
 			AMF_STRING
 		};
