@@ -1,5 +1,4 @@
-CXX = g++-4.7
-CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
+CXXFLAGS += -g -Wall -Wextra -pthread -std=c++0x
 
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.

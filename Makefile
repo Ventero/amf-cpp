@@ -1,4 +1,4 @@
-CXXFLAGS += -std=c++11 -Wall -Wextra -pedantic
+CXXFLAGS += -std=c++0x -Wall -Wextra -pedantic
 CPPFLAGS += -I.
 
 .PHONY: all clean debug release test
