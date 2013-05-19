@@ -1,7 +1,7 @@
 CXXFLAGS += -std=c++0x -Wall -Wextra -pedantic
 CPPFLAGS += -I.
 
-.PHONY: all clean debug release test
+.PHONY: all clean debug dist-clean release test
 all: release
 
 release: libamf.a
