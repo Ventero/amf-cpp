@@ -1,5 +1,6 @@
 CXXFLAGS += -g -Wall -Wextra -pthread -std=c++0x
 
+GTEST_DIR = googletest
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.
 CPPFLAGS += -isystem $(GTEST_DIR)/include
@@ -9,14 +10,13 @@ CPPFLAGS += -I..
 # Tests produced by this Makefile
 TESTS = main
 # Tests used by the main test
-SUBTESTS = bool double integer null undefined
+SUBTESTS = bool double integer null string undefined
 
 all : $(TESTS)
 
 clean :
 	rm -f $(TESTS) gtest.a gtest_main.a *.o
 
-GTEST_DIR = googletest
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
