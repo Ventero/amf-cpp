@@ -8,6 +8,14 @@
 #include "amf.hpp"
 #include "types/amfitem.hpp"
 
+#include "types/amfbool.hpp"
+#include "types/amfbytearray.hpp"
+#include "types/amfdouble.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfnull.hpp"
+#include "types/amfstring.hpp"
+#include "types/amfundefined.hpp"
+
 class Serializer {
 public:
 	Serializer() {};
