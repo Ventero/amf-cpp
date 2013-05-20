@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include "amf.hpp"
-#include "serializer.hpp"
 #include "types/amfundefined.hpp"
 
 TEST(UndefinedSerializationTest, SimpleValue) {

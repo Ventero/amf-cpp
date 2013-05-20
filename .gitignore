@@ -5,6 +5,9 @@
 *.out
 tests/main
 
+# Automatically generated dependency lists
+.dep
+
 # Compiled Dynamic libraries
 *.so
 *.dylib

@@ -15,7 +15,7 @@ SUBTESTS = bool double integer null string undefined
 all : $(TESTS)
 
 clean :
-	rm -f $(TESTS) gtest.a gtest_main.a *.o
+	rm -f $(TESTS) gtest.a gtest_main.a *.o .dep
 
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
@@ -45,3 +45,8 @@ gtest.a : gtest-all.o
 
 gtest_main.a : gtest-all.o gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
+
+-include .dep
+.dep:
+	$(CXX) $(CPPFLAGS) -MM $(addsuffix .cpp,$(TESTS)) \
+		$(addsuffix .cpp,$(SUBTESTS)) | sed 's,:, $@:,' > $@

@@ -9,7 +9,7 @@ debug: CXXFLAGS += -g
 debug: libamf.a
 
 clean:
-	rm -f *.a *.o
+	rm -f *.a *.o .dep
 
 dist-clean: clean
 	$(MAKE) -C tests clean
@@ -20,3 +20,7 @@ test:
 
 libamf.a: serializer.o
 	$(AR) $(ARFLAGS) $@ $<
+
+-include .dep
+.dep:
+	$(CXX) $(CPPFLAGS) -MM serializer.cpp | sed 's,:, $@:,' > $@

@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include "amf.hpp"
-#include "serializer.hpp"
 #include "types/amfstring.hpp"
 
 static void isEqual(const std::vector<u8>& expected, std::string value) {
