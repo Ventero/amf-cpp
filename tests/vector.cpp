@@ -72,7 +72,7 @@ TEST(VectorSerializationTest, VectorInt32Negative) {
 		-0x20000000,
 		-0x40000000,
 		-0x7fffffff,
-		-0x80000000
+		-2147483648
 	}, true);
 	v8 expected {
 		0x0d, 0x09, 0x01,
