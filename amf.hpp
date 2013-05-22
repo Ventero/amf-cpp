@@ -11,7 +11,7 @@ typedef std::vector<u8> v8;
 // lololololololol
 template <typename T>
 T swap_endian(T x) {
-	char& bytes = reinterpret_cast<char&>(x);
+	u8& bytes = reinterpret_cast<u8&>(x);
 	std::reverse(&bytes, &bytes + sizeof(T));
 	return x;
 }
