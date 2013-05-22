@@ -15,6 +15,7 @@
 #include "types/amfnull.hpp"
 #include "types/amfstring.hpp"
 #include "types/amfundefined.hpp"
+#include "types/amfvector.hpp"
 
 class Serializer {
 public:
