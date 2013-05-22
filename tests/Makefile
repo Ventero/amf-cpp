@@ -1,4 +1,4 @@
-CXXFLAGS += -g -Wall -Wextra -pthread -std=c++0x
+CXXFLAGS += -g -Wall -Wextra -pedantic -pthread -std=c++0x
 
 GTEST_DIR = googletest
 # Set Google Test's header directory as a system directory, such that
