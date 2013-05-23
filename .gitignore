@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.out
+*.swf
 tests/main
 
 # Automatically generated dependency lists
