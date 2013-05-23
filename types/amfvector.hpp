@@ -5,14 +5,34 @@
 #include <vector>
 #include "amfitem.hpp"
 #include "amfinteger.hpp"
+#include "amfstring.hpp"
 
 template<typename T>
-class AmfVector;
+struct VectorMarker;
 
 template<>
-class AmfVector<int> : public AmfItem {
+struct VectorMarker<int> {
+	static const u8 value = AMF_VECTOR_INT;
+};
+
+template<>
+struct VectorMarker<unsigned int> {
+	static const u8 value = AMF_VECTOR_UINT;
+};
+
+template<>
+struct VectorMarker<double> {
+	static const u8 value = AMF_VECTOR_DOUBLE;
+};
+
+template<typename T, class Enable = void>
+class AmfVector;
+
+template<typename T>
+class AmfVector<T, typename std::enable_if<
+	std::is_class<VectorMarker<T>>::value>::type> : public AmfItem {
 public:
-	AmfVector(std::vector<int> vector, bool fixed = false) :
+	AmfVector(std::vector<T> vector, bool fixed = false) :
 		vector(vector), fixed(fixed) { };
 
 	std::vector<u8> serialize() const {
@@ -20,24 +40,23 @@ public:
 		AmfInteger length(vector.size() << 1 | 1);
 		std::vector<u8> buf = length.serialize();
 		// overwrite the int marker with the correct vector one
-		buf[0] = AMF_VECTOR_INT;
+		buf[0] = VectorMarker<T>::value;
 
 		// fixed-vector marker
 		buf.push_back(fixed ? 0x01 : 0x00);
 
-		// TODO: FIXME
-		static_assert(sizeof(int) == 4, "int cannot be encoded as U32");
-		for(int it : vector) {
-			// value is encoded as U32 in network byte order, not AmfInt (U29)
-			int netvalue = hton(it);
+		for(T it : vector) {
+			// values are encoded as in network byte order
+			// ints are encoded as U32, not U29
+			T netvalue = hton(it);
 			const u8* bytes = reinterpret_cast<const u8*>(&netvalue);
-			buf.insert(buf.end(), bytes, bytes + 4);
+			buf.insert(buf.end(), bytes, bytes + sizeof(T));
 		}
 
 		return buf;
 	}
 private:
-	std::vector<int> vector;
+	std::vector<T> vector;
 	bool fixed;
 };
 

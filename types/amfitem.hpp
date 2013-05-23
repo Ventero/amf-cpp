@@ -19,9 +19,9 @@ enum AmfMarker : u8 {
 	AMF_OBJECT,        // unsupported
 	AMF_XML,           // unsupported
 	AMF_BYTEARRAY,
-	AMF_VECTOR_INT,    // unsupported
-	AMF_VECTOR_UINT,   // unsupported
-	AMF_VECTOR_DOUBLE, // unsupported
+	AMF_VECTOR_INT,
+	AMF_VECTOR_UINT,
+	AMF_VECTOR_DOUBLE,
 	AMF_VECTOR_OBJECT, // unsupported
 	AMF_DICTIONARY     // unsupported
 };
