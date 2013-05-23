@@ -5,7 +5,6 @@
 #include <vector>
 #include "amfitem.hpp"
 #include "amfinteger.hpp"
-#include "amfstring.hpp"
 
 template<typename T>
 struct VectorMarker;
