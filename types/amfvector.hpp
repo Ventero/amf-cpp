@@ -29,7 +29,7 @@ class AmfVector;
 
 template<typename T>
 class AmfVector<T, typename std::enable_if<
-	std::is_class<VectorMarker<T>>::value>::type> : public AmfItem {
+	std::is_constructible<VectorMarker<T>>::value>::type> : public AmfItem {
 public:
 	AmfVector(std::vector<T> vector, bool fixed = false) :
 		vector(vector), fixed(fixed) { };
