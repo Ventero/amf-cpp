@@ -2,9 +2,12 @@
 *.slo
 *.lo
 *.o
+*.obj
 *.out
 *.swf
 tests/main
+tests/test.exe
+tests/test-debug.exe
 
 # Precompiled headers
 *.gch
@@ -15,12 +18,25 @@ tests/main
 # Compiled Dynamic libraries
 *.so
 *.dylib
+*.dll
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
+*.lib
 
 # Sublime Files
 *.sublime-project
 *.sublime-workspace
+
+# VS Files
+VS/amf-cpp
+VS/googletest
+VS/test
+*.user
+*.suo
+*.opensdf
+*.sdf
+*.pdb
+*.ilk
