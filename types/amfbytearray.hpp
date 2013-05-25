@@ -6,7 +6,12 @@
 
 class AmfByteArray : public AmfItem {
 public:
-	AmfByteArray(std::vector<u8> v) : value(v) { };
+	template<typename T>
+	AmfByteArray(const T& v) {
+		using std::begin;
+		using std::end;
+		value = std::vector<u8>(begin(v), end(v));
+	}
 
 	std::vector<u8> serialize() const {
 		std::vector<u8> buf {
