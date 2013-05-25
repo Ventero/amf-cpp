@@ -3,6 +3,7 @@
 #define AMFBYTEARRAY_HPP
 
 #include "amfitem.hpp"
+#include "types/amfinteger.hpp"
 
 class AmfByteArray : public AmfItem {
 public:
@@ -14,10 +15,11 @@ public:
 	}
 
 	std::vector<u8> serialize() const {
-		std::vector<u8> buf {
-			AMF_BYTEARRAY,
-			u8(value.size() << 1 | 1)
-		};
+		AmfInteger length(value.size() << 1 | 1);
+		std::vector<u8> buf = length.serialize();
+		// overwrite type marker
+		buf[0] = AMF_BYTEARRAY;
+
 		buf.insert(buf.end(), value.begin(), value.end());
 		return buf;
 	}
