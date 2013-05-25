@@ -23,4 +23,4 @@ libamf.a: serializer.o
 
 -include .dep
 .dep:
-	$(CXX) $(CPPFLAGS) -MM serializer.cpp | sed 's,:, $@:,' > $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM serializer.cpp | sed 's,:, $@:,' > $@

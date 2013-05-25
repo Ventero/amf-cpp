@@ -10,7 +10,7 @@ CPPFLAGS += -I..
 # Tests produced by this Makefile
 TESTS = main
 # Tests used by the main test
-SUBTESTS = bool double integer null serializer string undefined vector
+SUBTESTS = bool bytearray double integer null serializer string undefined vector
 
 all : $(TESTS)
 
@@ -42,5 +42,5 @@ gtest_main.o : $(GTEST_SRCS_)
 
 -include .dep
 .dep:
-	$(CXX) $(CPPFLAGS) -MM $(addsuffix .cpp,$(TESTS)) \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(addsuffix .cpp,$(TESTS)) \
 		$(addsuffix .cpp,$(SUBTESTS)) | sed 's,:, $@:,' > $@
