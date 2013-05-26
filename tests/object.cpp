@@ -39,7 +39,7 @@ TEST(ObjectSerializationTest, DynamicAnonymousObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, SealedClassObject) {
+TEST(ObjectSerializationTest, SealedAnonymousObject) {
 	{
 		AmfObjectTraits traits("", false, false);
 		traits.attributes.push_back("sealedProp");
@@ -93,7 +93,7 @@ TEST(ObjectSerializationTest, SealedClassObject) {
 	}
 }
 
-TEST(ObjectSerializationTest, DynamicSealedClassObject) {
+TEST(ObjectSerializationTest, DynamicSealedAnonymousObject) {
 	AmfObjectTraits traits("", true, false);
 	traits.attributes.push_back("sealedProp");
 
