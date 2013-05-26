@@ -13,6 +13,7 @@
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfnull.hpp"
+#include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
 #include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
