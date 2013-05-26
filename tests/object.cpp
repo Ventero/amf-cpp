@@ -38,3 +38,88 @@ TEST(ObjectSerializationTest, DynamicAnonymousObject) {
 		0x01 // end of object (UTF-8-empty)
 	}, obj);
 }
+
+TEST(ObjectSerializationTest, SealedClassObject) {
+	{
+		AmfObjectTraits traits("", false, false);
+		traits.attributes.push_back("sealedProp");
+		AmfObject obj(traits);
+
+		AmfString value("value");
+		obj.sealedProperties["sealedProp"] = &value;
+
+		isEqual(v8 {
+			0x0a, // AMF_OBJECT
+			0x13, // 0b10011, U29O-traits, not dynamic, 1 sealed property
+			0x01, // class-name "" (anonymous object)
+			// sealed property names
+			// UTF-8-vr "sealedProp"
+			0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
+			// sealed property values
+			// AmfString "value"
+			0x06, 0x0b, 0x76, 0x61, 0x6c, 0x75, 0x65
+			// no dynamic members, so no empty string
+		}, obj);
+	}
+
+	{
+		AmfObjectTraits traits("", false, false);
+		traits.attributes.push_back("sealedProp");
+		traits.attributes.push_back("otherSealedProp");
+		AmfObject obj(traits);
+
+		AmfString value("value");
+		obj.sealedProperties["sealedProp"] = &value;
+		AmfString otherValue("otherValue");
+		obj.sealedProperties["otherSealedProp"] = &otherValue;
+
+		isEqual(v8 {
+			0x0a, // AMF_OBJECT
+			0x23, // 0b100011, U29O-traits, not dynamic, 2 sealed properties
+			0x01, // class-name "" (anonymous object)
+			// sealed property names
+			// UTF-8-vr "sealedProp"
+			0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
+			// UTF-8-vr "otherSealedProp"
+			0x1f, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x53, 0x65, 0x61, 0x6c, 0x65, 0x64,
+			0x50, 0x72, 0x6f, 0x70,
+			// sealed propety values
+			// AmfString "value"
+			0x06, 0x0b, 0x76, 0x61, 0x6c, 0x75, 0x65,
+			// AmfString "otherValue"
+			0x06, 0x15, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x56, 0x61, 0x6c, 0x75, 0x65
+			// no dynamic members
+		}, obj);
+	}
+}
+
+TEST(ObjectSerializationTest, DynamicSealedClassObject) {
+	AmfObjectTraits traits("", true, false);
+	traits.attributes.push_back("sealedProp");
+
+	AmfObject obj(traits);
+
+	AmfString sealedValue("value");
+	obj.sealedProperties["sealedProp"] = &sealedValue;
+	AmfString dynamicValue("dynamicValue");
+	obj.dynamicProperties["dynamicProp"] = &dynamicValue;
+
+	isEqual(v8 {
+		0x0a, // AMF_OBJECT
+		0x1b, // 0b11011, U29O-traits, dynamic, 1 sealed property
+		0x01, // class-name "" (anonymous object)
+		// sealed property names
+		// UTF-8-vr "sealedProp"
+		0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
+		// sealed property values
+		// AmfString "value"
+		0x06, 0x0b, 0x76, 0x61, 0x6c, 0x75, 0x65,
+		// dynamic members
+		// UTF-8-vr "dynamicProp"
+		0x17, 0x64, 0x79, 0x6e, 0x61, 0x6d, 0x69, 0x63, 0x50, 0x72, 0x6f, 0x70,
+		// AmfString "dynamicValue"
+		0x06, 0x19, 0x64, 0x79, 0x6e, 0x61, 0x6d, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65,
+		// end of dynamic members
+		0x01
+	}, obj);
+}
