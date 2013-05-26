@@ -10,7 +10,7 @@ CPPFLAGS += -I..
 # Tests produced by this Makefile
 TESTS = main
 # Tests used by the main test
-SUBTESTS = bool bytearray double integer null object serializer string \
+SUBTESTS = array bool bytearray double integer null object serializer string \
            undefined vector
 
 all : $(TESTS)
