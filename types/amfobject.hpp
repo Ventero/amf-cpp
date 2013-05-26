@@ -95,8 +95,10 @@ public:
 			buf.insert(buf.end(), value.begin(), value.end());
 		}
 
+		// only mark the end of *(dynamic-member) if the object is actually dynamic
 		// final dynamic member = UTF-8-empty
-		buf.push_back(0x01);
+		if (traits.dynamic)
+			buf.push_back(0x01);
 
 		return buf;
 	}
