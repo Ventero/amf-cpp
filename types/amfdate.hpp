@@ -17,7 +17,7 @@ public:
 	// this is at least guaranteed by POSIX
 	AmfDate(long long date) : value(date) { };
 	AmfDate(std::time_t date) : value(date * MSEC_PER_SEC) { };
-	AmfDate(std::tm* date) : AmfDate(mktime(date)) { };
+	AmfDate(std::tm* date) : value(mktime(date) * MSEC_PER_SEC) { };
 
 	AmfDate(std::chrono::system_clock::time_point date) {
 		auto duration = date.time_since_epoch();
