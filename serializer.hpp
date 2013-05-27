@@ -11,6 +11,7 @@
 #include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
 #include "types/amfbytearray.hpp"
+#include "types/amfdate.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfnull.hpp"
