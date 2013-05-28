@@ -99,3 +99,27 @@ TEST(ArraySerializationTest, AssociativeDenseArray) {
 		0x06, 0x0d, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72,
 	}, array);
 }
+
+TEST(ArraySerializationTest, AssociativeDenseArrayUtilityFunctions) {
+	AmfInteger v0(0xbeef);
+	AmfString v1("foobar");
+
+	AmfArray array;
+	array.push_back(&v1);
+	array.insert("sparseVal", &v0);
+
+	isEqual(v8 {
+		0x09, // AMF_ARRAY
+		0x03, // 1 dense element
+		// assoc-values
+		// UTF-8-vr "sparseVal"
+		0x13, 0x73, 0x70, 0x61, 0x72, 0x73, 0x65, 0x56, 0x61, 0x6c,
+		// AmfInteger 0xbeef
+		0x04, 0x82, 0xfd, 0x6f,
+		0x01, // end of assoc-values
+		// dense elements
+		// AmfString "foobar"
+		0x06, 0x0d, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72,
+	}, array);
+
+}

@@ -16,6 +16,14 @@ public:
 		std::map<std::string, AmfItem*> associativePart) :
 		dense(densePart), associative(associativePart) { };
 
+	void push_back(AmfItem* item) {
+		dense.push_back(item);
+	}
+
+	void insert(std::string key, AmfItem* item) {
+		associative[key] = item;
+	}
+
 	std::vector<u8> serialize() const {
 		/*
 		 * array-marker
