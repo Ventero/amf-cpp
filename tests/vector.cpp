@@ -278,6 +278,26 @@ TEST(VectorSerializationTest, VectorDoubleFixedDefault) {
 	ASSERT_EQ(expected, vec.serialize());
 }
 
+TEST(VectorSerializationTest, VectorUtilityFunctions) {
+	AmfVector<int> vector({}, false);
+	vector.push_back(1);
+	v8 expected {
+		0x0d, 0x03, 0x00,
+		0x00, 0x00, 0x00, 0x01,
+	};
+	ASSERT_EQ(expected, vector.serialize());
+
+	std::vector<int> elems { 3, 5 };
+	vector.insert(vector.end(), elems.begin(), elems.end());
+	expected = {
+		0x0d, 0x07, 0x00,
+		0x00, 0x00, 0x00, 0x01,
+		0x00, 0x00, 0x00, 0x03,
+		0x00, 0x00, 0x00, 0x05
+	};
+	ASSERT_EQ(expected, vector.serialize());
+}
+
 TEST(VectorSerializationTest, VectorLongLongNotConstructible) {
 	static_assert(!std::is_constructible<AmfVector<long long>>::value,
 		"AmfVector<long long> should not be constructible");

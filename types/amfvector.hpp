@@ -28,15 +28,20 @@ template<typename T, class Enable = void>
 class AmfVector;
 
 template<typename T>
-class AmfVector<T, typename std::enable_if<
-	std::is_constructible<VectorMarker<T>>::value>::type> : public AmfItem {
+class AmfVector<T, typename std::enable_if<std::is_constructible<
+	VectorMarker<T>>::value>::type> : public AmfItem, private std::vector<T> {
 public:
 	AmfVector(std::vector<T> vector, bool fixed = false) :
-		vector(vector), fixed(fixed) { };
+		std::vector<T>(vector), fixed(fixed) { };
+
+	using std::vector<T>::begin;
+	using std::vector<T>::end;
+	using std::vector<T>::insert;
+	using std::vector<T>::push_back;
 
 	std::vector<u8> serialize() const {
 		// U29V value
-		AmfInteger length(vector.size() << 1 | 1);
+		AmfInteger length(this->size() << 1 | 1);
 		std::vector<u8> buf = length.serialize();
 		// overwrite the int marker with the correct vector one
 		buf[0] = VectorMarker<T>::value;
@@ -44,7 +49,7 @@ public:
 		// fixed-vector marker
 		buf.push_back(fixed ? 0x01 : 0x00);
 
-		for(T it : vector) {
+		for(T it : *this) {
 			// values are encoded as in network byte order
 			// ints are encoded as U32, not U29
 			T netvalue = hton(it);
@@ -55,7 +60,6 @@ public:
 		return buf;
 	}
 private:
-	std::vector<T> vector;
 	bool fixed;
 };
 
