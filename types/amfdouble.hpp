@@ -6,7 +6,6 @@
 
 class AmfDouble : public AmfItem {
 public:
-	// TODO: range check somewhere
 	AmfDouble(double v) : value(v) { };
 	operator double() const { return value; }
 

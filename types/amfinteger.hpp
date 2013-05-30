@@ -18,7 +18,6 @@ public:
 		if (value < -0x10000000 || value >= 0x10000000)
 			return AmfDouble(value).serialize();
 
-		// TODO: range checking here? if out of range, serialize as double or throw?
 		if (value >= 0 && value <= 0x7F) {
 			return std::vector<u8> {
 				AMF_INTEGER,
