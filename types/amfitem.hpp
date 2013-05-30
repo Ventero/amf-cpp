@@ -22,7 +22,7 @@ enum AmfMarker : u8 {
 	AMF_VECTOR_INT,
 	AMF_VECTOR_UINT,
 	AMF_VECTOR_DOUBLE,
-	AMF_VECTOR_OBJECT, // unsupported
+	AMF_VECTOR_OBJECT,
 	AMF_DICTIONARY     // unsupported
 };
 

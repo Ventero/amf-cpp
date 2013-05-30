@@ -5,6 +5,7 @@
 #include <vector>
 #include "amfitem.hpp"
 #include "amfinteger.hpp"
+#include "amfstring.hpp"
 
 template<typename T>
 struct VectorMarker;
@@ -60,6 +61,45 @@ public:
 		return buf;
 	}
 private:
+	bool fixed;
+};
+
+template<>
+class AmfVector<AmfItem*> : public AmfItem, private std::vector<AmfItem*> {
+public:
+	AmfVector(std::vector<AmfItem*> vector, std::string type, bool fixed = false)
+	    : std::vector<AmfItem*>(vector), type(type), fixed(fixed) { };
+
+	using std::vector<AmfItem*>::begin;
+	using std::vector<AmfItem*>::end;
+	using std::vector<AmfItem*>::insert;
+	using std::vector<AmfItem*>::push_back;
+
+	std::vector<u8> serialize() const {
+		// U29V value, encoding the length
+		AmfInteger length(this->size() << 1 | 1);
+		std::vector<u8> buf = length.serialize();
+		// overwrite the int marker with the correct one
+		buf[0] = AMF_VECTOR_OBJECT;
+
+		// fixed-vector marker
+		buf.push_back(fixed ? 0x01 : 0x00);
+
+		// object type name
+		std::vector<u8> typeName = AmfString(type).serialize();
+		// skip the AMF_STRING marker
+		buf.insert(buf.end(), typeName.begin() + 1, typeName.end());
+
+		for (AmfItem* it : *this) {
+			std::vector<u8> value = it->serialize();
+			buf.insert(buf.end(), value.begin(), value.end());
+		}
+
+		return buf;
+	}
+
+private:
+	std::string type;
 	bool fixed;
 };
 

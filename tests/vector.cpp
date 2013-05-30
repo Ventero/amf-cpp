@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "amf.hpp"
+#include "types/amfobject.hpp"
 #include "types/amfvector.hpp"
 
 template<typename T>
@@ -294,6 +295,78 @@ TEST(VectorSerializationTest, VectorUtilityFunctions) {
 		0x00, 0x00, 0x00, 0x01,
 		0x00, 0x00, 0x00, 0x03,
 		0x00, 0x00, 0x00, 0x05
+	};
+	ASSERT_EQ(expected, vector.serialize());
+}
+
+TEST(VectorSerializationTest, VectorAnonObjectEmpty) {
+	AmfVector<AmfItem*> vector({}, "", false);
+	v8 expected {
+		0x10, 0x01, 0x00, 0x01
+	};
+	ASSERT_EQ(expected, vector.serialize());
+
+	vector = AmfVector<AmfItem*>({}, "", true);
+	expected = {
+		0x10, 0x01, 0x01, 0x01
+	};
+	ASSERT_EQ(expected, vector.serialize());
+}
+
+TEST(VectorSerializationTest, VectorNamedObjectEmpty) {
+	AmfVector<AmfItem*> vector({}, "TestObject", false);
+	v8 expected {
+		0x10, 0x01, 0x00,
+		0x15, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74
+	};
+
+	ASSERT_EQ(expected, vector.serialize());
+}
+
+TEST(VectorSerializationTest, VectorAnonObject) {
+	AmfVector<AmfItem*> vector({}, "", false);
+	AmfObjectTraits traits("", true, false);
+	AmfObject obj(traits);
+
+	AmfString value("val");
+	obj.dynamicProperties["prop"] = &value;
+	vector.push_back(&obj);
+
+	v8 expected {
+		0x10, 0x03, 0x00,
+		0x01,
+		0x0a, 0x0b, 0x01,
+		0x09, 0x70, 0x72, 0x6f, 0x70,
+		0x06, 0x07, 0x76, 0x61, 0x6c, 0x01
+	};
+	ASSERT_EQ(expected, vector.serialize());
+}
+
+TEST(VectorSerializationTest, VectorNamedObject) {
+	AmfVector<AmfItem*> vector({}, "TestObject", false);
+	// we're using a different class name (e.g subclass) for the actual object
+	// to prevent running into any string reference serialization
+	AmfObjectTraits traits("TestObject2", false, false);
+	traits.attributes.push_back("sealedProp");
+	AmfObject obj(traits);
+
+	AmfInteger val(0xbeef);
+	obj.sealedProperties["sealedProp"] = &val;
+	vector.push_back(&obj);
+
+	v8 expected {
+		// vector marker, 1 item, not fixed
+		0x10, 0x03, 0x00,
+		// class name "TestObject"
+		0x15, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+		// object marker, not dynamic, 1 sealed property, class name 0x00???
+		0x0a, 0x13,
+		// object type "TestObject2"
+		0x17, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x32,
+		// property name sealedProp
+		0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
+		// value 0xbeef
+		0x04, 0x82, 0xfd, 0x6f
 	};
 	ASSERT_EQ(expected, vector.serialize());
 }
