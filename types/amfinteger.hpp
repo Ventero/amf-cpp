@@ -7,6 +7,7 @@
 
 class AmfInteger : public AmfItem {
 public:
+	AmfInteger() : value(0) { };
 	AmfInteger(int v) : value(v) { };
 	operator int() const { return value; }
 

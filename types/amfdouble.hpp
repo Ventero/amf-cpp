@@ -6,6 +6,7 @@
 
 class AmfDouble : public AmfItem {
 public:
+	AmfDouble() : value(0) { };
 	AmfDouble(double v) : value(v) { };
 	operator double() const { return value; }
 
