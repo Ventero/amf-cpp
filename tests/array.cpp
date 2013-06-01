@@ -23,8 +23,8 @@ TEST(ArraySerializationTest, StrictIntArray) {
 	AmfInteger v1(1);
 	AmfInteger v2(2);
 	AmfInteger v3(3);
-	std::vector<AmfItem*> dense({{ &v0, &v1, &v2, &v3 }});
-	AmfArray array(dense, {});
+	std::vector<AmfInteger> dense({{ v0, v1, v2, v3 }});
+	AmfArray array(dense);
 
 	isEqual(v8 {
 		0x09,
@@ -41,8 +41,11 @@ TEST(ArraySerializationTest, StrictMixedArray) {
 	AmfObjectTraits traits("", true, false);
 	AmfObject v3(traits);
 
-	std::vector<AmfItem*> dense({{ &v0, &v1, &v2, &v3 }});
-	AmfArray array(dense, {});
+	AmfArray array;
+	array.push_back(v0);
+	array.push_back(v1);
+	array.push_back(v2);
+	array.push_back(v3);
 
 	isEqual(v8 {
 		0x09,
@@ -56,13 +59,10 @@ TEST(ArraySerializationTest, StrictMixedArray) {
 }
 
 TEST(ArraySerializationTest, AssociativeOnlyArray) {
-	AmfInteger v0(17);
-	AmfInteger v1(0);
-
-	std::map<std::string, AmfItem*> sparse;
-	sparse["bar"] = &v0;
-	sparse["foo"] = &v1;
-	AmfArray array({}, sparse);
+	std::map<std::string, AmfInteger> sparse;
+	sparse["bar"] = AmfInteger(17);
+	sparse["foo"] = AmfInteger(0);
+	AmfArray array(std::vector<AmfInteger> { }, sparse);
 
 	isEqual(v8 {
 		0x09, // AMF_ARRAY
@@ -77,13 +77,10 @@ TEST(ArraySerializationTest, AssociativeOnlyArray) {
 }
 
 TEST(ArraySerializationTest, AssociativeDenseArray) {
-	AmfInteger v0(0xbeef);
-	AmfString v1("foobar");
+	std::map<std::string, AmfInteger> sparse;
+	sparse["sparseVal"] = AmfInteger(0xbeef);
 
-	std::map<std::string, AmfItem*> sparse;
-	sparse["sparseVal"] = &v0;
-
-	AmfArray array({ &v1 }, sparse);
+	AmfArray array(std::vector<AmfString> { AmfString("foobar") }, sparse);
 
 	isEqual(v8 {
 		0x09, // AMF_ARRAY
@@ -105,8 +102,8 @@ TEST(ArraySerializationTest, AssociativeDenseArrayUtilityFunctions) {
 	AmfString v1("foobar");
 
 	AmfArray array;
-	array.push_back(&v1);
-	array.insert("sparseVal", &v0);
+	array.push_back(v1);
+	array.insert("sparseVal", v0);
 
 	isEqual(v8 {
 		0x09, // AMF_ARRAY
