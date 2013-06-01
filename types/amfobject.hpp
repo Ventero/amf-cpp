@@ -79,20 +79,18 @@ public:
 
 		// sealed property values = *(value-type)
 		for (const std::string& attribute : traits.attributes) {
-			AmfItem* property = sealedProperties.at(attribute);
-			std::vector<u8> value(property->serialize());
+			const std::vector<u8>& value = sealedProperties.at(attribute);
 			buf.insert(buf.end(), value.begin(), value.end());
 		}
 
 		// dynamic-members = UTF-8-vr value-type
 		for (const auto& it : dynamicProperties) {
 			AmfString attribute(it.first);
-			std::vector<u8> name(attribute.serialize());
-			std::vector<u8> value(it.second->serialize());
+			const std::vector<u8> name(attribute.serialize());
 
 			// skip AmfString marker again
 			buf.insert(buf.end(), name.begin() + 1, name.end());
-			buf.insert(buf.end(), value.begin(), value.end());
+			buf.insert(buf.end(), it.second.begin(), it.second.end());
 		}
 
 		// only mark the end of *(dynamic-member) if the object is actually dynamic
@@ -103,13 +101,19 @@ public:
 		return buf;
 	}
 
-	void addSealedProperty(std::string name, AmfItem* value) {
+	template<class T>
+	void addSealedProperty(std::string name, const T& value) {
 		traits.attributes.push_back(name);
-		sealedProperties[name] = value;
+		sealedProperties[name] = value.serialize();
 	}
 
-	std::map<std::string, AmfItem*> sealedProperties;
-	std::map<std::string, AmfItem*> dynamicProperties;
+	template<class T>
+	void addDynamicProperty(std::string name, const T& value) {
+		dynamicProperties[name] = value.serialize();
+	}
+
+	std::map<std::string, std::vector<u8>> sealedProperties;
+	std::map<std::string, std::vector<u8>> dynamicProperties;
 
 private:
 	AmfObjectTraits traits;

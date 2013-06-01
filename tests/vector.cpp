@@ -330,8 +330,7 @@ TEST(VectorSerializationTest, VectorAnonObject) {
 	AmfObjectTraits traits("", true, false);
 	AmfObject obj(traits);
 
-	AmfString value("val");
-	obj.dynamicProperties["prop"] = &value;
+	obj.addDynamicProperty("prop", AmfString("val"));
 	vector.push_back(&obj);
 
 	v8 expected {
@@ -349,11 +348,9 @@ TEST(VectorSerializationTest, VectorNamedObject) {
 	// we're using a different class name (e.g subclass) for the actual object
 	// to prevent running into any string reference serialization
 	AmfObjectTraits traits("TestObject2", false, false);
-	traits.attributes.push_back("sealedProp");
 	AmfObject obj(traits);
 
-	AmfInteger val(0xbeef);
-	obj.sealedProperties["sealedProp"] = &val;
+	obj.addSealedProperty("sealedProp", AmfInteger(0xbeef));
 	vector.push_back(&obj);
 
 	v8 expected {

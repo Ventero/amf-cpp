@@ -28,8 +28,7 @@ TEST(ObjectSerializationTest, DynamicAnonymousObject) {
 	AmfObjectTraits traits("", true, false);
 	AmfObject obj(traits);
 
-	AmfString value("val");
-	obj.dynamicProperties["prop"] = &value;
+	obj.addDynamicProperty("prop", AmfString("val"));
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
@@ -45,11 +44,8 @@ TEST(ObjectSerializationTest, DynamicAnonymousObject) {
 TEST(ObjectSerializationTest, SealedAnonymousObject) {
 	{
 		AmfObjectTraits traits("", false, false);
-		traits.attributes.push_back("sealedProp");
 		AmfObject obj(traits);
-
-		AmfString value("value");
-		obj.sealedProperties["sealedProp"] = &value;
+		obj.addSealedProperty("sealedProp", AmfString("value"));
 
 		isEqual(v8 {
 			0x0a, // AMF_OBJECT
@@ -67,14 +63,10 @@ TEST(ObjectSerializationTest, SealedAnonymousObject) {
 
 	{
 		AmfObjectTraits traits("", false, false);
-		traits.attributes.push_back("sealedProp");
-		traits.attributes.push_back("otherSealedProp");
 		AmfObject obj(traits);
 
-		AmfString value("value");
-		obj.sealedProperties["sealedProp"] = &value;
-		AmfString otherValue("otherValue");
-		obj.sealedProperties["otherSealedProp"] = &otherValue;
+		obj.addSealedProperty("sealedProp", AmfString("value"));
+		obj.addSealedProperty("otherSealedProp", AmfString("otherValue"));
 
 		isEqual(v8 {
 			0x0a, // AMF_OBJECT
@@ -98,14 +90,11 @@ TEST(ObjectSerializationTest, SealedAnonymousObject) {
 
 TEST(ObjectSerializationTest, DynamicSealedAnonymousObject) {
 	AmfObjectTraits traits("", true, false);
-	traits.attributes.push_back("sealedProp");
 
 	AmfObject obj(traits);
 
-	AmfString sealedValue("value");
-	obj.sealedProperties["sealedProp"] = &sealedValue;
-	AmfString dynamicValue("dynamicValue");
-	obj.dynamicProperties["dynamicProp"] = &dynamicValue;
+	obj.addSealedProperty("sealedProp", AmfString("value"));
+	obj.addDynamicProperty("dynamicProp", AmfString("dynamicValue"));
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
@@ -129,11 +118,9 @@ TEST(ObjectSerializationTest, DynamicSealedAnonymousObject) {
 
 TEST(ObjectSerializationTest, SealedNamedObject) {
 	AmfObjectTraits traits("de.ventero.AmfTest", false, false);
-	traits.attributes.push_back("sealedProp");
 	AmfObject obj(traits);
 
-	AmfString sealedValue("value");
-	obj.sealedProperties["sealedProp"] = &sealedValue;
+	obj.addSealedProperty("sealedProp", AmfString("value"));
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
@@ -153,14 +140,10 @@ TEST(ObjectSerializationTest, SealedNamedObject) {
 
 TEST(ObjectSerializationTest, DynamicSealedNamedObject) {
 	AmfObjectTraits traits("de.ventero.AmfTest", true, false);
-	traits.attributes.push_back("sealedProp");
 	AmfObject obj(traits);
 
-	AmfDouble sealedValue(3.14159);
-	obj.sealedProperties["sealedProp"] = &sealedValue;
-
-	AmfInteger dynamicValue(17);
-	obj.dynamicProperties["dynamicProp"] = &dynamicValue;
+	obj.addSealedProperty("sealedProp", AmfDouble(3.14159));
+	obj.addDynamicProperty("dynamicProp", AmfInteger(17));
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
@@ -188,9 +171,6 @@ TEST(ObjectSerializationTest, EmptySealedAnonymousObject) {
 	AmfObjectTraits traits("", false, false);
 	AmfObject obj(traits);
 
-	AmfInteger sealedValue(10);
-	obj.sealedProperties["sealedProp"] = &sealedValue;
-
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
 		0x03, // 0b0011, U29O-traits, not dynamic, 0 sealed properties
@@ -200,15 +180,12 @@ TEST(ObjectSerializationTest, EmptySealedAnonymousObject) {
 
 TEST(ObjectSerializationTest, SerializeOnlyPropsInTraits) {
 	AmfObjectTraits traits("", false, false);
-	traits.attributes.push_back("sealedProp");
 	AmfObject obj(traits);
 
-	AmfInteger sealedValue(0x05ffeffe);
-	obj.sealedProperties["sealedProp"] = &sealedValue;
+	obj.addSealedProperty("sealedProp", AmfInteger(0x05ffeffe));
 
 	// this should not be serialized as it's not part of the trait attributes
-	AmfString unusedValue("unused");
-	obj.sealedProperties["unusedProp"] = &unusedValue;
+	obj.sealedProperties["unusedProp"] = AmfString("unused").serialize();
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
