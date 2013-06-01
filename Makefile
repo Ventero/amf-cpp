@@ -7,6 +7,8 @@ all: release
 release: libamf.a
 debug: CXXFLAGS += -g
 debug: libamf.a
+32bit: CXXFLAGS += -m32
+32bit: release
 
 clean:
 	rm -f *.a *.o .dep
