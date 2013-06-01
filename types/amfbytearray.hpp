@@ -14,6 +14,11 @@ public:
 		value = std::vector<u8>(begin(v), end(v));
 	}
 
+	template<typename T>
+	AmfByteArray(T begin, T end) {
+		value = std::vector<u8>(begin, end);
+	}
+
 	std::vector<u8> serialize() const {
 		AmfInteger length(value.size() << 1 | 1);
 		std::vector<u8> buf = length.serialize();
