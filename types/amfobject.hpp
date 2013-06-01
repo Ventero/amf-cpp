@@ -103,6 +103,11 @@ public:
 		return buf;
 	}
 
+	void addSealedProperty(std::string name, AmfItem* value) {
+		traits.attributes.push_back(name);
+		sealedProperties[name] = value;
+	}
+
 	std::map<std::string, AmfItem*> sealedProperties;
 	std::map<std::string, AmfItem*> dynamicProperties;
 
