@@ -19,6 +19,7 @@
 #include "types/amfstring.hpp"
 #include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
+#include "types/amfxml.hpp"
 
 class Serializer {
 public:

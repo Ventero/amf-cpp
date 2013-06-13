@@ -11,7 +11,7 @@ CPPFLAGS += -I..
 TESTS = main
 # Tests used by the main test
 SUBTESTS = array bool bytearray date double integer null object serializer \
-           string undefined vector
+           string undefined vector xml
 
 all : $(TESTS)
 
