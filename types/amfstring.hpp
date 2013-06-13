@@ -25,8 +25,7 @@ public:
 		buf[0] = AMF_STRING;
 
 		// now, append the actual string.
-		auto data = value.data();
-		buf.insert(buf.end(), data, data + value.length());
+		buf.insert(buf.end(), value.begin(), value.end());
 
 		return buf;
 	}
