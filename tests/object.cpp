@@ -239,3 +239,15 @@ TEST(ObjectSerializationTest, NonTraitCtor) {
 		0x01
 	}, obj);
 }
+
+TEST(ObjectSerializationTest, OnlySerializeDynamicPropsOnDynamicObjects) {
+	// non-dynamic object
+	AmfObject obj("", false, false);
+	obj.addDynamicProperty("dynamicProp", AmfString("val"));
+
+	isEqual(v8 {
+		0x0a, // AMF_OBJECT
+		0x03, // 0b0011, U29O-traits, not dynamic, 0 sealed properties
+		0x01 // class-name "" (anonymous object)
+	}, obj);
+}

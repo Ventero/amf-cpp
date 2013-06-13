@@ -86,20 +86,22 @@ public:
 			buf.insert(buf.end(), value.begin(), value.end());
 		}
 
-		// dynamic-members = UTF-8-vr value-type
-		for (const auto& it : dynamicProperties) {
-			AmfString attribute(it.first);
-			const std::vector<u8> name(attribute.serialize());
+		// only encode *(dynamic-member) (including the end marker) if the object
+		// is actually dynamic
+		if(traits.dynamic) {
+			// dynamic-members = UTF-8-vr value-type
+			for (const auto& it : dynamicProperties) {
+				AmfString attribute(it.first);
+				const std::vector<u8> name(attribute.serialize());
 
-			// skip AmfString marker again
-			buf.insert(buf.end(), name.begin() + 1, name.end());
-			buf.insert(buf.end(), it.second.begin(), it.second.end());
-		}
+				// skip AmfString marker again
+				buf.insert(buf.end(), name.begin() + 1, name.end());
+				buf.insert(buf.end(), it.second.begin(), it.second.end());
+			}
 
-		// only mark the end of *(dynamic-member) if the object is actually dynamic
-		// final dynamic member = UTF-8-empty
-		if (traits.dynamic)
+			// final dynamic member = UTF-8-empty
 			buf.push_back(0x01);
+		}
 
 		return buf;
 	}
