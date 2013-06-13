@@ -10,8 +10,8 @@ This project is licensed under the MIT/X11 license. See [LICENSE](https://github
 
 # Documentation #
 
-So far, only serialization is supported, and the API is still subject to change.
-Proper documentation will follow once the API is stabilized.
+So far, only serialization is supported, and the serialization API is still subject
+to change. Proper documentation will follow once the API is stabilized.
 
 If you want to try the serialization, simply create the AMF objects (see `types/amf*.hpp`)
 and insert them into a `Serializer` object. To get the serialized data as `std::vector<u8>`,
