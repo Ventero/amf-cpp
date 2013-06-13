@@ -24,6 +24,9 @@ public:
 
 class AmfObject : public AmfItem {
 public:
+	AmfObject() : traits(AmfObjectTraits("", false, false)) { };
+	AmfObject(std::string className, bool dynamic, bool externalizable) :
+		traits(AmfObjectTraits(className, dynamic, externalizable)) { };
 	AmfObject(AmfObjectTraits traits) : traits(traits) { };
 
 	std::vector<u8> serialize() const {

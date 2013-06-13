@@ -200,3 +200,42 @@ TEST(ObjectSerializationTest, SerializeOnlyPropsInTraits) {
 		// no dynamic members
 	}, obj);
 }
+
+TEST(ObjectSerializationTest, NonTraitCtor) {
+	AmfObject obj;
+	obj.addSealedProperty("sealedProp", AmfInteger(0x7b));
+
+	isEqual(v8 {
+		0x0a, // AMF_OBJECT
+		0x13, // U29O-traits, not dynamic, 1 sealed prop
+		0x01, // class-name ""
+		// UTF-8-vr "sealedProp"
+		0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
+		// sealed property value
+		// AmfInteger 0x7b
+		0x04, 0x7b
+		// no dynamic members
+	}, obj);
+
+	obj = AmfObject("foo", true, false);
+	obj.addSealedProperty("sealedProp", AmfInteger(0x7b));
+	obj.addDynamicProperty("dynamicProp", AmfString("dyn"));
+	isEqual(v8 {
+		0x0a, // AMF_OBJECT
+		0x1b, // U29O-traits, dynamic, 1 sealed prop
+		// class-name UTF-8-vr "foo"
+		0x07, 0x66, 0x6f, 0x6f,
+		// UTF-8-vr "sealedProp"
+		0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
+		// sealed property value
+		// AmfInteger 0x7b
+		0x04, 0x7b,
+		// 1 dynamic member
+		// UTF-8-vr "dynamicProp"
+		0x17, 0x64, 0x79, 0x6e, 0x61, 0x6d, 0x69, 0x63, 0x50, 0x72, 0x6f, 0x70,
+		// AmfString "dyn"
+		0x06, 0x07, 0x64, 0x79, 0x6e,
+		// end of dynamic members
+		0x01
+	}, obj);
+}
