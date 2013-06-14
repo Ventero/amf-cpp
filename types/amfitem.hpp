@@ -13,7 +13,7 @@ enum AmfMarker : u8 {
 	AMF_INTEGER,
 	AMF_DOUBLE,
 	AMF_STRING,
-	AMF_XMLDOC,        // unsupported
+	AMF_XMLDOC,
 	AMF_DATE,
 	AMF_ARRAY,
 	AMF_OBJECT,        // partially supported

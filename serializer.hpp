@@ -20,6 +20,7 @@
 #include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
 #include "types/amfxml.hpp"
+#include "types/amfxmldocument.hpp"
 
 class Serializer {
 public:
