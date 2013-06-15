@@ -61,7 +61,6 @@ public:
 		}
 
 		// U29-traits = 0b0011 = 0x03
-		// TODO: make sure .size() is max 25 bit?
 		int traitMarker = traits.attributes.size() << 4 | 0x03;
 		// dynamic marker = 0b1000 = 0x08
 		if (traits.dynamic) traitMarker |= 0x08;
