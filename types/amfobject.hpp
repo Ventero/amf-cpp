@@ -36,11 +36,10 @@ public:
 		 *   U29O-ref |
 		 *   (U29O-traits-ext class-name *(U8)) |
 		 *   U29O-traits-ref |
-		 *   (U29O-traits class-name *(UTF-8-vr))
+		 *   (U29O-traits class-name *(UTF-8-vr) *(value-type) *(dynamic-member))
 		 * )
-		 * *(value-type)
-		 * *(dynamic-member)
 		 */
+
 		std::vector<u8> buf = { AMF_OBJECT };
 
 		AmfString className(traits.className);
