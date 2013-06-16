@@ -12,25 +12,30 @@ TESTS = main
 # Tests used by the main test
 SUBTESTS = array bool bytearray date double integer null object serializer \
            string undefined vector xml xmldocument
+# precompiled header name
+PCH = amftest.hpp
 
 all : $(TESTS)
 
 clean :
-	rm -f $(TESTS) gtest.a gtest_main.a *.o .dep
+	rm -f $(TESTS) gtest.a gtest_main.a *.o .dep $(PCH).gch
 
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 
 # our own build rules
-main.o : main.cpp $(GTEST_HEADERS)
+main.o : main.cpp $(GTEST_HEADERS) $(PCH).gch
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-$(addsuffix .o,$(SUBTESTS)) : %.o : %.cpp $(GTEST_HEADERS)
+$(addsuffix .o,$(SUBTESTS)) : %.o : %.cpp $(GTEST_HEADERS) $(PCH).gch
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 main : main.o $(addsuffix .o,$(SUBTESTS)) ../serializer.o gtest-all.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+
+$(PCH).gch: $(PCH)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
 
 # gtest build rules
 gtest-all.o : $(GTEST_SRCS_)

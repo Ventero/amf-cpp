@@ -1,3 +1,5 @@
+#include "amftest.hpp"
+
 #include <array>
 
 #include "gtest/gtest.h"
