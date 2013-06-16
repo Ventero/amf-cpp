@@ -51,10 +51,7 @@ public:
 		 * )
 		 */
 		// U29A-value
-		AmfInteger length(dense.size() << 1 | 1);
-		std::vector<u8> buf = length.serialize();
-		// write the correct type marker
-		buf[0] = AMF_ARRAY;
+		std::vector<u8> buf = AmfInteger(dense.size()).asLength(AMF_ARRAY);
 
 		for (const auto& it : associative) {
 			AmfString attribute(it.first);

@@ -12,10 +12,7 @@ public:
 	AmfXml(std::string value) : value(value) { };
 
 	std::vector<u8> serialize() const {
-		AmfInteger length(value.size() << 1 | 1);
-		std::vector<u8> buf = length.serialize();
-		// overwrite the int marker with the XML marker
-		buf[0] = AMF_XML;
+		std::vector<u8> buf = AmfInteger(value.size()).asLength(AMF_XML);
 
 		// the actual data is simply encoded as UTF8-chars
 		buf.insert(buf.end(), value.begin(), value.end());

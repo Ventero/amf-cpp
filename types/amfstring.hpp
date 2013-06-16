@@ -15,14 +15,10 @@ public:
 		if(value.empty())
 			return std::vector<u8>{ AMF_STRING, 0x01 };
 
-		// strings are encoded as AMF_STRING, followed by their length and
-		// the string encoded as UTF8. thus, we start by serializing the
-		// length and overwriting the type marker of the serialized data
-		// with an AMF_STRING marker.
-		// length << 1 | 1 to mark string as non-reference
-		AmfInteger length(value.length() << 1 | 1);
-		auto buf = length.serialize();
-		buf[0] = AMF_STRING;
+		// AmfString = string-marker UTF-8-vr
+		// with UTF-8-vr = U29S-value *(UTF8-char)
+		// U29S-value encodes the length of the following string
+		std::vector<u8> buf = AmfInteger(value.size()).asLength(AMF_STRING);
 
 		// now, append the actual string.
 		buf.insert(buf.end(), value.begin(), value.end());

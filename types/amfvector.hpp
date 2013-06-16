@@ -42,10 +42,7 @@ public:
 
 	std::vector<u8> serialize() const {
 		// U29V value
-		AmfInteger length(this->size() << 1 | 1);
-		std::vector<u8> buf = length.serialize();
-		// overwrite the int marker with the correct vector one
-		buf[0] = VectorMarker<T>::value;
+		std::vector<u8> buf = AmfInteger(this->size()).asLength(VectorMarker<T>::value);
 
 		// fixed-vector marker
 		buf.push_back(fixed ? 0x01 : 0x00);
