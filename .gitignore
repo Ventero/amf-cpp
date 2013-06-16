@@ -6,6 +6,9 @@
 *.swf
 tests/main
 
+# Precompiled headers
+*.gch
+
 # Automatically generated dependency lists
 .dep
 
