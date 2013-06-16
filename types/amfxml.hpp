@@ -4,6 +4,7 @@
 
 #include <string>
 #include "amfitem.hpp"
+#include "amfinteger.hpp"
 
 class AmfXml : public AmfItem {
 public:
@@ -11,11 +12,8 @@ public:
 	AmfXml(std::string value) : value(value) { };
 
 	std::vector<u8> serialize() const {
-		std::vector<u8> buf {
-			AMF_XML,
-			u8(value.size() << 1 | 1)
-		};
-
+		AmfInteger length(value.size() << 1 | 1);
+		std::vector<u8> buf = length.serialize();
 		// overwrite the int marker with the XML marker
 		buf[0] = AMF_XML;
 
