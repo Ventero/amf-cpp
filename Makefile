@@ -16,7 +16,7 @@ clean:
 dist-clean: clean
 	$(MAKE) -C tests clean
 
-test:
+test: serializer.o
 	$(MAKE) -C tests
 	tests/main
 
