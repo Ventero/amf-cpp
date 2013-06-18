@@ -23,6 +23,9 @@ test: serializer.o
 libamf.a: serializer.o
 	$(AR) $(ARFLAGS) $@ $<
 
--include .dep
 .dep:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM serializer.cpp | sed 's,:, $@:,' > $@
+
+ifneq ($(MAKECMDGOALS),clean)
+	-include .dep
+endif

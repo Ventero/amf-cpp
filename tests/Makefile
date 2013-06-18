@@ -41,7 +41,10 @@ gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
             $(GTEST_DIR)/src/gtest_main.cc
 
--include .dep
 .dep:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(addsuffix .cpp,$(TESTS)) \
 		$(addsuffix .cpp,$(SUBTESTS)) | sed 's,:, $@:,' > $@
+
+ifneq ($(MAKECMDGOALS),clean)
+	-include .dep
+endif
