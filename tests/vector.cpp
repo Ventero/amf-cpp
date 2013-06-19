@@ -1,7 +1,5 @@
 #include "amftest.hpp"
 
-#include "gtest/gtest.h"
-
 #include "amf.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfvector.hpp"

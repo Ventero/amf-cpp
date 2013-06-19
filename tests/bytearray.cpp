@@ -2,8 +2,6 @@
 
 #include <array>
 
-#include "gtest/gtest.h"
-
 #include "amf.hpp"
 #include "types/amfbytearray.hpp"
 
