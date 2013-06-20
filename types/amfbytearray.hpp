@@ -3,7 +3,7 @@
 #define AMFBYTEARRAY_HPP
 
 #include "amfitem.hpp"
-#include "types/amfinteger.hpp"
+#include "amfinteger.hpp"
 
 class AmfByteArray : public AmfItem {
 public:

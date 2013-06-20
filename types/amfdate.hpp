@@ -5,8 +5,8 @@
 #include <chrono>
 #include <ctime>
 
-#include "types/amfdouble.hpp"
-#include "types/amfitem.hpp"
+#include "amfdouble.hpp"
+#include "amfitem.hpp"
 
 // this needs to be a long long to ensure no overflow
 static const long long MSEC_PER_SEC = 1000ll;

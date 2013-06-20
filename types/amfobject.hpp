@@ -6,8 +6,8 @@
 #include <map>
 
 #include "amfitem.hpp"
-#include "types/amfinteger.hpp"
-#include "types/amfstring.hpp"
+#include "amfinteger.hpp"
+#include "amfstring.hpp"
 
 // TODO: nested class?
 class AmfObjectTraits {
