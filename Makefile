@@ -27,5 +27,5 @@ libamf.a: serializer.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM serializer.cpp | sed 's,:, $@:,' > $@
 
 ifneq ($(MAKECMDGOALS),clean)
-	-include .dep
+-include .dep
 endif

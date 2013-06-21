@@ -51,5 +51,5 @@ gtest_main.o : $(GTEST_SRCS_)
 		$(addsuffix .cpp,$(SUBTESTS)) | sed 's,:, $@:,' > $@
 
 ifneq ($(MAKECMDGOALS),clean)
-	-include .dep
+-include .dep
 endif
