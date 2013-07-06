@@ -7,6 +7,10 @@ static void isEqual(const std::vector<u8>& expected, int value) {
 	ASSERT_EQ(expected, AmfInteger(value).serialize());
 }
 
+static void isEqual(const std::vector<u8>& expected, const std::vector<u8>& value) {
+	ASSERT_EQ(expected, value);
+}
+
 TEST(IntegerSerializationTest, PositiveInteger1Byte) {
 	isEqual(v8 { 0x04, 0x00 }, 0);
 	isEqual(v8 { 0x04, 0x01 }, 1);
@@ -67,4 +71,18 @@ TEST(IntegerSerializationTest, NegativeIntegerLarge) {
 	isEqual(v8 { 0x05, 0xC1, 0xB0, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 }, -268435457);
 	isEqual(v8 { 0x05, 0xC1, 0xDC, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00 }, -1879048193);
 	isEqual(v8 { 0x05, 0xC1, 0xE0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, -2147483648);
+}
+
+TEST(IntegerAsLengthTest, SimpleValue) {
+	isEqual(v8 { 0x05, 0x07 }, AmfInteger(3).asLength(0x05));
+	isEqual(v8 { 0x06, 0x07 }, AmfInteger(3).asLength(0x06));
+	isEqual(v8 { 0x01, 0x87, 0x7F }, AmfInteger(511).asLength(0x01));
+}
+
+TEST(IntegerAsLengthTest, ValueNotModified) {
+	// tests that a call to AmfInteger#asLength doesn't modify the actual
+	// value of the AmfInteger
+	AmfInteger val(17);
+	isEqual(v8 { 0x0A, 0x23 }, val.asLength(0x0a));
+	isEqual(v8 { 0x04, 0x11 }, val.serialize());
 }

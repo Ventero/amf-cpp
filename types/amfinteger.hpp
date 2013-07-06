@@ -49,9 +49,9 @@ public:
 	}
 
 	std::vector<u8> asLength(u8 marker) {
-		value = value << 1 | 1;
+		AmfInteger length(value << 1 | 1);
 
-		std::vector<u8> buf = serialize();
+		std::vector<u8> buf = length.serialize();
 		buf[0] = marker;
 
 		return buf;
