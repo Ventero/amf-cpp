@@ -80,7 +80,9 @@ TEST(ArraySerializationTest, AssociativeDenseArray) {
 	std::map<std::string, AmfInteger> sparse;
 	sparse["sparseVal"] = AmfInteger(0xbeef);
 
-	AmfArray array(std::vector<AmfString> { AmfString("foobar") }, sparse);
+	AmfString v("foobar");
+	std::vector<AmfString> vec { v };
+	AmfArray array(vec, sparse);
 
 	isEqual(v8 {
 		0x09, // AMF_ARRAY
