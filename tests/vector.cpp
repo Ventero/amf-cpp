@@ -100,7 +100,7 @@ TEST(VectorSerializationTest, VectorIntFixedDefault) {
 
 TEST(VectorSerializationTest, VectorInt2ByteLength) {
 	std::vector<int> num(260);
-	std::iota(num.begin(), num.end(), 0);
+	for (int i = 0; i < 260; ++i) num[i] = i;
 
 	AmfVector<int> vec(num, true);
 	v8 expected {
