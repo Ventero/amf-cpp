@@ -11,7 +11,13 @@ TEST(DateSerializationTest, FromLongLong) {
 
 TEST(DateSerializationTest, FromTm) {
 	std::time_t time = 1234567890;
-	AmfDate date(localtime(&time));
+	std::tm res;
+#ifdef _WIN32
+	localtime_s(&res, &time);
+#else
+	localtime_r(&time, &res);
+#endif
+	AmfDate date(&res);
 	v8 expected { 0x08, 0x01, 0x42, 0x71, 0xf7, 0x1f, 0xb0, 0x45, 0x00, 0x00 };
 	ASSERT_EQ(expected, date.serialize());
 }
