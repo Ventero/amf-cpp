@@ -13,10 +13,8 @@ static const long long MSEC_PER_SEC = 1000ll;
 
 class AmfDate : public AmfItem {
 public:
-	// for simplicity, we assume std::time_t is the seconds since epoch
-	// this is at least guaranteed by POSIX
+	// millisconds since epoch
 	AmfDate(long long date) : value(date) { };
-	AmfDate(std::time_t date) : value(date * MSEC_PER_SEC) { };
 	AmfDate(std::tm* date) : value(mktime(date) * MSEC_PER_SEC) { };
 
 	AmfDate(std::chrono::system_clock::time_point date) {

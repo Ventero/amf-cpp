@@ -9,13 +9,6 @@ TEST(DateSerializationTest, FromLongLong) {
 	ASSERT_EQ(expected, date.serialize());
 }
 
-TEST(DateSerializationTest, FromTimeT) {
-	std::time_t time = 1369690506;
-	AmfDate date(time);
-	v8 expected { 0x08, 0x01, 0x42, 0x73, 0xee, 0x7e, 0xa8, 0x31, 0x00, 0x00 };
-	ASSERT_EQ(expected, date.serialize());
-}
-
 TEST(DateSerializationTest, FromTm) {
 	std::time_t time = 1234567890;
 	AmfDate date(localtime(&time));
