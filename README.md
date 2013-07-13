@@ -39,9 +39,8 @@ explicitly builds a 32bit library. `make test` builds and runs the unit tests.
 
 ## Windows ##
 
-There is a Visual Studio 2012 (might or might not work in 2010) solution in the
-`vs` branch. This branch isn't very actively maintained and thus usually doesn't
-contain the latest changes from the master branch.
+Since this project makes heavy use of C++11 features, the Visual Studio 2013
+preview is required to compile it.
 
 To build this project, simply open `amf-cpp.sln` and build the `amf-cpp` project.
 To run the unit tests, build and run the `test` project.
