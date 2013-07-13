@@ -23,7 +23,7 @@ TEST(ArraySerializationTest, StrictIntArray) {
 	AmfInteger v1(1);
 	AmfInteger v2(2);
 	AmfInteger v3(3);
-	std::vector<AmfInteger> dense({{ v0, v1, v2, v3 }});
+	std::vector<AmfInteger> dense {{ v0, v1, v2, v3 }};
 	AmfArray array(dense);
 
 	isEqual(v8 {

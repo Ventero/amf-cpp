@@ -12,17 +12,17 @@ static void isEqual(const std::vector<u8>& expected, AmfVector<T> vector) {
 }
 
 TEST(VectorSerializationTest, VectorIntEmpty) {
-	AmfVector<int> vec({}, false);
+	AmfVector<int> vec { {}, false };
 	v8 expected { 0x0d, 0x01, 0x00 };
 	isEqual(expected, vec);
 
-	vec = {{}, true};
+	vec = { {}, true };
 	expected = { 0x0d, 0x01, 0x01 };
 	isEqual(expected, vec);
 }
 
 TEST(VectorSerializationTest, VectorIntSimple) {
-	AmfVector<int> vec({ 1, 2, 3 }, false);
+	AmfVector<int> vec { { 1, 2, 3 }, false };
 	v8 expected {
 		0x0d, 0x07, 0x00,
 		0x00, 0x00, 0x00, 0x01,
@@ -45,11 +45,11 @@ TEST(VectorSerializationTest, VectorIntSimple) {
 }
 
 TEST(VectorSerializationTest, VectorInt32) {
-	AmfVector<int> vec({
+	AmfVector<int> vec { {
 		0x20000000,
 		0x40000000,
 		0x7fffffff
-	}, true);
+	}, true };
 	v8 expected {
 		0x0d, 0x07, 0x01,
 		0x20, 0x00, 0x00, 0x00,
@@ -60,7 +60,7 @@ TEST(VectorSerializationTest, VectorInt32) {
 }
 
 TEST(VectorSerializationTest, VectorIntNegative) {
-	AmfVector<int> vec({ -1, -2, -0xffff }, false);
+	AmfVector<int> vec { { -1, -2, -0xffff }, false };
 	v8 expected {
 		0x0d, 0x07, 0x00,
 		0xff, 0xff, 0xff, 0xff,
@@ -71,12 +71,12 @@ TEST(VectorSerializationTest, VectorIntNegative) {
 }
 
 TEST(VectorSerializationTest, VectorInt32Negative) {
-	AmfVector<int> vec({
+	AmfVector<int> vec { {
 		-0x20000000,
 		-0x40000000,
 		-0x7fffffff,
-		-2147483648
-	}, true);
+		-2147483647 - 1
+	}, true };
 	v8 expected {
 		0x0d, 0x09, 0x01,
 		0xe0, 0x00, 0x00, 0x00,
@@ -88,7 +88,7 @@ TEST(VectorSerializationTest, VectorInt32Negative) {
 }
 
 TEST(VectorSerializationTest, VectorIntFixedDefault) {
-	AmfVector<int> vec({1, 3, 5});
+	AmfVector<int> vec { {1, 3, 5} };
 	v8 expected {
 		0x0d, 0x07, 0x00,
 		0x00, 0x00, 0x00, 0x01,
@@ -175,7 +175,7 @@ TEST(VectorSerializationTest, VectorInt2ByteLength) {
 }
 
 TEST(VectorSerializationTest, VectorUintEmpty) {
-	AmfVector<unsigned int> vec({}, false);
+	AmfVector<unsigned int> vec { {}, false };
 	v8 expected { 0x0e, 0x01, 0x00 };
 	isEqual(expected, vec);
 
@@ -185,7 +185,7 @@ TEST(VectorSerializationTest, VectorUintEmpty) {
 }
 
 TEST(VectorSerializationTest, VectorUintSimple) {
-	AmfVector<unsigned int> vec({ 1, 2, 3 }, false);
+	AmfVector<unsigned int> vec { { 1, 2, 3 }, false };
 	v8 expected {
 		0x0e, 0x07, 0x00,
 		0x00, 0x00, 0x00, 0x01,
@@ -208,13 +208,13 @@ TEST(VectorSerializationTest, VectorUintSimple) {
 }
 
 TEST(VectorSerializationTest, VectorUint32) {
-	AmfVector<unsigned int> vec({
+	AmfVector<unsigned int> vec { {
 		0x20000000u,
 		0x40000000u,
 		0x7fffffffu,
 		0x80000000u,
 		0xffffffffu
-	}, true);
+	}, true };
 	v8 expected {
 		0x0e, 0x0b, 0x01,
 		0x20, 0x00, 0x00, 0x00,
@@ -227,7 +227,7 @@ TEST(VectorSerializationTest, VectorUint32) {
 }
 
 TEST(VectorSerializationTest, VectorUintFixedDefault) {
-	AmfVector<unsigned int> vec({1, 3, 5});
+	AmfVector<unsigned int> vec { {1, 3, 5} };
 	v8 expected {
 		0x0e, 0x07, 0x00,
 		0x00, 0x00, 0x00, 0x01,
@@ -238,13 +238,13 @@ TEST(VectorSerializationTest, VectorUintFixedDefault) {
 }
 
 TEST(VectorSerializationTest, VectorDoubleEmpty) {
-	AmfVector<double> vec({}, false);
+	AmfVector<double> vec { {}, false };
 	v8 expected { 0x0f, 0x01, 0x00 };
 	isEqual(expected, vec);
 }
 
 TEST(VectorSerializationTest, VectorDoubleSimple) {
-	AmfVector<double> vec({0}, true);
+	AmfVector<double> vec { {0}, true };
 	v8 expected {
 		0x0f, 0x03, 0x01,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
@@ -273,7 +273,7 @@ TEST(VectorSerializationTest, VectorDoubleSimple) {
 }
 
 TEST(VectorSerializationTest, VectorDoubleFixedDefault) {
-	AmfVector<double> vec({3.14159});
+	AmfVector<double> vec { {3.14159} };
 	v8 expected {
 		0x0f, 0x03, 0x00,
 		0x40, 0x09, 0x21, 0xf9, 0xf0, 0x1b, 0x86, 0x6e
@@ -282,7 +282,7 @@ TEST(VectorSerializationTest, VectorDoubleFixedDefault) {
 }
 
 TEST(VectorSerializationTest, VectorUtilityFunctions) {
-	AmfVector<int> vector({}, false);
+	AmfVector<int> vector { {}, false };
 	vector.push_back(1);
 	v8 expected {
 		0x0d, 0x03, 0x00,
@@ -302,7 +302,7 @@ TEST(VectorSerializationTest, VectorUtilityFunctions) {
 }
 
 TEST(VectorSerializationTest, VectorAnonObjectEmpty) {
-	AmfVector<AmfItem*> vector({}, "", false);
+	AmfVector<AmfItem*> vector { {}, "", false };
 	v8 expected {
 		0x10, 0x01, 0x00, 0x01
 	};
@@ -316,7 +316,7 @@ TEST(VectorSerializationTest, VectorAnonObjectEmpty) {
 }
 
 TEST(VectorSerializationTest, VectorNamedObjectEmpty) {
-	AmfVector<AmfItem*> vector({}, "TestObject", false);
+	AmfVector<AmfItem*> vector { {}, "TestObject", false };
 	v8 expected {
 		0x10, 0x01, 0x00,
 		0x15, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74
@@ -326,7 +326,7 @@ TEST(VectorSerializationTest, VectorNamedObjectEmpty) {
 }
 
 TEST(VectorSerializationTest, VectorAnonObject) {
-	AmfVector<AmfItem*> vector({}, "", false);
+	AmfVector<AmfItem*> vector { {}, "", false };
 	AmfObjectTraits traits("", true, false);
 	AmfObject obj(traits);
 
@@ -344,7 +344,7 @@ TEST(VectorSerializationTest, VectorAnonObject) {
 }
 
 TEST(VectorSerializationTest, VectorNamedObject) {
-	AmfVector<AmfItem*> vector({}, "TestObject", false);
+	AmfVector<AmfItem*> vector { {}, "TestObject", false };
 	// we're using a different class name (e.g subclass) for the actual object
 	// to prevent running into any string reference serialization
 	AmfObjectTraits traits("TestObject2", false, false);
