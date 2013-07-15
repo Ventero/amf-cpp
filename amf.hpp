@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #ifdef _WIN32
+	// Windows only runs on little endian platforms
 	#define __LITTLE_ENDIAN 1234
 	#define __BIG_ENDIAN 4321
 	#define __BYTE_ORDER __LITTLE_ENDIAN
