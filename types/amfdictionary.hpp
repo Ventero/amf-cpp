@@ -61,6 +61,11 @@ public:
 		return values[AmfDictionaryKeyConverter<T>::convert(item)];
 	}
 
+	template<class T, class U>
+	void insert(const T& key, const U& value) {
+		(*this)[key] = value.serialize();
+	}
+
 	std::vector<u8> serialize() const {
 		std::vector<u8> buf = AmfInteger(values.size()).asLength(AMF_DICTIONARY);
 
