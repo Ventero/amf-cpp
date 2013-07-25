@@ -66,6 +66,10 @@ public:
 		(*this)[key] = value.serialize();
 	}
 
+	void clear() {
+		values.clear();
+	}
+
 	std::vector<u8> serialize() const {
 		std::vector<u8> buf = AmfInteger(values.size()).asLength(AMF_DICTIONARY);
 
