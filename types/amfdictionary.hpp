@@ -24,14 +24,16 @@ namespace std {
 // (AmfInteger/AmfDouble), so we have to serialize them as strings
 template<class T>
 struct AmfDictionaryKeyConverter {
-	static std::vector<u8> convert(const T& item) {
+	static std::vector<u8> convert(const T& item, bool) {
 		return item.serialize();
 	}
 };
 
 template<>
 struct AmfDictionaryKeyConverter<AmfInteger> {
-	static std::vector<u8> convert(const AmfInteger& item) {
+	static std::vector<u8> convert(const AmfInteger& item, bool asString) {
+		if(!asString) return item.serialize();
+
 		std::string val = std::to_string(static_cast<int>(item));
 		return AmfString(val).serialize();
 	}
@@ -39,7 +41,9 @@ struct AmfDictionaryKeyConverter<AmfInteger> {
 
 template<>
 struct AmfDictionaryKeyConverter<AmfDouble> {
-	static std::vector<u8> convert(const AmfDouble& item) {
+	static std::vector<u8> convert(const AmfDouble& item, bool asString) {
+		if(!asString) return item.serialize();
+
 		std::string val = std::to_string(static_cast<double>(item));
 		return AmfString(val).serialize();
 	}
@@ -47,18 +51,21 @@ struct AmfDictionaryKeyConverter<AmfDouble> {
 
 template<>
 struct AmfDictionaryKeyConverter<AmfBool> {
-	static std::vector<u8> convert(const AmfBool& item) {
+	static std::vector<u8> convert(const AmfBool& item, bool asString) {
+		if(!asString) return item.serialize();
+
 		return AmfString(item ? "true" : "false").serialize();
 	}
 };
 
 class AmfDictionary : public AmfItem {
 public:
-	AmfDictionary(bool weak = false) : weak(weak) { };
+	AmfDictionary(bool numbersAsStrings, bool weak = false) :
+		asString(numbersAsStrings), weak(weak) { };
 
 	template<class T>
 	std::vector<u8>& operator[](const T& item) {
-		return values[AmfDictionaryKeyConverter<T>::convert(item)];
+		return values[AmfDictionaryKeyConverter<T>::convert(item, asString)];
 	}
 
 	template<class T, class U>
@@ -84,6 +91,7 @@ public:
 	}
 
 private:
+	bool asString;
 	bool weak;
 	std::unordered_map<std::vector<u8>, std::vector<u8>> values;
 };
