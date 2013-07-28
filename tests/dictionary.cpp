@@ -9,6 +9,7 @@
 #include "types/amfinteger.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfvector.hpp"
 
 void isEqual(const v8& expected, const AmfDictionary& value) {
 	v8 serialized = value.serialize();
@@ -112,6 +113,133 @@ TEST(DictionarySerializationTest, MultipleKeys) {
 		{ // "-16384" = "foo"
 			0x06, 0x0D, 0x2D, 0x31, 0x36, 0x33, 0x38, 0x34,
 			0x06, 0x07, 0x66, 0x6F, 0x6F
+		}
+	}, d.serialize());
+}
+
+TEST(DictionarySerializationTest, Clear) {
+	AmfDictionary d(false, true);
+	d.insert(AmfBool(true), AmfInteger(17));
+	d.clear();
+
+	isEqual(v8 {
+		0x11,
+		0x01, // no elements
+		0x01  // weak keys
+	}, d);
+
+	d.insert(AmfBool(false), AmfDouble(17.0));
+	isEqual(v8 {
+		0x11,
+		0x03, // 1 element
+		0x01, // weak keys
+		0x02, // AmfBool false
+		0x05, 0x40, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // AmfDouble 17.0
+	}, d);
+}
+
+TEST(DictionarySerializationTest, ComplexObjectKeys) {
+	AmfDictionary d(false);
+	d.insert(AmfArray(), AmfArray());
+	d.insert(AmfArray(std::vector<AmfInteger> { 1 }), AmfObject("", true, false));
+
+	consistsOf(std::vector<v8> {
+		{ // header
+			0x11,
+			0x05, // 2 elements
+			0x00  // no weak keys
+		},
+		{ // [] = []
+			0x09, 0x01, 0x01, // empty array
+			0x09, 0x01, 0x01 // empty array
+		},
+		{ // [1] = {}
+			0x09, 0x03, 0x01, 0x04, 0x01, // AmfArray [1]
+			0x0a, 0x0b, 0x01, 0x01 // empty dynamic anonymous object
+		}
+	}, d.serialize());
+
+
+	AmfObject obj("foo", true, false);
+	obj.addDynamicProperty("prop", AmfString("val"));
+
+	AmfVector<int> vec { { 1, 2, 3 }, false };
+
+	d = AmfDictionary(false);
+	d.insert(obj, vec);
+	consistsOf(std::vector<v8> {
+		{
+			0x11,
+			0x03,
+			0x00
+		},
+		{
+			// key
+			0x0a, // AMF_OBJECT
+			0x0b, // U29O-traits | dynamic, 0 sealed properties
+			0x07, 0x66, 0x6f, 0x6f, // class-name "foo"
+			// dynamic-member
+			0x09, 0x70, 0x72, 0x6f, 0x70, // UTF-8-vr "prop"
+			0x06, 0x07, 0x76, 0x61, 0x6c, // AmfString "val"
+			0x01, // end of object (UTF-8-empty)
+			// value
+			0x0d, 0x07, 0x00, // AmfVector<int> with 3 elements
+			0x00, 0x00, 0x00, 0x01,
+			0x00, 0x00, 0x00, 0x02,
+			0x00, 0x00, 0x00, 0x03
+		}
+	}, d.serialize());
+}
+
+TEST(DictionarySerializationTest, NumberAsStringsDoesntAffectObjects) {
+	AmfDictionary d(true);
+	d.insert(AmfArray(), AmfArray());
+	d.insert(AmfArray(std::vector<AmfInteger> { 1 }), AmfObject("", true, false));
+
+	consistsOf(std::vector<v8> {
+		{ // header
+			0x11,
+			0x05, // 2 elements
+			0x00  // no weak keys
+		},
+		{ // [] = []
+			0x09, 0x01, 0x01, // empty array
+			0x09, 0x01, 0x01 // empty array
+		},
+		{ // [1] = {}
+			0x09, 0x03, 0x01, 0x04, 0x01, // AmfArray [1]
+			0x0a, 0x0b, 0x01, 0x01 // empty dynamic anonymous object
+		}
+	}, d.serialize());
+
+
+	AmfObject obj("foo", true, false);
+	obj.addDynamicProperty("prop", AmfString("val"));
+
+	AmfVector<int> vec { { 1, 2, 3 }, false };
+
+	d = AmfDictionary(true);
+	d.insert(obj, vec);
+	consistsOf(std::vector<v8> {
+		{
+			0x11,
+			0x03,
+			0x00
+		},
+		{
+			// key
+			0x0a, // AMF_OBJECT
+			0x0b, // U29O-traits | dynamic, 0 sealed properties
+			0x07, 0x66, 0x6f, 0x6f, // class-name "foo"
+			// dynamic-member
+			0x09, 0x70, 0x72, 0x6f, 0x70, // UTF-8-vr "prop"
+			0x06, 0x07, 0x76, 0x61, 0x6c, // AmfString "val"
+			0x01, // end of object (UTF-8-empty)
+			// value
+			0x0d, 0x07, 0x00, // AmfVector<int> with 3 elements
+			0x00, 0x00, 0x00, 0x01,
+			0x00, 0x00, 0x00, 0x02,
+			0x00, 0x00, 0x00, 0x03
 		}
 	}, d.serialize());
 }
