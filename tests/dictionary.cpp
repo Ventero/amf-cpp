@@ -96,6 +96,30 @@ TEST(DictionarySerializationTest, BooleanKeys) {
 	}, d);
 }
 
+TEST(DictionarySerializationTest, NumberKeys) {
+	AmfDictionary d(true, true);
+	d.insert(AmfDouble(-0.5), AmfInteger(3));
+	isEqual(v8 {
+		0x11,
+		0x03, // 1 element
+		0x01, // weak keys
+		0x06, 0x09, 0x2D, 0x30, 0x2E, 0x35, // AmfString "-0.5"
+		0x04, 0x03 // AmfInteger 3
+	}, d);
+
+	d = AmfDictionary(true, false);
+	d.insert(AmfDouble(1.2345678912345e+35), AmfArray());
+	isEqual(v8 {
+		0x11,
+		0x03, // 1 element
+		0x00, // no weak keys
+		// AmfString "1.2345678912345e+35"
+		0x06, 0x27, 0x31, 0x2e, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+		0x31, 0x32, 0x33, 0x34, 0x35, 0x65, 0x2b, 0x33, 0x35,
+		0x09, 0x01, 0x01 // empty AmfArray
+	}, d);
+}
+
 TEST(DictionarySerializationTest, MultipleKeys) {
 	AmfDictionary d(true, false);
 	d.insert(AmfInteger(3), AmfBool(false));

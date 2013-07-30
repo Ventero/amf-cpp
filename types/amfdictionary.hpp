@@ -7,6 +7,9 @@
 #include "amfstring.hpp"
 
 #include <functional>
+#include <iomanip>
+#include <limits>
+#include <sstream>
 #include <unordered_map>
 
 namespace std {
@@ -44,8 +47,10 @@ struct AmfDictionaryKeyConverter<AmfDouble> {
 	static std::vector<u8> convert(const AmfDouble& item, bool asString) {
 		if(!asString) return item.serialize();
 
-		std::string val = std::to_string(static_cast<double>(item));
-		return AmfString(val).serialize();
+		std::ostringstream str;
+		str << std::setprecision(std::numeric_limits<double>::digits10)
+		    << static_cast<double>(item);
+		return AmfString(str.str()).serialize();
 	}
 };
 
