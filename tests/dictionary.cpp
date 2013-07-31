@@ -50,7 +50,76 @@ void consistsOf(std::vector<v8> parts, const v8& data) {
 	SUCCEED();
 }
 
+
 TEST(DictionarySerializationTest, IntegerKeys) {
+	AmfDictionary d(false, false);
+	d[AmfInteger(3)] = AmfBool(false).serialize();
+
+	isEqual(v8 {
+		0x11, // AMF_DICTIONARY
+		0x03, // 1 element
+		0x00, // no weak keys
+		0x04, 0x03, // AmfInteger 3
+		0x02 // AmfBool false
+	}, d);
+
+	d = AmfDictionary(false, false);
+	d.insert(AmfInteger(-16384), AmfString("foo"));
+	isEqual(v8 {
+		0x11, // AMF_DICTIONARY
+		0x03, // 1 element
+		0x00, // no weak keys
+		0x04, 0xFF, 0xFF, 0xC0, 0x00,
+		0x06, 0x07, 0x66, 0x6F, 0x6F
+	}, d);
+}
+
+TEST(DictionarySerializationTest, BooleanKeys) {
+	AmfDictionary d(false, false);
+	d.insert(AmfBool(true), AmfBool(false));
+
+	isEqual(v8 {
+		0x11,
+		0x03, // 1 element
+		0x00, // no weak keys
+		0x03, // AmfBool true
+		0x02 // AmfBool false
+	}, d);
+
+	d = AmfDictionary(false, true);
+	d.insert(AmfBool(false), AmfBool(true));
+	isEqual(v8 {
+		0x11,
+		0x03, // 1 element
+		0x01, // weak keys
+		0x02, // AmfBool false
+		0x03 // AmfBool true
+	}, d);
+}
+
+TEST(DictionarySerializationTest, NumberKeys) {
+	AmfDictionary d(false, true);
+	d.insert(AmfDouble(-0.5), AmfInteger(3));
+	isEqual(v8 {
+		0x11,
+		0x03, // 1 element
+		0x01, // weak keys
+		0x05, 0xBF, 0xE0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // AmfDouble -0.5
+		0x04, 0x03 // AmfInteger 3
+	}, d);
+
+	d = AmfDictionary(false, false);
+	d.insert(AmfDouble(1.2345678912345e+35), AmfArray());
+	isEqual(v8 {
+		0x11,
+		0x03, // 1 element
+		0x00, // no weak keys
+		0x05, 0x47, 0x37, 0xC6, 0xE3, 0xC0, 0x32, 0xF7, 0x20, // AmfDouble 1.2345678912345e+35
+		0x09, 0x01, 0x01 // empty AmfArray
+	}, d);
+}
+
+TEST(DictionarySerializationTest, IntegerAsStringKeys) {
 	AmfDictionary d(true, false);
 	d[AmfInteger(3)] = AmfBool(false).serialize();
 
@@ -73,7 +142,7 @@ TEST(DictionarySerializationTest, IntegerKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, BooleanKeys) {
+TEST(DictionarySerializationTest, BooleanAsStringKeys) {
 	AmfDictionary d(true, false);
 	d.insert(AmfBool(true), AmfBool(false));
 
@@ -96,7 +165,7 @@ TEST(DictionarySerializationTest, BooleanKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, NumberKeys) {
+TEST(DictionarySerializationTest, NumberAsStringKeys) {
 	AmfDictionary d(true, true);
 	d.insert(AmfDouble(-0.5), AmfInteger(3));
 	isEqual(v8 {
