@@ -342,3 +342,21 @@ TEST(DictionarySerializationTest, MultiByteLength) {
 	ASSERT_EQ(2166, actual.size());
 	ASSERT_EQ(expected, header);
 }
+
+TEST(DictionarySerializationTest, OverwriteKeys) {
+	AmfDictionary d(true, false);
+	d.insert(AmfBool(false), AmfInteger(3));
+
+	isEqual({
+		0x11, 0x03, 0x00,
+		0x06, 0x0B, 0x66, 0x61, 0x6C, 0x73, 0x65,
+		0x04, 0x03
+	}, d);
+
+	d.insert(AmfBool(false), AmfString("foo"));
+	isEqual({
+		0x11, 0x03, 0x00,
+		0x06, 0x0B, 0x66, 0x61, 0x6C, 0x73, 0x65,
+		0x06, 0x07, 0x66, 0x6f, 0x6f
+	}, d);
+}
