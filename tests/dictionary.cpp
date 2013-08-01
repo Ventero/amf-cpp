@@ -328,3 +328,17 @@ TEST(DictionarySerializationTest, NumberAsStringsDoesntAffectObjects) {
 		0x00, 0x00, 0x00, 0x03
 	}, d);
 }
+
+TEST(DictionarySerializationTest, MultiByteLength) {
+	AmfDictionary d(true, false);
+	for(int i = 0; i < 300; ++i)
+		d.insert(AmfInteger(i), AmfInteger(i));
+
+	// for simplicity, only test header and total length
+	v8 expected { 0x11, 0x84, 0x59, 0x00 };
+	v8 actual(d.serialize());
+	v8 header(actual.begin(), actual.begin() + 4);
+
+	ASSERT_EQ(2166, actual.size());
+	ASSERT_EQ(expected, header);
+}
