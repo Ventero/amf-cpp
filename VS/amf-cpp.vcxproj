@@ -78,6 +78,7 @@
     <ClInclude Include="..\types\amfbool.hpp" />
     <ClInclude Include="..\types\amfbytearray.hpp" />
     <ClInclude Include="..\types\amfdate.hpp" />
+    <ClInclude Include="..\types\amfdictionary.hpp" />
     <ClInclude Include="..\types\amfdouble.hpp" />
     <ClInclude Include="..\types\amfinteger.hpp" />
     <ClInclude Include="..\types\amfitem.hpp" />

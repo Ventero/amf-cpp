@@ -95,6 +95,7 @@
     <ClCompile Include="..\tests\bool.cpp" />
     <ClCompile Include="..\tests\bytearray.cpp" />
     <ClCompile Include="..\tests\date.cpp" />
+    <ClCompile Include="..\tests\dictionary.cpp" />
     <ClCompile Include="..\tests\double.cpp" />
     <ClCompile Include="..\tests\integer.cpp" />
     <ClCompile Include="..\tests\null.cpp" />
