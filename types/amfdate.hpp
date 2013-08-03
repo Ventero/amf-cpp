@@ -28,7 +28,8 @@ public:
 		// where U29D-value is 1 and date-time is a int64 encoded as double
 		std::vector<u8> buf { AMF_DATE, 0x01 };
 
-		std::vector<u8> date(AmfDouble(value).serialize());
+		// dates are serialised as double, ignoring the precision loss
+		std::vector<u8> date(AmfDouble(static_cast<double>(value)).serialize());
 		// skip the AMF_DOUBLE marker
 		buf.insert(buf.end(), date.begin() + 1, date.end());
 
