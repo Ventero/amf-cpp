@@ -42,5 +42,5 @@ explicitly builds a 32bit library. `make test` builds and runs the unit tests.
 Since this project makes heavy use of C++11 features, the Visual Studio 2013
 preview is required to compile it.
 
-To build this project, simply open `amf-cpp.sln` and build the `amf-cpp` project.
+To build the library, simply open `amf-cpp.sln` and build the `amf-cpp` project.
 To run the unit tests, build and run the `test` project.
