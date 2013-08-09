@@ -14,7 +14,7 @@ So far, only serialization is supported, and the serialization API is still subj
 to change. Proper documentation will follow once the API is stabilized.
 
 If you want to try the serialization, simply create the AMF objects (see `types/amf*.hpp`)
-and insert them into a `Serializer` object. To get the serialized data as `std::vector<u8>`,
+and insert them into a `Serializer` object. To get the serialized data as `std::vector<uint8_t>`,
 call the `.data()` member function.
 
 ```C++
@@ -23,7 +23,7 @@ serializer << AmfDouble(3.14159) << AmfInteger(17);
 AmfVector<int> vec({ 1, 2, 3 });
 serializer << vec;
 
-std::vector<u8> data = serializer.data();
+std::vector<uint8_t> data = serializer.data();
 ```
 
 # Build instructions #
