@@ -9,6 +9,7 @@
 #include "amfinteger.hpp"
 #include "amfstring.hpp"
 
+class AmfObject;
 // TODO: nested class?
 class AmfObjectTraits {
 public:
@@ -19,7 +20,7 @@ public:
 	std::vector<std::string> attributes;
 	bool dynamic;
 	bool externalizable;
-	std::function<std::vector<u8>()> externalizer;
+	std::function<std::vector<u8>(const AmfObject*)> externalizer;
 };
 
 class AmfObject : public AmfItem {
@@ -55,7 +56,7 @@ public:
 
 			// externalized value = *(U8)
 			// note: this may throw if externalizer is not properly initialized
-			std::vector<u8> externalized(traits.externalizer());
+			std::vector<u8> externalized(traits.externalizer(this));
 			buf.insert(buf.end(), externalized.begin(), externalized.end());
 			return buf;
 		}
