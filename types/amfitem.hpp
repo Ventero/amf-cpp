@@ -16,7 +16,7 @@ enum AmfMarker : u8 {
 	AMF_XMLDOC,
 	AMF_DATE,
 	AMF_ARRAY,
-	AMF_OBJECT,        // partially supported
+	AMF_OBJECT,
 	AMF_XML,
 	AMF_BYTEARRAY,
 	AMF_VECTOR_INT,
