@@ -5,9 +5,9 @@
 #include <functional>
 #include <map>
 
-#include "amfitem.hpp"
-#include "amfinteger.hpp"
-#include "amfstring.hpp"
+#include "types/amfitem.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfstring.hpp"
 
 class AmfObject;
 // TODO: nested class?

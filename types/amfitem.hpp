@@ -3,6 +3,7 @@
 #define AMFITEM_HPP
 
 #include <vector>
+
 #include "amf.hpp"
 
 enum AmfMarker : u8 {

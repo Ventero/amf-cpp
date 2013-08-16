@@ -2,8 +2,8 @@
 #ifndef AMFBYTEARRAY_HPP
 #define AMFBYTEARRAY_HPP
 
-#include "amfitem.hpp"
-#include "amfinteger.hpp"
+#include "types/amfitem.hpp"
+#include "types/amfinteger.hpp"
 
 class AmfByteArray : public AmfItem {
 public:

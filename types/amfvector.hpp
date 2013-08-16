@@ -3,9 +3,10 @@
 #define AMFVECTOR_HPP
 
 #include <vector>
-#include "amfitem.hpp"
-#include "amfinteger.hpp"
-#include "amfstring.hpp"
+
+#include "types/amfitem.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfstring.hpp"
 
 template<typename T>
 struct VectorMarker;

@@ -2,8 +2,8 @@
 #ifndef AMFXMLDOCUMENT_HPP
 #define AMFXMLDOCUMENT_HPP
 
-#include "amfitem.hpp"
-#include "amfxml.hpp"
+#include "types/amfitem.hpp"
+#include "types/amfxml.hpp"
 
 class AmfXmlDocument : public AmfItem {
 public:

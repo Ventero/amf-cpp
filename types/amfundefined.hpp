@@ -3,7 +3,8 @@
 #define AMFUNDEFINED_HPP
 
 #include <vector>
-#include "amfitem.hpp"
+
+#include "types/amfitem.hpp"
 
 class AmfUndefined : public AmfItem {
 public:

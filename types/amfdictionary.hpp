@@ -2,15 +2,15 @@
 #ifndef AMFDICTIONARY_HPP
 #define AMFDICTIONARY_HPP
 
-#include "amfitem.hpp"
-#include "amfinteger.hpp"
-#include "amfstring.hpp"
-
 #include <functional>
 #include <iomanip>
 #include <limits>
 #include <sstream>
 #include <unordered_map>
+
+#include "types/amfitem.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfstring.hpp"
 
 namespace std {
 	template<>

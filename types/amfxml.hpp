@@ -3,8 +3,9 @@
 #define AMFXML_HPP
 
 #include <string>
-#include "amfitem.hpp"
-#include "amfinteger.hpp"
+
+#include "types/amfitem.hpp"
+#include "types/amfinteger.hpp"
 
 class AmfXml : public AmfItem {
 public:

@@ -2,7 +2,7 @@
 #ifndef AMFDOUBLE_HPP
 #define AMFDOUBLE_HPP
 
-#include "amfitem.hpp"
+#include "types/amfitem.hpp"
 
 class AmfDouble : public AmfItem {
 public:

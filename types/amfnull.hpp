@@ -3,7 +3,8 @@
 #define AMFNULL_HPP
 
 #include <vector>
-#include "amfitem.hpp"
+
+#include "types/amfitem.hpp"
 
 class AmfNull : public AmfItem {
 public:

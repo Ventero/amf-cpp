@@ -4,9 +4,9 @@
 
 #include <map>
 
-#include "amfitem.hpp"
-#include "amfinteger.hpp"
-#include "amfstring.hpp"
+#include "types/amfitem.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfstring.hpp"
 
 class AmfArray : public AmfItem {
 public:

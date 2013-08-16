@@ -3,7 +3,7 @@
 #define AMFBOOL_HPP
 
 #include <vector>
-#include "amfitem.hpp"
+#include "types/amfitem.hpp"
 
 class AmfBool : public AmfItem {
 public:
