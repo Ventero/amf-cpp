@@ -25,7 +25,8 @@ public:
 
 	std::vector<u8> serialize() const {
 		// AmfDate is date-marker (U29O-ref | (U29D-value date-time)),
-		// where U29D-value is 1 and date-time is a int64 encoded as double
+		// where U29D-value is 1 and date-time is a int64 describing the number of
+		// milliseconds since epoch, encoded as double
 		std::vector<u8> buf { AMF_DATE, 0x01 };
 
 		// dates are serialised as double, ignoring the precision loss
