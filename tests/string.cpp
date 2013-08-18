@@ -3,8 +3,8 @@
 #include "amf.hpp"
 #include "types/amfstring.hpp"
 
-static void isEqual(const std::vector<u8>& expected, std::string value) {
-	ASSERT_EQ(expected, AmfString(value).serialize()) << "Failed to encode " << value;
+static void isEqual(const std::vector<u8>& expected, const char* value) {
+	isEqual(expected, AmfString(value));
 }
 
 TEST(StringSerializationTest, EmptyString) {
@@ -48,7 +48,7 @@ TEST(StringSerialization, MultiByteLength) {
 		           0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
 		           0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
 		           0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
-		           0x61, 0x61, 0x61, 0x61, 0x61, 0x61 }, std::string(300, 'a'));
+		           0x61, 0x61, 0x61, 0x61, 0x61, 0x61 }, std::string(300, 'a').c_str());
 }
 
 TEST(StringSerializationTest, Umlaute) {

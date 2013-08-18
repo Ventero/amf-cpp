@@ -11,12 +11,6 @@
 #include "types/amfstring.hpp"
 #include "types/amfvector.hpp"
 
-void isEqual(const v8& expected, const AmfDictionary& value) {
-	v8 serialized = value.serialize();
-	ASSERT_EQ(expected, serialized) << "Expected length " << expected.size()
-	                                << ", got " << serialized.size();
-}
-
 std::vector<v8>::iterator findElement(const v8::const_iterator& start, std::vector<v8>& parts) {
 	return std::find_if(parts.begin(), parts.end(), [=] (const v8& part) {
 		return std::equal(part.begin(), part.end(), start);

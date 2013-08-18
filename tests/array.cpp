@@ -6,12 +6,6 @@
 #include "types/amfinteger.hpp"
 #include "types/amfobject.hpp"
 
-void isEqual(const std::vector<u8>& expected, const AmfArray& value) {
-	v8 serialized = value.serialize();
-	ASSERT_EQ(expected, serialized) << "Expected length " << expected.size()
-	                                << ", got " << serialized.size();
-}
-
 TEST(ArraySerializationTest, EmptyArray) {
 	AmfArray array;
 

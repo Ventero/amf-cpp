@@ -5,12 +5,6 @@
 #include "amf.hpp"
 #include "types/amfbytearray.hpp"
 
-void isEqual(const std::vector<u8>& expected, const AmfByteArray& value) {
-	v8 serialized = value.serialize();
-	ASSERT_EQ(expected, serialized) << "Expected length " << expected.size()
-	                                << ", got " << serialized.size();
-}
-
 TEST(ByteArraySerializationTest, SimpleValues) {
 	AmfByteArray ba(v8 {1, 2, 3});
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, ba);

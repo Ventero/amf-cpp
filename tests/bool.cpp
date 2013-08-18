@@ -4,7 +4,7 @@
 #include "types/amfbool.hpp"
 
 static void isEqual(const std::vector<u8>& expected, bool value) {
-	ASSERT_EQ(expected, AmfBool(value).serialize());
+	isEqual(expected, AmfBool(value));
 }
 
 TEST(BoolSerializationTest, SimpleValues) {

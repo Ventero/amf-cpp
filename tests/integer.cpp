@@ -4,7 +4,7 @@
 #include "types/amfinteger.hpp"
 
 static void isEqual(const std::vector<u8>& expected, int value) {
-	ASSERT_EQ(expected, AmfInteger(value).serialize());
+	isEqual(expected, AmfInteger(value));
 }
 
 static void isEqual(const std::vector<u8>& expected, const std::vector<u8>& value) {

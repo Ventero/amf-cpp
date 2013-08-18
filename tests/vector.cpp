@@ -4,13 +4,6 @@
 #include "types/amfobject.hpp"
 #include "types/amfvector.hpp"
 
-template<typename T>
-static void isEqual(const std::vector<u8>& expected, AmfVector<T> vector) {
-	v8 serialized = vector.serialize();
-	ASSERT_EQ(expected, serialized) << "Expected length " << expected.size()
-	                                << ", got " << serialized.size();
-}
-
 TEST(VectorSerializationTest, VectorIntEmpty) {
 	AmfVector<int> vec { {}, false };
 	v8 expected { 0x0d, 0x01, 0x00 };

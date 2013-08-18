@@ -3,12 +3,6 @@
 #include "amf.hpp"
 #include "types/amfxml.hpp"
 
-static void isEqual(const std::vector<u8>& expected, AmfXml value) {
-	std::vector<u8> serialized = value.serialize();
-	ASSERT_EQ(expected, serialized) << "Expected length " << expected.size()
-	                                << ", got " << serialized.size();;
-}
-
 TEST(XmlSerializationTest, EmptyXmlString) {
 	AmfXml val;
 

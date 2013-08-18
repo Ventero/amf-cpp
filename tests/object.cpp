@@ -6,12 +6,6 @@
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
 
-void isEqual(const std::vector<u8>& expected, const AmfObject& value) {
-	v8 serialized = value.serialize();
-	ASSERT_EQ(expected, serialized) << "Expected length " << expected.size()
-	                                << ", got " << serialized.size();
-}
-
 TEST(ObjectSerializationTest, EmptyDynamicAnonymousObject) {
 	AmfObjectTraits traits("", true, false);
 	AmfObject obj(traits);
