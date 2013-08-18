@@ -9,6 +9,7 @@
 
 class AmfString : public AmfItem {
 public:
+	AmfString(const char* v) : value(v) { };
 	AmfString(std::string v) : value(v) { };
 	operator std::string() const { return value; }
 
