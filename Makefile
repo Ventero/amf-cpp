@@ -2,7 +2,9 @@ CXXFLAGS += -std=c++0x -Wall -Wextra -pedantic
 CPPFLAGS += -I.
 
 ifneq ($(shell $(CXX) --version | grep clang),)
-	CXXFLAGS += -stdlib=libc++
+	ifeq ($(shell uname -s),Darwin)
+		CXXFLAGS += -stdlib=libc++
+	endif
 endif
 
 .PHONY: all clean debug dist-clean release test
