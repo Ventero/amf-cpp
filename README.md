@@ -28,11 +28,11 @@ std::vector<uint8_t> data = serializer.data();
 
 # Build instructions #
 
-## Linux / Unix ##
+## Linux / OS X / Unix ##
 
 Building this project requires a reasonably recent C++ compiler with (at least partial)
 C++11 support (GCC >= 4.6 and Clang >= 3.1 should work), as well as make (probably
-GNU make, this wasn't tested with any other versions).
+GNU make only, this project hasn't been tested with any other versions).
 
 To build the library, just run `make` from the project directory, `make 32bit`
 explicitly builds a 32bit library. `make test` builds and runs the unit tests.
