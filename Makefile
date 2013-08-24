@@ -1,6 +1,10 @@
 CXXFLAGS += -std=c++0x -Wall -Wextra -pedantic
 CPPFLAGS += -I.
 
+ifneq ($(shell $(CXX) --version | grep clang),)
+	CXXFLAGS += -stdlib=libc++
+endif
+
 .PHONY: all clean debug dist-clean release test
 all: release
 
