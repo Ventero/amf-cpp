@@ -91,6 +91,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\tests\amftest.hpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\tests\array.cpp" />
     <ClCompile Include="..\tests\bool.cpp" />
     <ClCompile Include="..\tests\bytearray.cpp" />
