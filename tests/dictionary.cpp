@@ -41,7 +41,7 @@ void consistsOf(std::vector<v8> parts, const v8& data) {
 		parts.erase(found);
 	}
 
-	SUCCEED();
+	ASSERT_TRUE(parts.empty());
 }
 
 
