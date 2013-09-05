@@ -1,5 +1,11 @@
 CXXFLAGS += -g -Wall -Wextra -pedantic -pthread -std=c++0x
 
+ifneq ($(shell $(CXX) --version | grep clang),)
+        ifeq ($(shell uname -s),Darwin)
+                CXXFLAGS += -stdlib=libc++
+        endif
+endif
+
 GTEST_DIR = googletest
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.
