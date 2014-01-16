@@ -282,26 +282,16 @@ TEST(VectorSerializationTest, VectorUtilityFunctions) {
 		0x00, 0x00, 0x00, 0x01,
 	};
 	isEqual(expected, vector);
-
-	std::vector<int> elems { 3, 5 };
-	vector.insert(vector.end(), elems.begin(), elems.end());
-	expected = {
-		0x0d, 0x07, 0x00,
-		0x00, 0x00, 0x00, 0x01,
-		0x00, 0x00, 0x00, 0x03,
-		0x00, 0x00, 0x00, 0x05
-	};
-	isEqual(expected, vector);
 }
 
 TEST(VectorSerializationTest, VectorAnonObjectEmpty) {
-	AmfVector<AmfItem*> vector { {}, "", false };
+	AmfVector<AmfObject> vector { {}, "", false };
 	v8 expected {
 		0x10, 0x01, 0x00, 0x01
 	};
 	isEqual(expected, vector);
 
-	vector = AmfVector<AmfItem*>({}, "", true);
+	vector = AmfVector<AmfObject>({}, "", true);
 	expected = {
 		0x10, 0x01, 0x01, 0x01
 	};
@@ -309,7 +299,7 @@ TEST(VectorSerializationTest, VectorAnonObjectEmpty) {
 }
 
 TEST(VectorSerializationTest, VectorNamedObjectEmpty) {
-	AmfVector<AmfItem*> vector { {}, "TestObject", false };
+	AmfVector<AmfObject> vector { {}, "TestObject", false };
 	v8 expected {
 		0x10, 0x01, 0x00,
 		0x15, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74
@@ -319,12 +309,12 @@ TEST(VectorSerializationTest, VectorNamedObjectEmpty) {
 }
 
 TEST(VectorSerializationTest, VectorAnonObject) {
-	AmfVector<AmfItem*> vector { {}, "", false };
+	AmfVector<AmfObject> vector { {}, "", false };
 	AmfObjectTraits traits("", true, false);
 	AmfObject obj(traits);
 
 	obj.addDynamicProperty("prop", AmfString("val"));
-	vector.push_back(&obj);
+	vector.push_back(obj);
 
 	v8 expected {
 		0x10, 0x03, 0x00,
@@ -337,14 +327,14 @@ TEST(VectorSerializationTest, VectorAnonObject) {
 }
 
 TEST(VectorSerializationTest, VectorNamedObject) {
-	AmfVector<AmfItem*> vector { {}, "TestObject", false };
+	AmfVector<AmfObject> vector { {}, "TestObject", false };
 	// we're using a different class name (e.g subclass) for the actual object
 	// to prevent running into any string reference serialization
 	AmfObjectTraits traits("TestObject2", false, false);
 	AmfObject obj(traits);
 
 	obj.addSealedProperty("sealedProp", AmfInteger(0xbeef));
-	vector.push_back(&obj);
+	vector.push_back(obj);
 
 	v8 expected {
 		// vector marker, 1 item, not fixed

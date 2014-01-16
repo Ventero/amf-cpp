@@ -31,24 +31,23 @@ class AmfVector;
 
 template<typename T>
 class AmfVector<T, typename std::enable_if<std::is_constructible<
-	VectorMarker<T>>::value>::type> : public AmfItem, private std::vector<T> {
+	VectorMarker<T>>::value>::type> : public AmfItem {
 public:
 	AmfVector(std::vector<T> vector, bool fixed = false) :
-		std::vector<T>(vector), fixed(fixed) { };
+		values(vector), fixed(fixed) { };
 
-	using std::vector<T>::begin;
-	using std::vector<T>::end;
-	using std::vector<T>::insert;
-	using std::vector<T>::push_back;
+	void push_back(T item) {
+		values.push_back(item);
+	}
 
 	std::vector<u8> serialize() const {
 		// U29V value
-		std::vector<u8> buf = AmfInteger(this->size()).asLength(VectorMarker<T>::value);
+		std::vector<u8> buf = AmfInteger(values.size()).asLength(VectorMarker<T>::value);
 
 		// fixed-vector marker
 		buf.push_back(fixed ? 0x01 : 0x00);
 
-		for(T it : *this) {
+		for(const T& it : values) {
 			// values are encoded as in network byte order
 			// ints are encoded as U32, not U29
 			T netvalue = hton(it);
@@ -59,23 +58,27 @@ public:
 		return buf;
 	}
 private:
+	std::vector<T> values;
 	bool fixed;
 };
 
-template<>
-class AmfVector<AmfItem*> : public AmfItem, private std::vector<AmfItem*> {
+template<typename T>
+class AmfVector<T, typename std::enable_if<std::
+	is_base_of<AmfItem, T>::value>::type> : public AmfItem {
 public:
-	AmfVector(std::vector<AmfItem*> vector, std::string type, bool fixed = false)
-	    : std::vector<AmfItem*>(vector), type(type), fixed(fixed) { };
+	AmfVector(std::vector<T> vector, std::string type, bool fixed = false) :
+		type(type), fixed(fixed) {
+		for (const auto& it : vector)
+			push_back(it);
+	};
 
-	using std::vector<AmfItem*>::begin;
-	using std::vector<AmfItem*>::end;
-	using std::vector<AmfItem*>::insert;
-	using std::vector<AmfItem*>::push_back;
+	void push_back(const AmfItem& item) {
+		values.push_back(item.serialize());
+	}
 
 	std::vector<u8> serialize() const {
 		// U29V value, encoding the length
-		std::vector<u8> buf = AmfInteger(this->size()).asLength(AMF_VECTOR_OBJECT);
+		std::vector<u8> buf = AmfInteger(values.size()).asLength(AMF_VECTOR_OBJECT);
 
 		// fixed-vector marker
 		buf.push_back(fixed ? 0x01 : 0x00);
@@ -85,15 +88,15 @@ public:
 		// skip the AMF_STRING marker
 		buf.insert(buf.end(), typeName.begin() + 1, typeName.end());
 
-		for (AmfItem* it : *this) {
-			std::vector<u8> value = it->serialize();
-			buf.insert(buf.end(), value.begin(), value.end());
+		for (const auto& it : values) {
+			buf.insert(buf.end(), it.begin(), it.end());
 		}
 
 		return buf;
 	}
 
 private:
+	std::vector<std::vector<u8>> values;
 	std::string type;
 	bool fixed;
 };
