@@ -32,13 +32,11 @@ public:
 			insert(it.first, it.second);
 	}
 
-	template<class T>
-	void push_back(const T& item) {
+	void push_back(const AmfItem& item) {
 		dense.push_back(item.serialize());
 	}
 
-	template<class T>
-	void insert(const std::string key, const T& item) {
+	void insert(const std::string key, const AmfItem& item) {
 		associative[key] = item.serialize();
 	}
 

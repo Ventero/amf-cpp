@@ -73,8 +73,8 @@ public:
 		return values[AmfDictionaryKeyConverter<T>::convert(item, asString)];
 	}
 
-	template<class T, class U>
-	void insert(const T& key, const U& value) {
+	template<class T>
+	void insert(const T& key, const AmfItem& value) {
 		(*this)[key] = value.serialize();
 	}
 
