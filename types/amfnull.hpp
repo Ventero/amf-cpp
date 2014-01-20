@@ -6,6 +6,8 @@
 
 #include "types/amfitem.hpp"
 
+namespace amf {
+
 class AmfNull : public AmfItem {
 public:
 	AmfNull() { }
@@ -14,5 +16,7 @@ public:
 		return std::vector<u8>{ AMF_NULL };
 	}
 };
+
+} // namespace amf
 
 #endif

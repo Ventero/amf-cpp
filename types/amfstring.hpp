@@ -7,6 +7,8 @@
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 
+namespace amf {
+
 class AmfString : public AmfItem {
 public:
 	AmfString(const char* v) : value(v) { };
@@ -31,5 +33,7 @@ public:
 private:
 	std::string value;
 };
+
+} // namespace amf
 
 #endif

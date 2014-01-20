@@ -6,6 +6,8 @@
 
 #include "types/amfitem.hpp"
 
+namespace amf {
+
 class AmfUndefined : public AmfItem {
 public:
 	AmfUndefined() {}
@@ -14,5 +16,7 @@ public:
 		return std::vector<u8>{ AMF_UNDEFINED };
 	}
 };
+
+} // namespace amf
 
 #endif

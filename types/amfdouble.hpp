@@ -4,6 +4,8 @@
 
 #include "types/amfitem.hpp"
 
+namespace amf {
+
 class AmfDouble : public AmfItem {
 public:
 	AmfDouble() : value(0) { };
@@ -22,5 +24,7 @@ public:
 private:
 	double value;
 };
+
+} // namespace amf
 
 #endif

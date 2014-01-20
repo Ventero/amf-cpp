@@ -8,6 +8,8 @@
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
 
+namespace amf {
+
 class AmfArray : public AmfItem {
 public:
 	AmfArray() { };
@@ -75,4 +77,7 @@ private:
 	std::map<std::string, std::vector<u8>> associative;
 
 };
+
+} // namespace amf
+
 #endif

@@ -8,6 +8,8 @@
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
 
+namespace amf {
+
 template<typename T>
 struct VectorMarker;
 
@@ -100,5 +102,7 @@ private:
 	std::string type;
 	bool fixed;
 };
+
+} // namespace amf
 
 #endif

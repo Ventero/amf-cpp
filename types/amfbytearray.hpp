@@ -5,6 +5,8 @@
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 
+namespace amf {
+
 class AmfByteArray : public AmfItem {
 public:
 	template<typename T>
@@ -29,5 +31,7 @@ public:
 private:
 	std::vector<u8> value;
 };
+
+} // namespace amf
 
 #endif

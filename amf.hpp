@@ -14,6 +14,8 @@
 	#include <endian.h>
 #endif
 
+namespace amf {
+
 typedef unsigned char u8;
 typedef std::vector<u8> v8;
 
@@ -33,5 +35,7 @@ T swap_endian(T x) {
 #else
 #error Endianness not supported
 #endif
+
+} // namespace amf
 
 #endif

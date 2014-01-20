@@ -6,6 +6,8 @@
 
 #include "amf.hpp"
 
+namespace amf {
+
 enum AmfMarker : u8 {
 	AMF_UNDEFINED,
 	AMF_NULL,
@@ -32,5 +34,7 @@ public:
 
 	virtual std::vector<u8> serialize() const = 0;
 };
+
+} // namespace amf
 
 #endif

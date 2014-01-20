@@ -5,6 +5,8 @@
 #include "amfitem.hpp"
 #include "amfdouble.hpp"
 
+namespace amf {
+
 class AmfInteger : public AmfItem {
 public:
 	AmfInteger() : value(0) { };
@@ -60,5 +62,7 @@ public:
 private:
 	int value;
 };
+
+} // namespace amf
 
 #endif

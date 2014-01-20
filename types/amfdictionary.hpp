@@ -14,14 +14,16 @@
 
 namespace std {
 	template<>
-	struct hash<std::vector<u8>> {
+	struct hash<amf::v8> {
 	public:
-		std::size_t operator()(const std::vector<u8>& s) const {
+		std::size_t operator()(const amf::v8& s) const {
 			std::string chars(s.begin(), s.end());
 			return std::hash<std::string>()(chars);
 		}
 	};
 }
+
+namespace amf {
 
 // Flash Player doesn't support deserializing booleans and number types
 // (AmfInteger/AmfDouble), so we have to serialize them as strings
@@ -100,5 +102,7 @@ private:
 	bool weak;
 	std::unordered_map<std::vector<u8>, std::vector<u8>> values;
 };
+
+} // namespace amf
 
 #endif

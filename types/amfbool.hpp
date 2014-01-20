@@ -5,6 +5,8 @@
 #include <vector>
 #include "types/amfitem.hpp"
 
+namespace amf {
+
 class AmfBool : public AmfItem {
 public:
 	AmfBool(bool v) : value(v) { }
@@ -17,5 +19,7 @@ public:
 private:
 	bool value;
 };
+
+} // namespace amf
 
 #endif

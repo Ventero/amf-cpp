@@ -5,6 +5,8 @@
 #include "types/amfitem.hpp"
 #include "types/amfxml.hpp"
 
+namespace amf {
+
 class AmfXmlDocument : public AmfItem {
 public:
 	AmfXmlDocument() { };
@@ -22,5 +24,7 @@ public:
 private:
 	std::string value;
 };
+
+} // namespace amf
 
 #endif

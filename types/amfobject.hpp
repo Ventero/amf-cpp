@@ -9,6 +9,8 @@
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
 
+namespace amf {
+
 class AmfObject;
 // TODO: nested class?
 class AmfObjectTraits {
@@ -122,5 +124,7 @@ public:
 private:
 	AmfObjectTraits traits;
 };
+
+} // namespace amf
 
 #endif

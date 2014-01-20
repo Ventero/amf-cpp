@@ -23,6 +23,8 @@
 #include "types/amfxml.hpp"
 #include "types/amfxmldocument.hpp"
 
+namespace amf {
+
 class Serializer {
 public:
 	Serializer() {};
@@ -36,5 +38,7 @@ public:
 private:
 	std::vector<u8> buf;
 };
+
+} // namespace amf
 
 #endif

@@ -8,6 +8,8 @@
 #include "types/amfdouble.hpp"
 #include "types/amfitem.hpp"
 
+namespace amf {
+
 // this needs to be a long long to ensure no overflow
 static const long long MSEC_PER_SEC = 1000ll;
 
@@ -40,5 +42,7 @@ public:
 private:
 	long long value;
 };
+
+} // namespace amf
 
 #endif
