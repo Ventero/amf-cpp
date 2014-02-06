@@ -8,7 +8,9 @@
 
 namespace amf {
 
-const u8 AVMPLUS_OBJECT_MARKER = 0x11;
+enum Amf0Marker : u8 {
+	AVMPLUS_OBJECT = 0x11
+};
 
 class PacketHeader : public AmfItem {
 public:
@@ -28,11 +30,11 @@ public:
 		buf.push_back(mustUnderstand ? 0x01 : 0x00);
 
 		// we have to mark the value as AMF3 value, which is achieved by adding
-		// an AVMPLUS_OBJECT_MARKER in front of the value. note that this counts
+		// an AVMPLUS_OBJECT marker in front of the value. note that this counts
 		// towards the value's length.
 		v8 value_length = network_bytes<uint32_t>(value.size() + 1);
 		buf.insert(buf.end(), value_length.begin(), value_length.end());
-		buf.push_back(AVMPLUS_OBJECT_MARKER);
+		buf.push_back(AVMPLUS_OBJECT);
 		buf.insert(buf.end(), value.begin(), value.end());
 
 		return buf;
@@ -63,7 +65,7 @@ public:
 
 		v8 value_length = network_bytes<uint32_t>(value.size() + 1);
 		buf.insert(buf.end(), value_length.begin(), value_length.end());
-		buf.push_back(AVMPLUS_OBJECT_MARKER);
+		buf.push_back(AVMPLUS_OBJECT);
 		buf.insert(buf.end(), value.begin(), value.end());
 
 		return buf;
