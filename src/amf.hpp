@@ -36,6 +36,13 @@ T swap_endian(T x) {
 #error Endianness not supported
 #endif
 
+template <typename T>
+v8 network_bytes(T x) {
+	T swapped = hton(x);
+	const u8* bytes = reinterpret_cast<const u8*>(&swapped);
+	return v8(bytes, bytes + sizeof(T));
+}
+
 } // namespace amf
 
 #endif

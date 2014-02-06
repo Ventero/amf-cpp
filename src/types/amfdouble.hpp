@@ -15,9 +15,8 @@ public:
 	std::vector<u8> serialize() const {
 		std::vector<u8> buf = { AMF_DOUBLE };
 
-		double netvalue = hton(value);
-		const u8* bytes = reinterpret_cast<const u8*>(&netvalue);
-		buf.insert(buf.end(), bytes, bytes + sizeof(double));
+		v8 bytes = network_bytes(value);
+		buf.insert(buf.end(), bytes.begin(), bytes.end());
 		return buf;
 	}
 
