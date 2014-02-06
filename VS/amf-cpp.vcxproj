@@ -72,26 +72,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\amf.hpp" />
-    <ClInclude Include="..\serializer.hpp" />
-    <ClInclude Include="..\types\amfarray.hpp" />
-    <ClInclude Include="..\types\amfbool.hpp" />
-    <ClInclude Include="..\types\amfbytearray.hpp" />
-    <ClInclude Include="..\types\amfdate.hpp" />
-    <ClInclude Include="..\types\amfdictionary.hpp" />
-    <ClInclude Include="..\types\amfdouble.hpp" />
-    <ClInclude Include="..\types\amfinteger.hpp" />
-    <ClInclude Include="..\types\amfitem.hpp" />
-    <ClInclude Include="..\types\amfnull.hpp" />
-    <ClInclude Include="..\types\amfobject.hpp" />
-    <ClInclude Include="..\types\amfstring.hpp" />
-    <ClInclude Include="..\types\amfundefined.hpp" />
-    <ClInclude Include="..\types\amfvector.hpp" />
-    <ClInclude Include="..\types\amfxml.hpp" />
-    <ClInclude Include="..\types\amfxmldocument.hpp" />
+    <ClInclude Include="..\src\amf.hpp" />
+    <ClInclude Include="..\src\serializer.hpp" />
+    <ClInclude Include="..\src\types\amfarray.hpp" />
+    <ClInclude Include="..\src\types\amfbool.hpp" />
+    <ClInclude Include="..\src\types\amfbytearray.hpp" />
+    <ClInclude Include="..\src\types\amfdate.hpp" />
+    <ClInclude Include="..\src\types\amfdictionary.hpp" />
+    <ClInclude Include="..\src\types\amfdouble.hpp" />
+    <ClInclude Include="..\src\types\amfinteger.hpp" />
+    <ClInclude Include="..\src\types\amfitem.hpp" />
+    <ClInclude Include="..\src\types\amfnull.hpp" />
+    <ClInclude Include="..\src\types\amfobject.hpp" />
+    <ClInclude Include="..\src\types\amfstring.hpp" />
+    <ClInclude Include="..\src\types\amfundefined.hpp" />
+    <ClInclude Include="..\src\types\amfvector.hpp" />
+    <ClInclude Include="..\src\types\amfxml.hpp" />
+    <ClInclude Include="..\src\types\amfxmldocument.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\serializer.cpp" />
+    <ClCompile Include="..\src\serializer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

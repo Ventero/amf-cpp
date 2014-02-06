@@ -6,52 +6,52 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\types\amfbool.hpp">
+    <ClInclude Include="..\src\types\amfbool.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfbytearray.hpp">
+    <ClInclude Include="..\src\types\amfbytearray.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfdouble.hpp">
+    <ClInclude Include="..\src\types\amfdouble.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfinteger.hpp">
+    <ClInclude Include="..\src\types\amfinteger.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfitem.hpp">
+    <ClInclude Include="..\src\types\amfitem.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfnull.hpp">
+    <ClInclude Include="..\src\types\amfnull.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfstring.hpp">
+    <ClInclude Include="..\src\types\amfstring.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfundefined.hpp">
+    <ClInclude Include="..\src\types\amfundefined.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\amf.hpp" />
-    <ClInclude Include="..\serializer.hpp" />
-    <ClInclude Include="..\types\amfvector.hpp">
+    <ClInclude Include="..\src\amf.hpp" />
+    <ClInclude Include="..\src\serializer.hpp" />
+    <ClInclude Include="..\src\types\amfvector.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfarray.hpp">
+    <ClInclude Include="..\src\types\amfarray.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfdate.hpp">
+    <ClInclude Include="..\src\types\amfdate.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfobject.hpp">
+    <ClInclude Include="..\src\types\amfobject.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfxml.hpp">
+    <ClInclude Include="..\src\types\amfxml.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\types\amfxmldocument.hpp">
+    <ClInclude Include="..\src\types\amfxmldocument.hpp">
       <Filter>types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\serializer.cpp" />
+    <ClCompile Include="..\src\serializer.cpp" />
   </ItemGroup>
 </Project>

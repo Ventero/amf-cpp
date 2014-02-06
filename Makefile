@@ -1,5 +1,5 @@
 CXXFLAGS += -std=c++0x -Wall -Wextra -pedantic
-CPPFLAGS += -I.
+CPPFLAGS += -Isrc
 
 ifneq ($(shell $(CXX) --version | grep clang),)
 	ifeq ($(shell uname -s),Darwin)
@@ -15,6 +15,7 @@ debug: CXXFLAGS += -g
 debug: libamf.a
 32bit: CXXFLAGS += -m32
 32bit: release
+libamf.a: libamf.a(src/serializer.o)
 
 clean:
 	rm -f *.a *.o .dep
@@ -22,15 +23,12 @@ clean:
 dist-clean: clean
 	$(MAKE) -C tests clean
 
-test: serializer.o
+test: src/serializer.o
 	$(MAKE) -C tests
 	tests/main
 
-libamf.a: serializer.o
-	$(AR) $(ARFLAGS) $@ $<
-
 .dep:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM serializer.cpp | sed 's,:, $@:,' > $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM src/serializer.cpp | sed 's,:, $@:,' > $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include .dep

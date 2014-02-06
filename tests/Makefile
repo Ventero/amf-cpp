@@ -11,7 +11,7 @@ GTEST_DIR = googletest
 # the compiler doesn't generate warnings in Google Test headers.
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 # and include AMF libs
-CPPFLAGS += -I..
+CPPFLAGS += -I../src
 
 # Tests produced by this Makefile
 TESTS = main
@@ -37,7 +37,7 @@ main.o : main.cpp $(GTEST_HEADERS) $(PCH).gch
 $(addsuffix .o,$(SUBTESTS)) : %.o : %.cpp $(GTEST_HEADERS) $(PCH).gch
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-main : main.o $(addsuffix .o,$(SUBTESTS)) ../serializer.o gtest-all.o
+main : main.o $(addsuffix .o,$(SUBTESTS)) ../src/serializer.o gtest-all.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
 $(PCH).gch: $(PCH)
