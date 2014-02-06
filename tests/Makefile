@@ -55,6 +55,8 @@ gtest_main.o : $(GTEST_SRCS_)
 .dep:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(addsuffix .cpp,$(TESTS)) \
 		$(addsuffix .cpp,$(SUBTESTS)) | sed 's,:, $@:,' > $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $(PCH).gch $(PCH) | \
+		sed 's,:, $@:,' >> $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include .dep
