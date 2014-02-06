@@ -23,6 +23,8 @@
 #include "types/amfxml.hpp"
 #include "types/amfxmldocument.hpp"
 
+#include "amfpacket.hpp"
+
 namespace amf {
 
 class Serializer {

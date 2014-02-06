@@ -17,7 +17,7 @@ CPPFLAGS += -I../src
 TESTS = main
 # Tests used by the main test
 SUBTESTS = array bool bytearray date dictionary double integer null object \
-           serializer string undefined vector xml xmldocument
+           packet serializer string undefined vector xml xmldocument
 # precompiled header name
 PCH = amftest.hpp
 
