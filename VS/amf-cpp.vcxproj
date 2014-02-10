@@ -73,6 +73,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\amf.hpp" />
+    <ClInclude Include="..\src\amfpacket.hpp" />
     <ClInclude Include="..\src\serializer.hpp" />
     <ClInclude Include="..\src\types\amfarray.hpp" />
     <ClInclude Include="..\src\types\amfbool.hpp" />

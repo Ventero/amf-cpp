@@ -9,9 +9,10 @@
     <ClCompile Include="..\tests\double.cpp" />
     <ClCompile Include="..\tests\integer.cpp" />
     <ClCompile Include="..\tests\null.cpp" />
+    <ClCompile Include="..\tests\object.cpp" />
+    <ClCompile Include="..\tests\packet.cpp" />
     <ClCompile Include="..\tests\serializer.cpp" />
     <ClCompile Include="..\tests\string.cpp" />
-    <ClCompile Include="..\tests\object.cpp" />
     <ClCompile Include="..\tests\undefined.cpp" />
     <ClCompile Include="..\tests\vector.cpp" />
     <ClCompile Include="..\tests\xml.cpp" />
