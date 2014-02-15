@@ -18,7 +18,7 @@ debug: libamf.a
 libamf.a: libamf.a(src/serializer.o)
 
 clean:
-	rm -f *.a *.o .dep
+	rm -f *.a src/*.o .dep
 
 dist-clean: clean
 	$(MAKE) -C tests clean
