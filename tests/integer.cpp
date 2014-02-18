@@ -7,10 +7,6 @@ static void isEqual(const std::vector<u8>& expected, int value) {
 	isEqual(expected, AmfInteger(value));
 }
 
-static void isEqual(const std::vector<u8>& expected, const std::vector<u8>& value) {
-	ASSERT_EQ(expected, value);
-}
-
 TEST(IntegerSerializationTest, PositiveInteger1Byte) {
 	isEqual(v8 { 0x04, 0x00 }, 0);
 	isEqual(v8 { 0x04, 0x01 }, 1);
