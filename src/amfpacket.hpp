@@ -77,7 +77,7 @@ private:
 	v8 value;
 };
 
-class AmfPacket {
+class AmfPacket : public AmfItem {
 public:
 	AmfPacket() { };
 
