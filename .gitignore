@@ -40,3 +40,8 @@ VS/test
 *.sdf
 *.pdb
 *.ilk
+
+# Coverity files/folders
+cov-int
+*.gch_cov
+*.tgz
