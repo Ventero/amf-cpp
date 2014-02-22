@@ -28,7 +28,8 @@ test: src/serializer.o
 	tests/main
 
 .dep:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM src/serializer.cpp | sed 's,:, $@:,' > $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM src/serializer.cpp -MT src/serializer.o \
+		| sed 's,:, $@:,' > $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include .dep
