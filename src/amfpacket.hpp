@@ -82,6 +82,7 @@ public:
 	AmfPacket() { };
 
 	v8 serialize() const {
+		// TODO: replace with std::length_error?
 		assert(headers.size() < 65536 && "Too many headers");
 		assert(messages.size() < 65536 && "Too many messages");
 
