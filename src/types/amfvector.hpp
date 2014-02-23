@@ -16,24 +16,26 @@ struct VectorMarker;
 template<>
 struct VectorMarker<int> {
 	static const u8 value = AMF_VECTOR_INT;
+	typedef void type;
 };
 
 template<>
 struct VectorMarker<unsigned int> {
 	static const u8 value = AMF_VECTOR_UINT;
+	typedef void type;
 };
 
 template<>
 struct VectorMarker<double> {
 	static const u8 value = AMF_VECTOR_DOUBLE;
+	typedef void type;
 };
 
 template<typename T, class Enable = void>
 class AmfVector;
 
 template<typename T>
-class AmfVector<T, typename std::enable_if<std::is_constructible<
-	VectorMarker<T>>::value>::type> : public AmfItem {
+class AmfVector<T, typename VectorMarker<T>::type> : public AmfItem {
 public:
 	AmfVector() : values({}), fixed(false) { };
 	AmfVector(std::vector<T> vector, bool fixed = false) :
