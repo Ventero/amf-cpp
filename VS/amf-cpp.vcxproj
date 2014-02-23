@@ -39,13 +39,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/src;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)/obj/</OutDir>
     <IntDir>$(ProjectDir)/$(ProjectName)/$(Configuration)/</IntDir>
     <TargetName>$(ProjectName)-debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/src;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)/obj/</OutDir>
     <IntDir>$(ProjectDir)/$(ProjectName)/$(Configuration)/</IntDir>
   </PropertyGroup>
