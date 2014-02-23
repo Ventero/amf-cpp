@@ -3,6 +3,7 @@
 #define AMF_HPP
 
 #include <algorithm>
+#include <cstdint>
 #ifdef _WIN32
 	// Windows only runs on little endian platforms
 	#define __LITTLE_ENDIAN 1234
