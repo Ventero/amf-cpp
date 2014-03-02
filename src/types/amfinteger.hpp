@@ -59,7 +59,31 @@ public:
 		return buf;
 	}
 
-private:
+	template<typename Iter>
+	static AmfInteger deserialize(Iter& it, Iter end) {
+		v8 data(it, end);
+		int i = 0;
+		int val = 0;
+
+		// up to 3 bytes with high bit set for values > 255
+		while (it != end && i < 3 && data.at(i) & 0x80) {
+			val <<= 7;
+			val |= data.at(i++) & 0x7F;
+		}
+
+		// last byte
+		val <<= i < 3 ? 7 : 8;
+		val |= data.at(i++);
+
+		// set sign bit to handle negative integers
+		val <<= 3;
+		val >>= 3;
+
+		it += i;
+
+		return AmfInteger(val);
+	}
+
 	int value;
 };
 

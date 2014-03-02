@@ -20,7 +20,19 @@ public:
 		return buf;
 	}
 
-private:
+	template<typename Iter>
+	static AmfDouble deserialize(Iter& it, Iter end) {
+		v8 data(it, end);
+
+		if(data.size() < 8)
+			throw std::out_of_range("Not enough bytes for AmfDouble");
+
+		it += 8;
+
+		double v = *reinterpret_cast<double*>(&data[0]);
+		return AmfDouble(ntoh(v));
+	}
+
 	double value;
 };
 

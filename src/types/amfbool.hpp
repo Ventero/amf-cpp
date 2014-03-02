@@ -16,7 +16,6 @@ public:
 		return std::vector<u8>{ value ? AMF_TRUE : AMF_FALSE };
 	}
 
-private:
 	bool value;
 };
 

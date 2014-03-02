@@ -28,7 +28,22 @@ public:
 		return buf;
 	}
 
-private:
+	template<typename Iter>
+	static AmfByteArray deserialize(Iter& it, Iter end) {
+		int type = AmfInteger::deserialize(it, end);
+		if ((type & 0x01) == 0)
+			throw std::invalid_argument("Object references not yet implemented");
+
+		int length = type >> 1;
+		if (end - it < length)
+			throw std::out_of_range("Not enough bytes for AmfByteArray");
+
+		AmfByteArray ret(it, it + length);
+		it += length;
+
+		return ret;
+	}
+
 	std::vector<u8> value;
 };
 

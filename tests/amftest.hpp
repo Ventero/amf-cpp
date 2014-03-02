@@ -15,3 +15,15 @@ static inline void isEqual(const std::vector<u8>& expected, const AmfItem& value
 	v8 serialized = value.serialize();
 	isEqual(expected, serialized);
 }
+
+template<typename T, typename V>
+void deserializesTo(V expected, const v8& data, int expectedLeft = 0) {
+	auto it = data.begin();
+	T i = T::deserialize(it, data.end());
+	ASSERT_EQ(expectedLeft, data.end() - it)
+		<< "Expected " << expectedLeft
+	  << " bytes left, got " << (data.end() - it)
+	  << " bytes left";
+	ASSERT_EQ(expected, i.value) << "Expected value " << ::testing::PrintToString(expected)
+	                             << ", got " << ::testing::PrintToString(i.value);
+}
