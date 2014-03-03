@@ -9,6 +9,9 @@ namespace amf {
 
 class AmfByteArray : public AmfItem {
 public:
+	AmfByteArray() { }
+	AmfByteArray(const AmfByteArray& other) : value(other.value) { }
+
 	template<typename T>
 	AmfByteArray(const T& v) {
 		using std::begin;
