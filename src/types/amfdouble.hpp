@@ -2,6 +2,7 @@
 #ifndef AMFDOUBLE_HPP
 #define AMFDOUBLE_HPP
 
+#include "deserializationcontext.hpp"
 #include "types/amfitem.hpp"
 
 namespace amf {
@@ -21,7 +22,7 @@ public:
 	}
 
 	template<typename Iter>
-	static AmfDouble deserialize(Iter& it, Iter end) {
+	static AmfDouble deserialize(Iter& it, Iter end, DeserializationContext&) {
 		v8 data(it, end);
 
 		if(data.size() < 8)

@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 
@@ -32,10 +34,10 @@ public:
 	}
 
 	template<typename Iter>
-	static AmfString deserialize(Iter& it, Iter end) {
-		int type = AmfInteger::deserialize(it, end).value;
+	static AmfString deserialize(Iter& it, Iter end, DeserializationContext& ctx) {
+		int type = AmfInteger::deserialize(it, end, ctx).value;
 		if ((type & 0x01) == 0)
-			throw std::invalid_argument("Object references not yet implemented");
+			return ctx.getString(type >> 1);
 
 		int length = type >> 1;
 		if (end - it < length)
@@ -44,7 +46,10 @@ public:
 		std::string val(it, it + length);
 		it += length;
 
-		return AmfString(val);
+		AmfString ret(val);
+		ctx.addString(ret);
+
+		return ret;
 	}
 
 	std::string value;

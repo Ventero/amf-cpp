@@ -141,7 +141,24 @@ TEST(StringDeserialization, MultiByteLength) {
 TEST(StringDeserialization, EmptyIterator) {
 	v8 empty { };
 	auto begin = empty.begin();
+	DeserializationContext ctx;
 	ASSERT_THROW({
-		AmfString::deserialize(begin, empty.end());
+		AmfString::deserialize(begin, empty.end(), ctx);
 	}, std::out_of_range);
+}
+
+TEST(StringDeserialization, StringContext) {
+	DeserializationContext ctx;
+	auto cmp = [&ctx] (const char* value, const v8& data) {
+		SCOPED_TRACE(std::string(value) + " = " + ::testing::PrintToString(data));
+		deserializesTo<AmfString>(std::string(value), data, ctx, 0);
+	};
+
+	cmp("bar", { 0x07, 0x62, 0x61, 0x72 });
+	cmp("bar", { 0x00 });
+	cmp("foobar", { 0x0D, 0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72 });
+	cmp("bar", { 0x00 });
+	cmp("qux", { 0x07, 0x71, 0x75, 0x78 });
+	cmp("foobar", { 0x02 });
+	cmp("qux", { 0x04 });
 }

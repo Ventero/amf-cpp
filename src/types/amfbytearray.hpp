@@ -2,6 +2,8 @@
 #ifndef AMFBYTEARRAY_HPP
 #define AMFBYTEARRAY_HPP
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 
@@ -32,10 +34,10 @@ public:
 	}
 
 	template<typename Iter>
-	static AmfByteArray deserialize(Iter& it, Iter end) {
-		int type = AmfInteger::deserialize(it, end);
+	static AmfByteArray deserialize(Iter& it, Iter end, DeserializationContext& ctx) {
+		int type = AmfInteger::deserialize(it, end, ctx);
 		if ((type & 0x01) == 0)
-			throw std::invalid_argument("Object references not yet implemented");
+			return ctx.getObject<AmfByteArray>(type >> 1);
 
 		int length = type >> 1;
 		if (end - it < length)
@@ -43,6 +45,8 @@ public:
 
 		AmfByteArray ret(it, it + length);
 		it += length;
+
+		ctx.addObject<AmfByteArray>(ret);
 
 		return ret;
 	}

@@ -1,7 +1,10 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+
 #include "amf.hpp"
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 
 using namespace amf;
@@ -18,14 +21,28 @@ static inline void isEqual(const std::vector<u8>& expected, const AmfItem& value
 }
 
 template<typename T, typename V>
-void deserializesTo(V expected, const v8& data, int expectedLeft = 0) {
+void deserializesTo(V expected, const v8& data, DeserializationContext& ctx,
+	int expectedLeft = 0) {
+
 	auto it = data.begin();
-	T i = T::deserialize(it, data.end());
+
+	decltype(std::declval<T>().value) value;
+	ASSERT_NO_THROW({
+		T i = T::deserialize(it, data.end(), ctx);
+		value = i.value;
+	});
+
 	ASSERT_EQ(expectedLeft, data.end() - it)
 		<< "Expected " << expectedLeft
 		<< " bytes left, got " << (data.end() - it)
 		<< " bytes left";
-	ASSERT_EQ(expected, i.value)
+	ASSERT_EQ(expected, value)
 		<< "Expected value " << ::testing::PrintToString(expected)
-		<< ", got " << ::testing::PrintToString(i.value);
+		<< ", got " << ::testing::PrintToString(value);
+}
+
+template<typename T, typename V>
+void deserializesTo(V expected, const v8& data, int expectedLeft = 0) {
+	DeserializationContext ctx;
+	deserializesTo<T, V>(expected, data, ctx, expectedLeft);
 }

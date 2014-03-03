@@ -110,3 +110,17 @@ TEST(ByteArrayDeserializationTest, MultiByteLengthMarker) {
 	};
 	deserializesTo(values, data);
 }
+
+TEST(ByteArrayDeserializationTest, ObjectReferences) {
+	DeserializationContext ctx;
+	auto cmp = [&ctx] (const v8& expected, const v8& data) {
+		SCOPED_TRACE(::testing::PrintToString(expected) + " = " + ::testing::PrintToString(data));
+		deserializesTo<AmfByteArray>(expected, data, ctx, 0);
+	};
+
+	cmp({1, 2, 3}, {0x07, 0x01, 0x02, 0x03});
+	cmp({1, 2, 3}, {0x00});
+	cmp({4, 5, 6}, {0x07, 0x04, 0x05, 0x06});
+	cmp({1, 2, 3}, {0x00});
+	cmp({4, 5, 6}, {0x02});
+}

@@ -2,8 +2,10 @@
 #ifndef AMFINTEGER_HPP
 #define AMFINTEGER_HPP
 
-#include "amfitem.hpp"
-#include "amfdouble.hpp"
+#include "deserializationcontext.hpp"
+
+#include "types/amfitem.hpp"
+#include "types/amfdouble.hpp"
 
 namespace amf {
 
@@ -60,7 +62,7 @@ public:
 	}
 
 	template<typename Iter>
-	static AmfInteger deserialize(Iter& it, Iter end) {
+	static AmfInteger deserialize(Iter& it, Iter end, DeserializationContext&) {
 		v8 data(it, end);
 		int i = 0;
 		int val = 0;
