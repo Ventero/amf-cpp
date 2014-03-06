@@ -23,7 +23,25 @@ public:
 		return buf;
 	}
 
-private:
+	template<typename Iter>
+	static AmfXml deserialize(Iter& it, Iter end, DeserializationContext& ctx) {
+		int type = AmfInteger::deserialize(it, end, ctx).value;
+		if ((type & 0x01) == 0)
+			return ctx.getObject<AmfXml>(type >> 1);
+
+		int length = type >> 1;
+		if (end - it < length)
+			throw std::out_of_range("Not enough bytes for AmfXml");
+
+		std::string val(it, it + length);
+		it += length;
+
+		AmfXml ret(val);
+		ctx.addObject<AmfXml>(ret);
+
+		return ret;
+	}
+
 	std::string value;
 };
 
