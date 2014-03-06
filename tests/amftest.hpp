@@ -21,14 +21,20 @@ static inline void isEqual(const std::vector<u8>& expected, const AmfItem& value
 }
 
 template<typename T, typename V>
-void deserializesTo(V expected, const v8& data, DeserializationContext& ctx,
-	int expectedLeft = 0) {
+void deserialize(V expected, const v8& data, int expectedLeft = 0,
+		DeserializationContext* ctx = nullptr) {
+	SCOPED_TRACE(::testing::PrintToString(expected) + " = " + ::testing::PrintToString(data));
+
+	std::unique_ptr<DeserializationContext> dummy;
+	if (!ctx) {
+		dummy.reset(new DeserializationContext());
+		ctx = dummy.get();
+	}
 
 	auto it = data.begin();
-
 	decltype(std::declval<T>().value) value;
 	ASSERT_NO_THROW({
-		T i = T::deserialize(it, data.end(), ctx);
+		T i = T::deserialize(it, data.end(), *ctx);
 		value = i.value;
 	});
 
@@ -39,10 +45,4 @@ void deserializesTo(V expected, const v8& data, DeserializationContext& ctx,
 	ASSERT_EQ(expected, value)
 		<< "Expected value " << ::testing::PrintToString(expected)
 		<< ", got " << ::testing::PrintToString(value);
-}
-
-template<typename T, typename V>
-void deserializesTo(V expected, const v8& data, int expectedLeft = 0) {
-	DeserializationContext ctx;
-	deserializesTo<T, V>(expected, data, ctx, expectedLeft);
 }

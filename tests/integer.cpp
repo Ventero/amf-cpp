@@ -83,8 +83,8 @@ TEST(IntegerAsLengthTest, ValueNotModified) {
 	isEqual(v8 { 0x04, 0x11 }, val.serialize());
 }
 
-static void deserializesTo(int expected, const v8& data) {
-	deserializesTo<AmfInteger>(expected, data);
+static void deserializesTo(int expected, const v8& data, int left = 0) {
+	deserialize<AmfInteger>(expected, data, left);
 }
 
 TEST(IntegerDeserializationTest, PositiveInteger1Byte) {

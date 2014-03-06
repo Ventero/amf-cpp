@@ -30,8 +30,8 @@ TEST(DoubleSerializationTest, SimpleValues) {
 	isEqual(v8 { 0x05, 0x40, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 17.0);
 }
 
-static void deserializesTo(double expected, const v8& data) {
-	deserializesTo<AmfDouble>(expected, data);
+static void deserializesTo(double expected, const v8& data, int left = 0) {
+	deserialize<AmfDouble>(expected, data, left);
 }
 
 TEST(DoubleDeserializationTest, SimpleValues) {
