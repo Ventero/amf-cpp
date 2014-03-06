@@ -5,7 +5,10 @@
 #include <chrono>
 #include <ctime>
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfdouble.hpp"
+#include "types/amfinteger.hpp"
 #include "types/amfitem.hpp"
 
 namespace amf {
@@ -39,7 +42,22 @@ public:
 		return buf;
 	}
 
-private:
+	template<typename Iter>
+	static AmfDate deserialize(Iter& it, Iter end, DeserializationContext& ctx) {
+		int type = AmfInteger::deserialize(it, end, ctx);
+		if ((type & 0x01) == 0)
+			return ctx.getObject<AmfDate>(type >> 1);
+
+		v8 data(it, end);
+		double v = *reinterpret_cast<double*>(&data[0]);
+		it += 8;
+
+		AmfDate ret(static_cast<long long>(ntoh(v)));
+		ctx.addObject<AmfDate>(ret);
+
+		return ret;
+	}
+
 	long long value;
 };
 

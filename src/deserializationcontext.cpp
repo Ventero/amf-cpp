@@ -1,6 +1,7 @@
 #include "deserializationcontext.hpp"
 
 #include "types/amfbytearray.hpp"
+#include "types/amfdate.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
 
@@ -43,4 +44,6 @@ T DeserializationContext::getObject(int index) {
 template void DeserializationContext::addObject<AmfByteArray>(const AmfByteArray&);
 template AmfByteArray DeserializationContext::getObject<AmfByteArray>(int);
 
+template void DeserializationContext::addObject<AmfDate>(const AmfDate&);
+template AmfDate DeserializationContext::getObject<AmfDate>(int);
 } // namespace amf
