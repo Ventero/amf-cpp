@@ -21,7 +21,7 @@ debug: libamf.a
 libamf.a: libamf.a($(OBJ))
 
 clean:
-	rm -f *.a src/*.o .dep
+	rm -f libamf.a $(OBJ) .dep
 
 dist-clean: clean
 	$(MAKE) -C tests clean
@@ -31,7 +31,7 @@ test: $(OBJ)
 	tests/main
 
 .dep:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(SRC)src/serializer.cpp | \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(SRC) | \
 		sed '/^[^[:space:]]/s,^,src/,;s,:, $@:,' > $@
 
 ifneq ($(MAKECMDGOALS),clean)
