@@ -1,6 +1,7 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfbytearray.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfvector.hpp"
 
@@ -341,7 +342,7 @@ TEST(VectorSerializationTest, VectorNamedObject) {
 		0x10, 0x03, 0x00,
 		// class name "TestObject"
 		0x15, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74,
-		// object marker, not dynamic, 1 sealed property, class name 0x00???
+		// object marker, not dynamic, 1 sealed property
 		0x0a, 0x13,
 		// object type "TestObject2"
 		0x17, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x32,
@@ -349,6 +350,88 @@ TEST(VectorSerializationTest, VectorNamedObject) {
 		0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
 		// value 0xbeef
 		0x04, 0x82, 0xfd, 0x6f
+	};
+	isEqual(expected, vector);
+}
+
+TEST(VectorSerializationTest, NestedVectorInt) {
+	AmfVector<AmfVector<int>> vector { {}, "", false };
+	vector.push_back(AmfVector<int> { { 1 } });
+	vector.push_back(AmfVector<int> { { 1, 2 } });
+	vector.push_back(AmfVector<int> { { 1, 2, 3 } });
+
+	v8 expected {
+		// vector marker, 3 items, not fixed
+		0x10, 0x07, 0x00,
+		// empty class name
+		0x01,
+			// vector<int> marker, 1 item, not fixed
+			0x0d, 0x03, 0x00,
+				// element 1
+				0x00, 0x00, 0x00, 0x01,
+			// vector<int> marker, 2 items, not fiex
+			0x0d, 0x05, 0x00,
+				// element 1
+				0x00, 0x00, 0x00, 0x01,
+				// element 2
+				0x00, 0x00, 0x00, 0x02,
+			// vector<int> marker, 3 items, not fixed
+			0x0d, 0x07, 0x00,
+				// element 1
+				0x00, 0x00, 0x00, 0x01,
+				// element 2
+				0x00, 0x00, 0x00, 0x02,
+				// element 3
+				0x00, 0x00, 0x00, 0x03
+	};
+	isEqual(expected, vector);
+}
+
+TEST(VectorSerializationTest, NestedVectorObject) {
+	AmfVector<AmfVector<AmfObject>> vector { {}, "", false };
+	AmfVector<AmfObject> inner { {}, "TestObject", false };
+	AmfObjectTraits traits("TestObject2", false, false);
+	AmfObject obj(traits);
+
+	obj.addSealedProperty("sealedProp", AmfInteger(0xbeef));
+	inner.push_back(obj);
+	vector.push_back(inner);
+
+	v8 expected {
+		// vector marker, 1 item, not fixed
+		0x10, 0x03, 0x00,
+		// empty class name
+		0x01,
+			// vector marker, 1 item, not fixed
+			0x10, 0x03, 0x00,
+			// class name "TestObject"
+			0x15, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+			// object marker, not dynamic, 1 sealed property
+			0x0a, 0x13,
+			// object type "TestObject2"
+			0x17, 0x54, 0x65, 0x73, 0x74, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x32,
+			// property name sealedProp
+			0x15, 0x73, 0x65, 0x61, 0x6c, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x70,
+			// value 0xbeef
+			0x04, 0x82, 0xfd, 0x6f
+	};
+	isEqual(expected, vector);
+}
+
+TEST(VectorSerializationTest, VectorOfByteArray) {
+	AmfByteArray v0(v8 { 0x01, 0x02, 0x03, 0x04, 0xff });
+	AmfByteArray v1(v8 { 0xff, 0xfe, 0xfd });
+	AmfVector<AmfByteArray> vector { { v0, v1 }, "", false };
+
+	v8 expected {
+		// vector marker, 2 items, not fixed
+		0x10, 0x05, 0x00,
+		// empty class name
+		0x01,
+		// byte array, length 5
+		0x0c, 0x0b, 0x01, 0x02, 0x03, 0x04, 0xff,
+		// byte array, length 3
+		0x0c, 0x07, 0xff, 0xfe, 0xfd
 	};
 	isEqual(expected, vector);
 }
