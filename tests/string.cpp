@@ -7,6 +7,10 @@ static void isEqual(const std::vector<u8>& expected, const char* value) {
 	isEqual(expected, AmfString(value));
 }
 
+TEST(AmfString, NullptrCtor) {
+	ASSERT_NO_THROW(AmfString(nullptr));
+}
+
 TEST(StringSerializationTest, EmptyString) {
 	isEqual(v8 { 0x06, 0x01 }, "");
 }
