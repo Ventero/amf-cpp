@@ -45,3 +45,6 @@ VS/test
 cov-int
 *.gch_cov
 *.tgz
+
+# Documentation
+*.pdf
