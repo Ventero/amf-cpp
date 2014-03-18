@@ -49,6 +49,9 @@ public:
 			return ctx.getObject<AmfDate>(type >> 1);
 
 		v8 data(it, end);
+		if(data.size() < 8)
+			throw std::out_of_range("Not enough bytes for AmfDate");
+
 		double v = *reinterpret_cast<double*>(&data[0]);
 		it += 8;
 

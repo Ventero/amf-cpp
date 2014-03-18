@@ -42,7 +42,7 @@ static void deserializesTo(long long expected, const v8& data, int left = 0,
 	deserialize<AmfDate>(expected, data, left, ctx);
 }
 
-TEST(DateDeserializatinTest, Values) {
+TEST(DateDeserializationTest, Values) {
 	deserializesTo(136969002755210ll, { 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49,
 		0x22, 0x80 });
 	deserializesTo(1234567890000ll, { 0x01, 0x42, 0x71, 0xf7, 0x1f, 0xb0, 0x45,
@@ -53,7 +53,7 @@ TEST(DateDeserializatinTest, Values) {
 		0x22, 0x80, 0x90 }, 1);
 }
 
-TEST(DateDeserializatinTest, ObjectCache) {
+TEST(DateDeserializationTest, ObjectCache) {
 	DeserializationContext ctx;
 	deserializesTo(136969002755210ll, { 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22, 0x80 }, 0, &ctx);
 	deserializesTo(136969002755210ll, { 0x00 }, 0, &ctx);
@@ -64,4 +64,11 @@ TEST(DateDeserializatinTest, ObjectCache) {
 	deserializesTo(136969002755210ll, { 0x00 }, 0, &ctx);
 	deserializesTo(136969002755210ll, { 0x02 }, 0, &ctx);
 	deserializesTo(1234567890000ll,   { 0x04 }, 0, &ctx);
+}
+
+TEST(DateDeserializationTest, NotEnoughBytes) {
+	v8 data = { 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22 };
+	auto it = data.begin();
+	DeserializationContext ctx;
+	ASSERT_THROW(AmfDate::deserialize(it, data.end(), ctx), std::out_of_range);
 }
