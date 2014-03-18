@@ -68,7 +68,7 @@ public:
 		int val = 0;
 
 		// up to 3 bytes with high bit set for values > 255
-		while (it != end && i < 3 && data.at(i) & 0x80) {
+		while (i < 3 && data.at(i) & 0x80) {
 			val <<= 7;
 			val |= data.at(i++) & 0x7F;
 		}
