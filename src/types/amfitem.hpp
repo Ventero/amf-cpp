@@ -31,7 +31,7 @@ enum AmfMarker : u8 {
 
 class AmfItem {
 public:
-
+	virtual ~AmfItem() { }
 	virtual std::vector<u8> serialize() const = 0;
 };
 
