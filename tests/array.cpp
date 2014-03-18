@@ -145,3 +145,20 @@ TEST(ArraySerializationTest, ArrayOfArrays) {
 				0x06, 0x0d, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72
 	}, outerArray);
 }
+
+TEST(ArrayMember, Modify) {
+	AmfInteger* v0 = new AmfInteger(0xbeef);
+	AmfArray array;
+	array.push_back(*v0);
+
+	ASSERT_EQ(array.at<AmfInteger>(0), *v0);
+
+	delete v0;
+	ASSERT_EQ(array.at<AmfInteger>(0), AmfInteger(0xbeef));
+
+	array.at<AmfInteger>(0).value = 0xbad;
+	ASSERT_EQ(array.at<AmfInteger>(0), AmfInteger(0xbad));
+
+	array.at<AmfInteger>(0) = AmfInteger(0x38);
+	ASSERT_EQ(array.at<AmfInteger>(0), AmfInteger(0x38));
+}
