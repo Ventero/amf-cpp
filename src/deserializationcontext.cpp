@@ -43,17 +43,14 @@ T DeserializationContext::getObject(int index) {
 }
 
 // explicit instantiations
-template void DeserializationContext::addObject<AmfByteArray>(const AmfByteArray&);
-template AmfByteArray DeserializationContext::getObject<AmfByteArray>(int);
+#define INSTANCIATE(T) \
+	template void DeserializationContext::addObject<T>(const T&); \
+	template T DeserializationContext::getObject<T>(int)
 
-template void DeserializationContext::addObject<AmfDate>(const AmfDate&);
-template AmfDate DeserializationContext::getObject<AmfDate>(int);
+INSTANCIATE(AmfByteArray);
+INSTANCIATE(AmfDate);
+INSTANCIATE(AmfXml);
+INSTANCIATE(AmfXmlDocument);
 
-template void DeserializationContext::addObject<AmfXml>(const AmfXml&);
-template AmfXml DeserializationContext::getObject<AmfXml>(int);
-
-template void DeserializationContext::addObject<AmfXmlDocument>(const AmfXmlDocument&);
-template AmfXmlDocument DeserializationContext::getObject<AmfXmlDocument>(int);
-
-
+#undef INSTANCIATE
 } // namespace amf
