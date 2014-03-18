@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
@@ -83,8 +84,8 @@ public:
 
 		// sealed property values = *(value-type)
 		for (const std::string& attribute : traits.attributes) {
-			const std::vector<u8>& value = sealedProperties.at(attribute);
-			buf.insert(buf.end(), value.begin(), value.end());
+			auto s = sealedProperties.at(attribute)->serialize();
+			buf.insert(buf.end(), s.begin(), s.end());
 		}
 
 		// only encode *(dynamic-member) (including the end marker) if the object
@@ -97,7 +98,9 @@ public:
 
 				// skip AmfString marker again
 				buf.insert(buf.end(), name.begin() + 1, name.end());
-				buf.insert(buf.end(), it.second.begin(), it.second.end());
+
+				auto s = it.second->serialize();
+				buf.insert(buf.end(), s.begin(), s.end());
 			}
 
 			// final dynamic member = UTF-8-empty
@@ -110,16 +113,32 @@ public:
 	template<class T>
 	void addSealedProperty(std::string name, const T& value) {
 		traits.attributes.push_back(name);
-		sealedProperties[name] = value.serialize();
+		sealedProperties[name] = std::shared_ptr<AmfItem>(new T(value));
 	}
 
 	template<class T>
 	void addDynamicProperty(std::string name, const T& value) {
-		dynamicProperties[name] = value.serialize();
+		dynamicProperties[name] = std::shared_ptr<AmfItem>(new T(value));
 	}
 
-	std::map<std::string, std::vector<u8>> sealedProperties;
-	std::map<std::string, std::vector<u8>> dynamicProperties;
+	template<class T>
+	T& getSealedProperty(std::string name) {
+		const auto& it = std::find(traits.attributes.begin(),
+			traits.attributes.end(), name);
+
+		if (it == traits.attributes.end())
+			throw std::out_of_range("AmfObject::getSealedProperty");
+
+		return *static_cast<T*>(sealedProperties.at(name).get());
+	}
+
+	template<class T>
+	T& getDynamicProperty(std::string name) {
+		return *static_cast<T*>(dynamicProperties.at(name).get());
+	}
+
+	std::map<std::string, std::shared_ptr<AmfItem>> sealedProperties;
+	std::map<std::string, std::shared_ptr<AmfItem>> dynamicProperties;
 
 private:
 	AmfObjectTraits traits;

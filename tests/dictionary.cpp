@@ -47,7 +47,7 @@ void consistsOf(std::vector<v8> parts, const v8& data) {
 
 TEST(DictionarySerializationTest, IntegerKeys) {
 	AmfDictionary d(false, false);
-	d[AmfInteger(3)] = AmfBool(false).serialize();
+	d.insert(AmfInteger(3), AmfBool(false));
 
 	isEqual(v8 {
 		0x11, // AMF_DICTIONARY
@@ -115,7 +115,7 @@ TEST(DictionarySerializationTest, NumberKeys) {
 
 TEST(DictionarySerializationTest, IntegerAsStringKeys) {
 	AmfDictionary d(true, false);
-	d[AmfInteger(3)] = AmfBool(false).serialize();
+	d.insert(AmfInteger(3), AmfBool(false));
 
 	isEqual(v8 {
 		0x11, // AMF_DICTIONARY

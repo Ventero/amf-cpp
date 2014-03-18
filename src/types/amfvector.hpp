@@ -2,6 +2,7 @@
 #ifndef AMFVECTOR_HPP
 #define AMFVECTOR_HPP
 
+#include <memory>
 #include <vector>
 
 #include "types/amfitem.hpp"
@@ -45,6 +46,10 @@ public:
 		values.push_back(item);
 	}
 
+	T& at(int index) {
+		return values.at(index);
+	}
+
 	std::vector<u8> serialize() const {
 		// U29V value
 		std::vector<u8> buf = AmfInteger(values.size()).asLength(VectorMarker<T>::value);
@@ -62,7 +67,7 @@ public:
 
 		return buf;
 	}
-private:
+
 	std::vector<T> values;
 	bool fixed;
 };
@@ -77,8 +82,12 @@ public:
 			push_back(it);
 	};
 
-	void push_back(const AmfItem& item) {
-		values.push_back(item.serialize());
+	void push_back(const T& item) {
+		values.emplace_back(new T(item));
+	}
+
+	T& at(int index) {
+		return *static_cast<T*>(values.at(index).get());
 	}
 
 	std::vector<u8> serialize() const {
@@ -94,14 +103,14 @@ public:
 		buf.insert(buf.end(), typeName.begin() + 1, typeName.end());
 
 		for (const auto& it : values) {
-			buf.insert(buf.end(), it.begin(), it.end());
+			auto s = it->serialize();
+			buf.insert(buf.end(), s.begin(), s.end());
 		}
 
 		return buf;
 	}
 
-private:
-	std::vector<std::vector<u8>> values;
+	std::vector<std::shared_ptr<AmfItem>> values;
 	std::string type;
 	bool fixed;
 };

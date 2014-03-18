@@ -3,6 +3,7 @@
 #define AMFARRAY_HPP
 
 #include <map>
+#include <memory>
 
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
@@ -14,32 +15,43 @@ class AmfArray : public AmfItem {
 public:
 	AmfArray() { };
 
-	AmfArray(std::vector<std::vector<u8>> densePart,
-		std::map<std::string, std::vector<u8>> associativePart) :
-		dense(densePart), associative(associativePart) { };
-
 	template<class V>
 	AmfArray(std::vector<V> densePart) {
-		for (const auto& it : densePart)
+		for (const V& it : densePart)
 			push_back(it);
 	}
 
 	template<class V, class A>
-	AmfArray(std::vector<V> densePart,
-		std::map<std::string, A> associativePart) {
-		for (const auto& it : densePart)
+	AmfArray(std::vector<V> densePart, std::map<std::string, A> associativePart) {
+		for (const V& it : densePart)
 			push_back(it);
 
 		for (const auto& it : associativePart)
 			insert(it.first, it.second);
 	}
 
-	void push_back(const AmfItem& item) {
-		dense.push_back(item.serialize());
+	template<class T>
+	void push_back(const T& item) {
+		static_assert(std::is_base_of<AmfItem, T>::value, "Elements must extend AmfItem");
+
+		dense.emplace_back(new T(item));
 	}
 
-	void insert(const std::string key, const AmfItem& item) {
-		associative[key] = item.serialize();
+	template<class T>
+	void insert(const std::string key, const T& item) {
+		static_assert(std::is_base_of<AmfItem, T>::value, "Elements must extend AmfItem");
+
+		associative[key] = std::shared_ptr<AmfItem>(new T(item));
+	}
+
+	template<class T>
+	T& at(int index) {
+		return *static_cast<T*>(dense.at(index).get());
+	}
+
+	template<class T>
+	T& at(std::string key) {
+		return *static_cast<T*>(associative.at(key).get());
 	}
 
 	std::vector<u8> serialize() const {
@@ -54,28 +66,27 @@ public:
 		std::vector<u8> buf = AmfInteger(dense.size()).asLength(AMF_ARRAY);
 
 		for (const auto& it : associative) {
-			AmfString attribute(it.first);
-			std::vector<u8> name(attribute.serialize());
+			auto name = AmfString(it.first).serialize();
+			auto s = it.second->serialize();
 
 			// skip AmfString marker
 			buf.insert(buf.end(), name.begin() + 1, name.end());
-			buf.insert(buf.end(), it.second.begin(), it.second.end());
+			buf.insert(buf.end(), s.begin(), s.end());
 		}
 
 		// UTF-8-empty
 		buf.push_back(0x01);
 
 		for (const auto& it : dense) {
-			buf.insert(buf.end(), it.begin(), it.end());
+			auto s = it->serialize();
+			buf.insert(buf.end(), s.begin(), s.end());
 		}
 
 		return buf;
 	}
 
-private:
-	std::vector<std::vector<u8>> dense;
-	std::map<std::string, std::vector<u8>> associative;
-
+	std::vector<std::shared_ptr<AmfItem>> dense;
+	std::map<std::string, std::shared_ptr<AmfItem>> associative;
 };
 
 } // namespace amf

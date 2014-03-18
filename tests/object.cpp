@@ -179,7 +179,7 @@ TEST(ObjectSerializationTest, SerializeOnlyPropsInTraits) {
 	obj.addSealedProperty("sealedProp", AmfInteger(0x05ffeffe));
 
 	// this should not be serialized as it's not part of the trait attributes
-	obj.sealedProperties["unusedProp"] = AmfString("unused").serialize();
+	obj.sealedProperties["unusedProp"] = std::shared_ptr<AmfItem>(new AmfString("unused"));
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
