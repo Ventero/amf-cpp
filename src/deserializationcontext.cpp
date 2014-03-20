@@ -1,11 +1,7 @@
 #include "deserializationcontext.hpp"
 
-#include "types/amfbytearray.hpp"
-#include "types/amfdate.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
-#include "types/amfxml.hpp"
-#include "types/amfxmldocument.hpp"
 
 namespace amf {
 
