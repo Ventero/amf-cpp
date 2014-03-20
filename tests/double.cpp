@@ -1,7 +1,10 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfbool.hpp"
 #include "types/amfdouble.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfundefined.hpp"
 
 static void isEqual(const std::vector<u8>& expected, double value) {
 	isEqual(expected, AmfDouble(value));
@@ -30,8 +33,51 @@ TEST(DoubleSerializationTest, SimpleValues) {
 	isEqual(v8 { 0x05, 0x40, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 17.0);
 }
 
+TEST(DoubleEquality, SimpleValues) {
+	AmfDouble d0;
+	AmfDouble d1(0.0);
+	EXPECT_EQ(d0, d1);
+
+	AmfDouble d2(-1);
+	AmfDouble d3(-1.0);
+	AmfDouble d4(-1.0f);
+	EXPECT_EQ(d2, d3);
+	EXPECT_EQ(d2, d4);
+
+	AmfDouble d5(1.0);
+	EXPECT_NE(d5, d2);
+
+	AmfDouble d6(1.2345678912345e+35);
+	AmfDouble d7(-1.2345678912345e+35);
+	EXPECT_NE(d6, d7);
+}
+
+TEST(DoubleEquality, DoubleConversion) {
+	AmfDouble d0;
+	EXPECT_EQ(d0, 0.0);
+
+	AmfDouble d1(-1);
+	EXPECT_EQ(d1, -1.0);
+
+	AmfDouble d3(1.0);
+	EXPECT_EQ(d3, 1.0);
+
+	AmfDouble d4(1.2345678912345e+35);
+	EXPECT_EQ(d4, 1.2345678912345e+35);
+}
+
+TEST(DoubleEquality, MixedTypes) {
+	AmfDouble d0(1);
+	AmfInteger i(1);
+	AmfBool b(true);
+	AmfUndefined u;
+	EXPECT_NE(d0, i);
+	EXPECT_NE(d0, b);
+	EXPECT_NE(d0, u);
+}
+
 static void deserializesTo(double expected, const v8& data, int left = 0) {
-	deserialize<AmfDouble>(expected, data, left);
+	deserialize(AmfDouble(expected), data, left);
 }
 
 TEST(DoubleDeserializationTest, SimpleValues) {

@@ -3,7 +3,9 @@
 #include <array>
 
 #include "amf.hpp"
+#include "types/amfarray.hpp"
 #include "types/amfbytearray.hpp"
+#include "types/amfvector.hpp"
 
 TEST(ByteArraySerializationTest, SimpleValues) {
 	AmfByteArray ba(v8 {1, 2, 3});
@@ -61,9 +63,30 @@ TEST(ByteArraySerializationTest, ExplicitVectorCtor) {
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, AmfByteArray(values));
 }
 
+TEST(ByteArrayEquality, SimpleValues) {
+	AmfByteArray b1(v8 { 1, 2, 3 });
+	AmfByteArray b2(v8 { 1, 2, 3 });
+	EXPECT_EQ(b1, b2);
+
+	AmfByteArray b3(v8 { 1, 2 });
+	EXPECT_NE(b1, b3);
+}
+
+TEST(ByteArrayEquality, MixedTypes) {
+	AmfByteArray b(v8 { 1, 2, 3 });
+	AmfArray a(std::vector<AmfInteger> { 1, 2, 3 });
+	EXPECT_NE(b, a);
+
+	AmfVector<int> v { { 1, 2, 3 } };
+	EXPECT_NE(b, v);
+
+	AmfVector<unsigned int> uv { { 1, 2, 3 } };
+	EXPECT_NE(b, uv);
+}
+
 static void deserializesTo(const v8& expected, const v8& data, int left = 0,
 	DeserializationContext* ctx = nullptr) {
-	deserialize<AmfByteArray>(expected, data, left, ctx);
+	deserialize(AmfByteArray(expected), data, left, ctx);
 }
 
 TEST(ByteArrayDeserializationTest, Empty) {

@@ -4,11 +4,12 @@
 
 #include <functional>
 #include <map>
-#include <memory>
 
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
+
+#include "utils/amfitemptr.hpp"
 
 namespace amf {
 
@@ -16,6 +17,17 @@ class AmfObjectTraits {
 public:
 	AmfObjectTraits(std::string className, bool dynamic, bool externalizable) :
 		className(className), dynamic(dynamic), externalizable(externalizable) { };
+
+	bool operator==(const AmfObjectTraits& other) const {
+		return dynamic == other.dynamic &&
+			externalizable == other.externalizable &&
+			className == other.className &&
+			attributes == other.attributes;
+	}
+
+	bool operator!=(const AmfObjectTraits& other) const {
+		return !(*this == other);
+	}
 
 	std::string className;
 	std::vector<std::string> attributes;
@@ -28,6 +40,31 @@ public:
 	AmfObject() : traits("", false, false) { };
 	AmfObject(std::string className, bool dynamic, bool externalizable) :
 		traits(AmfObjectTraits(className, dynamic, externalizable)) { };
+
+	bool operator==(const AmfItem& other) const {
+		const AmfObject* p = dynamic_cast<const AmfObject*>(&other);
+
+		if (p == nullptr)
+			return false;
+
+		if (traits != p->traits)
+			return false;
+
+		if (dynamicProperties != p->dynamicProperties)
+			return false;
+
+		// we don't need to check if other.sealedProperties contains the attribute,
+		// as this is taken care of by the traits equality check
+		for (const std::string& it : traits.attributes) {
+			if (sealedProperties.at(it) != p->sealedProperties.at(it))
+				return false;
+		}
+
+		if (traits.externalizable && externalizer(this) != p->externalizer(p))
+			return false;
+
+		return true;
+	}
 
 	std::vector<u8> serialize() const {
 		/* AmfObject is defined as
@@ -112,12 +149,12 @@ public:
 		if (std::find(a->begin(), a->end(), name) == a->end())
 			traits.attributes.push_back(name);
 
-		sealedProperties[name] = std::shared_ptr<AmfItem>(new T(value));
+		sealedProperties[name] = AmfItemPtr(new T(value));
 	}
 
 	template<class T>
 	void addDynamicProperty(std::string name, const T& value) {
-		dynamicProperties[name] = std::shared_ptr<AmfItem>(new T(value));
+		dynamicProperties[name] = AmfItemPtr(new T(value));
 	}
 
 	template<class T>
@@ -136,8 +173,8 @@ public:
 		return *static_cast<T*>(dynamicProperties.at(name).get());
 	}
 
-	std::map<std::string, std::shared_ptr<AmfItem>> sealedProperties;
-	std::map<std::string, std::shared_ptr<AmfItem>> dynamicProperties;
+	std::map<std::string, AmfItemPtr> sealedProperties;
+	std::map<std::string, AmfItemPtr> dynamicProperties;
 
 	std::function<v8(const AmfObject*)> externalizer;
 

@@ -21,8 +21,8 @@ static inline void isEqual(const std::vector<u8>& expected, const AmfItem& value
 	isEqual(expected, serialized);
 }
 
-template<typename T, typename V>
-void deserialize(V expected, const v8& data, int expectedLeft = 0,
+template<typename T>
+void deserialize(T expected, const v8& data, int expectedLeft = 0,
 		DeserializationContext* ctx = nullptr) {
 	SCOPED_TRACE(::testing::PrintToString(expected) + " = " + ::testing::PrintToString(data));
 
@@ -33,17 +33,16 @@ void deserialize(V expected, const v8& data, int expectedLeft = 0,
 	}
 
 	auto it = data.begin();
-	decltype(std::declval<T>().value) value;
-	ASSERT_NO_THROW({
+	try {
 		T i = T::deserialize(it, data.end(), *ctx);
-		value = i.value;
-	});
+		ASSERT_EQ(expected, i);
+	} catch(std::exception& e) {
+		FAIL() << "Deserialization threw exception:\n"
+		       << e.what() ;
+	}
 
 	ASSERT_EQ(expectedLeft, data.end() - it)
 		<< "Expected " << expectedLeft
 		<< " bytes left, got " << (data.end() - it)
 		<< " bytes left";
-	ASSERT_EQ(expected, value)
-		<< "Expected value " << ::testing::PrintToString(expected)
-		<< ", got " << ::testing::PrintToString(value);
 }

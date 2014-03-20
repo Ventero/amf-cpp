@@ -18,6 +18,11 @@ public:
 	AmfString(std::string v) : value(v) { }
 	operator std::string() const { return value; }
 
+	bool operator==(const AmfItem& other) const {
+		const AmfString* p = dynamic_cast<const AmfString*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		if(value.empty())
 			return std::vector<u8>{ AMF_STRING, 0x01 };

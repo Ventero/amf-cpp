@@ -1,7 +1,10 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfxml.hpp"
+#include "types/amfxmldocument.hpp"
 
 static void isEqual(const std::vector<u8>& expected, const char* value) {
 	isEqual(expected, AmfString(value));
@@ -67,9 +70,45 @@ TEST(StringSerializationTest, Unicode) {
 		           0xC4, 0xA7 }, "”]²³¶ŧ↓øħ”“łµæðµ→³øħ");
 }
 
+TEST(StringEquality, SimpleValues) {
+	AmfString s1;
+	AmfString s2("");
+	EXPECT_EQ(s1, s1);
+	EXPECT_EQ(s1, s2);
+
+	AmfString s3("foo");
+	AmfString s4("foo");
+	EXPECT_EQ(s3, s4);
+	EXPECT_NE(s1, s3);
+
+	AmfString s5("foobar");
+	EXPECT_NE(s3, s5);
+}
+
+TEST(StringEquality, StringConversion) {
+	AmfString s1;
+	EXPECT_EQ(std::string(s1), "");
+
+	AmfString s2("foo");
+	EXPECT_EQ(std::string(s2), "foo");
+
+	AmfString s3("ħ");
+	EXPECT_EQ(std::string(s3), "ħ");
+}
+
+TEST(StringEquality, MixedTypes) {
+	AmfString s1("foo");
+	AmfXml x1("foo");
+	AmfXmlDocument x2("foo");
+	AmfInteger i1(0x666f6f);
+	EXPECT_NE(s1, x1);
+	EXPECT_NE(s1, x2);
+	EXPECT_NE(s1, i1);
+}
+
 static void deserializesTo(const char* value, const v8& data, int left = 0,
 	DeserializationContext* ctx = nullptr) {
-	deserialize<AmfString>(value, data, left, ctx);
+	deserialize(AmfString(value), data, left, ctx);
 }
 
 TEST(StringDeserialization, EmptyString) {

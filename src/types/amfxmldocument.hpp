@@ -12,6 +12,11 @@ public:
 	AmfXmlDocument() { };
 	AmfXmlDocument(std::string value) : value(value) { };
 
+	bool operator==(const AmfItem& other) const {
+		const AmfXmlDocument* p = dynamic_cast<const AmfXmlDocument*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		// XMLDocument is identical to XML (except for the object marker),
 		// so simply forward everything to the AmfXml implementation

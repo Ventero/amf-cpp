@@ -12,6 +12,11 @@ class AmfNull : public AmfItem {
 public:
 	AmfNull() { }
 
+	bool operator==(const AmfItem& other) const {
+		const AmfNull* p = dynamic_cast<const AmfNull*>(&other);
+		return p != nullptr;
+	}
+
 	std::vector<u8> serialize() const {
 		return std::vector<u8>{ AMF_NULL };
 	}

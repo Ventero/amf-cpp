@@ -52,6 +52,9 @@
     <ClInclude Include="..\src\types\amfxmldocument.hpp">
       <Filter>types</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\utils\amfitemptr.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\deserializationcontext.cpp" />

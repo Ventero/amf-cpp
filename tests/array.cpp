@@ -5,6 +5,7 @@
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfobject.hpp"
+#include "types/amfvector.hpp"
 
 TEST(ArraySerializationTest, EmptyArray) {
 	AmfArray array;
@@ -160,4 +161,68 @@ TEST(ArrayMember, Modify) {
 
 	array.at<AmfInteger>(0) = AmfInteger(0x38);
 	ASSERT_EQ(array.at<AmfInteger>(0), AmfInteger(0x38));
+}
+
+TEST(ArrayEquality, IntArray) {
+	AmfArray a0;
+	AmfArray a1;
+	EXPECT_EQ(a0, a1);
+
+	AmfArray a2(std::vector<AmfInteger> { 1, 2, 3 });
+	AmfArray a3;
+	a3.push_back(AmfInteger(1));
+	a3.push_back(AmfInteger(2));
+	a3.push_back(AmfInteger(3));
+	EXPECT_EQ(a2, a3);
+	a3.insert("foo", AmfInteger(0));
+	EXPECT_NE(a2, a3);
+	a2.insert("foo", AmfInteger(0));
+	EXPECT_EQ(a2, a3);
+
+	AmfArray a4(std::vector<AmfInteger> { 1, 2, 3 },
+		std::map<std::string, AmfInteger> { { "foo", 0 } });
+	EXPECT_EQ(a2, a4);
+}
+
+TEST(ArrayEquality, MixedArray) {
+	AmfArray a0, a1;
+	a0.push_back(AmfInteger(1));
+	a1.push_back(AmfInteger(1));
+	a0.push_back(AmfString("foo"));
+	a1.push_back(AmfString("foo"));
+	EXPECT_EQ(a0, a1);
+}
+
+TEST(ArrayEquality, NestedArray) {
+	AmfArray a0, a1, i0;
+	i0.push_back(AmfInteger(1));
+	i0.insert("qux", AmfString("foo"));
+	a0.push_back(i0);
+	a1.push_back(i0);
+	a0.insert("a", i0);
+	a1.insert("a", i0);
+	EXPECT_EQ(a0, a1);
+}
+
+TEST(ArrayEquality, SparseArray) {
+	AmfArray a0 { std::vector<AmfInteger> {}, std::map<std::string, AmfString> {
+		{ "foo", "bar" },
+		{ "qux", "quux" }
+	} };
+	AmfArray a1;
+	a1.insert("foo", AmfString("bar"));
+	a1.insert("qux", AmfString("quux"));
+	EXPECT_EQ(a0, a1);
+}
+
+TEST(ArrayEquality, MixedTypes) {
+	AmfArray a0(std::vector<AmfInteger> { 1, 2, 3});
+	AmfArray a1(std::vector<AmfDouble> { 1, 2, 3});
+	EXPECT_NE(a0, a1);
+
+	AmfVector<int> v1 { { 1, 2, 3 } };
+	EXPECT_NE(a0, v1);
+
+	AmfVector<unsigned int> v2 { { 1, 2, 3} };
+	EXPECT_NE(a0, v2);
 }

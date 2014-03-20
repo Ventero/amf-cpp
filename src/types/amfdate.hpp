@@ -28,6 +28,11 @@ public:
 			duration).count();
 	}
 
+	bool operator==(const AmfItem& other) const {
+		const AmfDate* p = dynamic_cast<const AmfDate*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		// AmfDate is date-marker (U29O-ref | (U29D-value date-time)),
 		// where U29D-value is 1 and date-time is a int64 describing the number of

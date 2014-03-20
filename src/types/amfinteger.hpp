@@ -15,6 +15,11 @@ public:
 	AmfInteger(int v) : value(v) { };
 	operator int() const { return value; }
 
+	bool operator==(const AmfItem& other) const {
+		const AmfInteger* p = dynamic_cast<const AmfInteger*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		// According to the spec:
 		// If the value of an unsigned integer (uint) or signed integer (int)

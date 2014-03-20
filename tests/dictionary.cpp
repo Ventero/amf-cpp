@@ -3,12 +3,15 @@
 
 #include "amf.hpp"
 #include "types/amfarray.hpp"
+#include "types/amfbytearray.hpp"
 #include "types/amfbool.hpp"
 #include "types/amfdictionary.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
+#include "types/amfnull.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
 
 std::vector<v8>::iterator findElement(const v8::const_iterator& start, std::vector<v8>& parts) {
@@ -353,4 +356,56 @@ TEST(DictionarySerializationTest, OverwriteKeys) {
 		0x06, 0x0B, 0x66, 0x61, 0x6C, 0x73, 0x65,
 		0x06, 0x07, 0x66, 0x6f, 0x6f
 	}, d);
+}
+
+TEST(DictionaryEquality, EmptyDictionary) {
+	AmfDictionary d0(true);
+	AmfDictionary d1(true, false);
+	EXPECT_EQ(d0, d1);
+
+	AmfDictionary d2(false);
+	EXPECT_NE(d0, d2);
+	AmfDictionary d3(false, true);
+	EXPECT_NE(d2, d3);
+	EXPECT_NE(d0, d3);
+}
+
+TEST(DictionaryEquality, SimpleValues) {
+	AmfDictionary d0(true), d1(true), d2(false);
+	d0.insert(AmfInteger(0), AmfString("foo"));
+	d1.insert(AmfInteger(0), AmfString("foo"));
+	d2.insert(AmfInteger(0), AmfString("foo"));
+	EXPECT_EQ(d0, d1);
+	EXPECT_NE(d0, d2);
+
+	d0.insert(AmfString("qux"), AmfByteArray(v8 { 0x00 }));
+	EXPECT_NE(d0, d1);
+	d1.insert(AmfString("qux"), AmfByteArray(v8 { 0x00 }));
+	EXPECT_EQ(d0, d1);
+
+	d0.insert(AmfNull(), AmfUndefined());
+	d1.insert(AmfUndefined(), AmfNull());
+	EXPECT_NE(d0, d1);
+
+	d0.insert(AmfUndefined(), AmfNull());
+	d1.insert(AmfNull(), AmfUndefined());
+	EXPECT_EQ(d0, d1);
+}
+
+TEST(DictionaryEquality, NestedDictionary) {
+	AmfDictionary d0(true), d1(true), i(false);
+	i.insert(AmfNull(), AmfUndefined());
+	d0.insert(i, i);
+	d1.insert(i, i);
+	EXPECT_EQ(d0, d1);
+}
+
+TEST(DictionaryEquality, MixedTypes) {
+	AmfDictionary d0(false);
+	AmfArray a;
+	AmfVector<int> v;
+	AmfUndefined u;
+	EXPECT_NE(d0, a);
+	EXPECT_NE(d0, v);
+	EXPECT_NE(d0, u);
 }

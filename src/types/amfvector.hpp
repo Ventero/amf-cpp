@@ -2,12 +2,13 @@
 #ifndef AMFVECTOR_HPP
 #define AMFVECTOR_HPP
 
-#include <memory>
 #include <vector>
 
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
+
+#include "utils/amfitemptr.hpp"
 
 namespace amf {
 
@@ -45,6 +46,11 @@ public:
 	AmfVector(std::vector<T> vector, bool fixed = false) :
 		values(vector), fixed(fixed) { };
 
+	bool operator==(const AmfItem& other) const {
+		const AmfVector<T>* p = dynamic_cast<const AmfVector<T>*>(&other);
+		return p != nullptr && fixed == p->fixed && values == p->values;
+	}
+
 	void push_back(T item) {
 		values.push_back(item);
 	}
@@ -62,7 +68,7 @@ public:
 		buf.push_back(fixed ? 0x01 : 0x00);
 
 		for(const T& it : values) {
-			// values are encoded as in network byte order
+			// values are encoded in network byte order
 			// ints are encoded as U32, not U29
 			T netvalue = hton(it);
 			const u8* bytes = reinterpret_cast<const u8*>(&netvalue);
@@ -85,6 +91,11 @@ public:
 		for (const auto& it : vector)
 			push_back(it);
 	};
+
+	bool operator==(const AmfItem& other) const {
+		const AmfVector<T>* p = dynamic_cast<const AmfVector<T>*>(&other);
+		return p != nullptr && fixed == p->fixed && type == p->type && values == p->values;
+	}
 
 	void push_back(const T& item) {
 		values.emplace_back(new T(item));
@@ -114,7 +125,7 @@ public:
 		return buf;
 	}
 
-	std::vector<std::shared_ptr<AmfItem>> values;
+	std::vector<AmfItemPtr> values;
 	std::string type;
 	bool fixed;
 };

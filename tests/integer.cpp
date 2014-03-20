@@ -1,6 +1,7 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfbool.hpp"
 #include "types/amfinteger.hpp"
 
 static void isEqual(const std::vector<u8>& expected, int value) {
@@ -83,8 +84,75 @@ TEST(IntegerAsLengthTest, ValueNotModified) {
 	isEqual(v8 { 0x04, 0x11 }, val.serialize());
 }
 
+TEST(IntegerEquality, SimpleValues) {
+	AmfInteger i1(0);
+	AmfInteger i2(1);
+	AmfInteger i3(0x7e);
+	AmfInteger i4(0x80);
+	AmfInteger i5(0x1fffff);
+	AmfInteger i6(0x200000);
+	AmfInteger i7(0xfffffff);
+	AmfInteger i8(-1);
+	AmfInteger i9(-268435456);
+	AmfInteger i10(0);
+	AmfInteger i11(1);
+	AmfInteger i12(-1);
+
+	EXPECT_EQ(i1, i1);
+	EXPECT_EQ(i2, i2);
+	EXPECT_EQ(i3, i3);
+	EXPECT_EQ(i4, i4);
+	EXPECT_EQ(i5, i5);
+	EXPECT_EQ(i6, i6);
+	EXPECT_EQ(i7, i7);
+	EXPECT_EQ(i8, i8);
+	EXPECT_EQ(i9, i9);
+
+	EXPECT_EQ(i1, i10);
+	EXPECT_EQ(i2, i11);
+	EXPECT_EQ(i8, i12);
+
+	EXPECT_NE(i1, i8);
+}
+
+TEST(IntegerEquality, LargeValues) {
+	AmfInteger i1(0x7fffffff);
+	AmfInteger i2(0x7fffffff);
+	AmfInteger i3(-2147483647);
+	AmfInteger i4(-2147483647);
+	AmfInteger i5(-2147483647 - 1);
+	AmfInteger i6(-2147483647 - 1);
+
+	EXPECT_EQ(i1, i1);
+	EXPECT_EQ(i1, i2);
+	EXPECT_EQ(i3, i4);
+	EXPECT_EQ(i5, i6);
+
+	EXPECT_NE(i1, i3);
+}
+
+TEST(IntegerEquality, MixedTypes) {
+	AmfInteger i1(0);
+	AmfDouble d(0);
+	EXPECT_NE(i1, d);
+
+	AmfBool b(false);
+	EXPECT_NE(i1, b);
+}
+
+TEST(IntegerEquality, ImplicitConversion) {
+	AmfInteger i1(1);
+	EXPECT_EQ(i1, 1);
+
+	AmfInteger i2(-1);
+	EXPECT_EQ(i2, -1);
+
+	AmfInteger i3(-2147483647 - 1);
+	EXPECT_EQ(i3, -2147483647 - 1);
+}
+
 static void deserializesTo(int expected, const v8& data, int left = 0) {
-	deserialize<AmfInteger>(expected, data, left);
+	deserialize(AmfInteger(expected), data, left);
 }
 
 TEST(IntegerDeserializationTest, PositiveInteger1Byte) {

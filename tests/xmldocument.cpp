@@ -1,6 +1,7 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfstring.hpp"
 #include "types/amfxml.hpp"
 #include "types/amfxmldocument.hpp"
 
@@ -81,10 +82,32 @@ TEST(XmlDocumentSerializationTest, MultiByteLengthString) {
 	}, val);
 }
 
+TEST(XmlDocumentEquality, SimpleValues) {
+	AmfXmlDocument x1;
+	AmfXmlDocument x2("");
+	EXPECT_EQ(x1, x2);
+
+	AmfXmlDocument x3("foo");
+	AmfXmlDocument x4("foo");
+	EXPECT_EQ(x3, x4);
+
+	EXPECT_NE(x1, x3);
+
+	AmfXmlDocument x5("foobar");
+	EXPECT_NE(x3, x5);
+}
+
+TEST(XmlDocumentEquality, MixedTypes) {
+	AmfXmlDocument x1("foo");
+	AmfString s("foo");
+	AmfXml x2("foo");
+	EXPECT_NE(x1, s);
+	EXPECT_NE(x1, x2);
+}
 
 static void deserializesTo(const char* expected, const v8& data, int left = 0,
 	DeserializationContext* ctx = nullptr) {
-	deserialize<AmfXmlDocument>(expected, data, left, ctx);
+	deserialize(AmfXmlDocument(expected), data, left, ctx);
 }
 
 TEST(XmlDocumentDeserializationTest, SimpleValues) {
@@ -167,10 +190,10 @@ TEST(XmlDocumentDeserializationTest, ObjectReference) {
 TEST(XmlDocumentDeserializationTest, SharesCacheWithXml) {
 	DeserializationContext ctx;
 	deserializesTo("foo", v8 { 0x07, 0x66, 0x6f, 0x6f }, 0, &ctx);
-	deserialize<AmfXml>("foo", v8 { 0x00 }, 0, &ctx);
+	deserialize(AmfXml("foo"), v8 { 0x00 }, 0, &ctx);
 
 	deserializesTo("bar", v8 { 0x07, 0x62, 0x61, 0x72 }, 0, &ctx);
-	deserialize<AmfXml>("foo", v8 { 0x07, 0x66, 0x6f, 0x6f }, 0, &ctx);
+	deserialize(AmfXml("foo"), v8 { 0x07, 0x66, 0x6f, 0x6f }, 0, &ctx);
 
 	deserializesTo("bar", v8 { 0x02 }, 0, &ctx);
 	deserializesTo("foo", v8 { 0x04, 0x03 }, 1, &ctx);

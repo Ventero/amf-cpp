@@ -5,7 +5,6 @@
 #include <functional>
 #include <iomanip>
 #include <limits>
-#include <memory>
 #include <sstream>
 #include <unordered_map>
 
@@ -13,20 +12,14 @@
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
 
+#include "utils/amfitemptr.hpp"
+
 namespace amf {
 struct AmfDictionaryHash {
 public:
-	std::size_t operator()(const std::shared_ptr<AmfItem>& val) const {
+	std::size_t operator()(const AmfItemPtr& val) const {
 		auto s = val->serialize();
 		return std::hash<std::string>()(std::string(s.begin(), s.end()));
-	}
-};
-
-struct AmfDictionaryKeyEqual {
-public:
-	bool operator()(const std::shared_ptr<AmfItem>& lhs,
-		const std::shared_ptr<AmfItem>& rhs) const {
-		return lhs->serialize() == rhs->serialize();
 	}
 };
 
@@ -34,33 +27,33 @@ public:
 // (AmfInteger/AmfDouble), so we have to serialize them as strings
 template<class T, bool>
 struct AmfDictionaryKeyConverter {
-	static std::shared_ptr<AmfItem> convert(const T& item) {
-		return std::shared_ptr<AmfItem>(new T(item));
+	static AmfItemPtr convert(const T& item) {
+		return AmfItemPtr(new T(item));
 	}
 };
 
 template<>
 struct AmfDictionaryKeyConverter<AmfInteger, true> {
-	static std::shared_ptr<AmfItem> convert(const AmfInteger& item) {
+	static AmfItemPtr convert(const AmfInteger& item) {
 		std::string val = std::to_string(static_cast<int>(item));
-		return std::shared_ptr<AmfItem>(new AmfString(val));
+		return AmfItemPtr(new AmfString(val));
 	}
 };
 
 template<>
 struct AmfDictionaryKeyConverter<AmfDouble, true> {
-	static std::shared_ptr<AmfItem> convert(const AmfDouble& item) {
+	static AmfItemPtr convert(const AmfDouble& item) {
 		std::ostringstream str;
 		str << std::setprecision(std::numeric_limits<double>::digits10)
 		    << static_cast<double>(item);
-		return std::shared_ptr<AmfItem>(new AmfString(str.str()));
+		return AmfItemPtr(new AmfString(str.str()));
 	}
 };
 
 template<>
 struct AmfDictionaryKeyConverter<AmfBool, true> {
-	static std::shared_ptr<AmfItem> convert(const AmfBool& item) {
-		return std::shared_ptr<AmfItem>(new AmfString(item ? "true" : "false"));
+	static AmfItemPtr convert(const AmfBool& item) {
+		return AmfItemPtr(new AmfString(item ? "true" : "false"));
 	}
 };
 
@@ -69,12 +62,17 @@ public:
 	AmfDictionary(bool numbersAsStrings, bool weak = false) :
 		asString(numbersAsStrings), weak(weak) { };
 
+	bool operator==(const AmfItem& other) const {
+		const AmfDictionary* p = dynamic_cast<const AmfDictionary*>(&other);
+		return p != nullptr && asString == p->asString && weak == p->weak &&
+			values == p->values;
+	}
+
 	template<class T, class V>
 	void insert(const T& key, const V& value) {
 		static_assert(std::is_base_of<AmfItem, V>::value, "Values must extend AmfItem");
 
-		std::shared_ptr<AmfItem> ptr(new V(value));
-		(*this)[key].swap(ptr);
+		(*this)[key].reset(new V(value));
 	}
 
 	template<class T, class V>
@@ -105,22 +103,21 @@ public:
 	bool asString;
 	bool weak;
 	std::unordered_map<
-		std::shared_ptr<AmfItem>,
-		std::shared_ptr<AmfItem>,
-		AmfDictionaryHash,
-		AmfDictionaryKeyEqual
+		AmfItemPtr,
+		AmfItemPtr,
+		AmfDictionaryHash
 	> values;
 
 private:
 	template<class T>
-	std::shared_ptr<AmfItem>& operator[](const T& item) {
+	AmfItemPtr& operator[](const T& item) {
 		static_assert(std::is_base_of<AmfItem, T>::value, "Keys must extend AmfItem");
 
 		auto val = asString ?
 			AmfDictionaryKeyConverter<T, true>::convert(item) :
 			AmfDictionaryKeyConverter<T, false>::convert(item);
 
-		std::shared_ptr<AmfItem> p(val);
+		AmfItemPtr p(val);
 		return values[p];
 	}
 };

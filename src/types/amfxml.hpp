@@ -14,6 +14,11 @@ public:
 	AmfXml() { };
 	AmfXml(std::string value) : value(value) { };
 
+	bool operator==(const AmfItem& other) const {
+		const AmfXml* p = dynamic_cast<const AmfXml*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		std::vector<u8> buf = AmfInteger(value.size()).asLength(AMF_XML);
 

@@ -33,6 +33,10 @@ class AmfItem {
 public:
 	virtual ~AmfItem() { }
 	virtual std::vector<u8> serialize() const = 0;
+	virtual bool operator==(const AmfItem&) const = 0;
+	virtual bool operator!=(const AmfItem& other) const {
+		return !(*this == other);
+	}
 };
 
 } // namespace amf

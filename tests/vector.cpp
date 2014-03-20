@@ -374,3 +374,124 @@ TEST(VectorTypeTest, VectorFloatNotConstructible) {
 	SUCCEED();
 }
 #endif
+
+TEST(VectorEquality, IntVector) {
+	AmfVector<int> vec { { 1, 2, 3 }, false };
+	AmfVector<int> vec2 { { 1, 2, 3 }, false };
+	EXPECT_EQ(vec, vec2);
+
+	AmfVector<int> vec3 { { 1, 2, 3 }, true };
+	EXPECT_NE(vec, vec3);
+
+	AmfVector<int> vec4 { { -1, 2, 3 }, true };
+	EXPECT_NE(vec, vec4);
+
+	AmfVector<int> vec5 { { 1, 2, 4 }, false };
+	EXPECT_NE(vec, vec5);
+
+	AmfVector<int> vec6 { { 1, 2, 4 }, true };
+	EXPECT_NE(vec, vec6);
+
+	AmfVector<int> vec7 { { 1, 2, 3, 4, 5 }, false };
+	EXPECT_NE(vec, vec7);
+
+	AmfVector<int> vec8 { { 1, 2 }, false };
+	EXPECT_NE(vec, vec8);
+
+	AmfVector<int> vec9 { {}, false };
+	AmfVector<int> vec10;
+	EXPECT_EQ(vec9, vec10);
+}
+
+TEST(VectorEquality, UIntVector) {
+	AmfVector<unsigned int> vec { { 1, 2, 3 }, false };
+	AmfVector<unsigned int> vec2 { { 1, 2, 3 }, false };
+	EXPECT_EQ(vec, vec2);
+
+	AmfVector<unsigned int> vec3 { { 1, 2, 3 }, true };
+	EXPECT_NE(vec, vec3);
+
+	AmfVector<unsigned int> vec4 { { 1 }, true };
+	EXPECT_NE(vec, vec4);
+
+	AmfVector<unsigned int> vec5 { { 1, 2, 4 }, false };
+	EXPECT_NE(vec, vec5);
+
+	AmfVector<unsigned int> vec6 { { 1, 2, 4 }, true };
+	EXPECT_NE(vec, vec6);
+}
+
+TEST(VectorEquality, DoubleVector) {
+	AmfVector<double> vec { { 3.14159, 1.0, -0.5 } };
+	AmfVector<double> vec2 { { 3.14159, 1.0, -0.5 } };
+	EXPECT_EQ(vec, vec2);
+
+	AmfVector<double> vec3 { { 3.14159, 1.0, -0.5 }, true };
+	EXPECT_NE(vec, vec3);
+
+	AmfVector<double> vec4 { { 3.141591, 1.0, -0.5 } };
+	EXPECT_NE(vec, vec4);
+
+	AmfVector<double> vec5 { { 3.141590, 1.000, -0.5 } };
+	EXPECT_EQ(vec, vec5);
+
+	AmfVector<double> vec6 { { 3.141590, 1.000, 0.5 } };
+	EXPECT_NE(vec, vec6);
+}
+
+TEST(VectorEquality, VectorIntVector) {
+	AmfVector<AmfVector<int>> vec { {}, "", false };
+	vec.push_back(AmfVector<int> { { 1, 2, 3}, false });
+
+	AmfVector<int> inner { { 1, 2, 3 }, false };
+	AmfVector<AmfVector<int>> vec2 { { inner }, "", false };
+	EXPECT_EQ(vec, vec2);
+
+	AmfVector<int> inner2 { { 1, 2, 4 }, false };
+	AmfVector<AmfVector<int>> vec3 { { inner2 }, "", false };
+	EXPECT_NE(vec, vec3);
+
+	AmfVector<AmfVector<int>> vec4 { { inner }, "", true };
+	EXPECT_NE(vec, vec4);
+
+	AmfVector<AmfVector<int>> vec5 { { inner }, "asd", false };
+	EXPECT_NE(vec, vec5);
+
+	AmfVector<AmfVector<int>> vec6 { { AmfVector<int> { {1, 2, 3 }, false } }, "", false };
+	EXPECT_EQ(vec, vec6);
+}
+
+TEST(VectorEquality, ObjectVector) {
+	AmfObject obj;
+	AmfVector<AmfObject> v1 { { obj }, "", false };
+	AmfVector<AmfObject> v2 { { obj }, "", false };
+	EXPECT_EQ(v1, v2);
+
+	AmfVector<AmfObject> v3(v2);
+	EXPECT_EQ(v2, v3);
+
+	AmfVector<AmfObject> v4 { { }, "" };
+	v4.push_back(obj);
+	EXPECT_EQ(v3, v4);
+
+	AmfVector<AmfObject> v5 { { obj }, "", true };
+	EXPECT_NE(v1, v5);
+
+	AmfVector<AmfObject> v6 { { obj }, "x", false };
+	EXPECT_NE(v1, v6);
+
+	AmfVector<AmfObject> v7 { { }, "", false };
+	EXPECT_NE(v1, v7);
+}
+
+TEST(VectorEquality, MixedTypes) {
+	AmfVector<int> v1 { { 1 } };
+	AmfVector<unsigned int> v2 { { 1 } };
+	EXPECT_NE(v1, v2);
+
+	AmfVector<AmfInteger> v3 { { AmfInteger(1) }, "", false };
+	EXPECT_NE(v1, v3);
+
+	AmfVector<double> v4 { { 1.0 } };
+	EXPECT_NE(v1, v4);
+}

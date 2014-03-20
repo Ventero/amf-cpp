@@ -93,6 +93,7 @@
     <ClInclude Include="..\src\types\amfvector.hpp" />
     <ClInclude Include="..\src\types\amfxml.hpp" />
     <ClInclude Include="..\src\types\amfxmldocument.hpp" />
+    <ClInclude Include="..\src\utils\amfitemptr.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\deserializationcontext.cpp" />

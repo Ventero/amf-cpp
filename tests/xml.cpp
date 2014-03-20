@@ -1,7 +1,9 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfstring.hpp"
 #include "types/amfxml.hpp"
+#include "types/amfxmldocument.hpp"
 
 TEST(XmlSerializationTest, EmptyXmlString) {
 	AmfXml val;
@@ -79,9 +81,32 @@ TEST(XmlSerializationTest, MultiByteLengthString) {
 	}, val);
 }
 
+TEST(XmlEquality, SimpleValues) {
+	AmfXml x1;
+	AmfXml x2("");
+	EXPECT_EQ(x1, x2);
+
+	AmfXml x3("foo");
+	AmfXml x4("foo");
+	EXPECT_EQ(x3, x4);
+
+	EXPECT_NE(x1, x3);
+
+	AmfXml x5("foobar");
+	EXPECT_NE(x3, x5);
+}
+
+TEST(XmlEquality, MixedTypes) {
+	AmfXml x1("foo");
+	AmfString s("foo");
+	AmfXmlDocument x2("foo");
+	EXPECT_NE(x1, s);
+	EXPECT_NE(x1, x2);
+}
+
 static void deserializesTo(const char* expected, const v8& data, int left = 0,
 	DeserializationContext* ctx = nullptr) {
-	deserialize<AmfXml>(expected, data, left, ctx);
+	deserialize(AmfXml(expected), data, left, ctx);
 }
 
 TEST(XmlDeserializationTest, SimpleValues) {

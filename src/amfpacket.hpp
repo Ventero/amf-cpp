@@ -15,6 +15,12 @@ public:
 	PacketHeader(std::string name, bool mustUnderstand, const AmfItem& value) :
 		name(name), mustUnderstand(mustUnderstand), value(value.serialize()) { };
 
+	bool operator==(const AmfItem& other) const {
+		const PacketHeader* p = dynamic_cast<const PacketHeader*>(&other);
+		return p != nullptr && mustUnderstand == p->mustUnderstand &&
+			name == p->name && value == p->value;
+	}
+
 	v8 serialize() const {
 		v8 buf;
 		buf.reserve(2 + name.size() + 1 + 5 + value.size());
@@ -49,6 +55,12 @@ public:
 	PacketMessage(std::string targetUri, std::string responseUri, const AmfItem& value) :
 		target(targetUri), response(responseUri), value(value.serialize()) { };
 
+	bool operator==(const AmfItem& other) const {
+		const PacketMessage* p = dynamic_cast<const PacketMessage*>(&other);
+		return p != nullptr && target == p->target && response == p->response &&
+			value == p->value;
+	}
+
 	v8 serialize() const {
 		v8 buf;
 		buf.reserve(2 + target.size() + 2 + response.size() + 5 + value.size());
@@ -78,6 +90,11 @@ private:
 class AmfPacket : public AmfItem {
 public:
 	AmfPacket() { };
+
+	bool operator==(const AmfItem& other) const {
+		const AmfPacket* p = dynamic_cast<const AmfPacket*>(&other);
+		return p != nullptr && headers == p->headers && messages == p->messages;
+	}
 
 	v8 serialize() const {
 		if (headers.size() >= 65536)

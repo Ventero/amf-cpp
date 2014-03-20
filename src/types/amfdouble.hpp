@@ -13,6 +13,11 @@ public:
 	AmfDouble(double v) : value(v) { };
 	operator double() const { return value; }
 
+	bool operator==(const AmfItem& other) const {
+		const AmfDouble* p = dynamic_cast<const AmfDouble*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		std::vector<u8> buf = { AMF_DOUBLE };
 

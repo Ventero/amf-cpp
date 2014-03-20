@@ -174,7 +174,7 @@ TEST(ObjectSerializationTest, SerializeOnlyPropsInTraits) {
 	obj.addSealedProperty("sealedProp", AmfInteger(0x05ffeffe));
 
 	// this should not be serialized as it's not part of the trait attributes
-	obj.sealedProperties["unusedProp"] = std::shared_ptr<AmfItem>(new AmfString("unused"));
+	obj.sealedProperties["unusedProp"] = AmfItemPtr(new AmfString("unused"));
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
@@ -378,4 +378,124 @@ TEST(ObjectSerializationTest, Externalizable) {
 TEST(ObjectSerializationTest, ExternalizableThrowsWithoutExternalizer) {
 	AmfObject obj("", true, true);
 	ASSERT_THROW(obj.serialize(), std::bad_function_call);
+}
+
+TEST(ObjectEquality, EmptyObject) {
+	AmfObject o1, o2;
+	EXPECT_EQ(o1, o2);
+
+	AmfObject o3("", false, false);
+	EXPECT_EQ(o1, o3);
+
+	AmfObject o4("foo", false, false);
+	EXPECT_NE(o1, o4);
+
+	AmfObject o5("", true, false);
+	EXPECT_NE(o1, o5);
+
+	AmfObject o6("", false, true);
+	EXPECT_NE(o1, o6);
+	EXPECT_NE(o5, o6);
+}
+
+TEST(ObjectEquality, DynamicProperties) {
+	AmfObject o1, o2;
+
+	o1.addDynamicProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o2);
+	o2.addDynamicProperty("foo", AmfString("qux"));
+	EXPECT_NE(o1, o2);
+	o2.addDynamicProperty("foo", AmfNull());
+	EXPECT_NE(o1, o2);
+	o2.addDynamicProperty("foo", AmfString("bar"));
+	EXPECT_EQ(o1, o2);
+
+	AmfObject o3("foo", false, false);
+	o3.addDynamicProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o3);
+
+	AmfObject o4("", true, false);
+	o4.addDynamicProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o4);
+
+	AmfObject o5("", false, true);
+	o5.addDynamicProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o5);
+
+	o1.addDynamicProperty("qux", AmfNull());
+	EXPECT_NE(o1, o2);
+	o1.addDynamicProperty("qux", AmfUndefined());
+	EXPECT_NE(o1, o2);
+	o2.addDynamicProperty("qux", AmfNull());
+	EXPECT_NE(o1, o2);
+	o2.addDynamicProperty("qux", AmfUndefined());
+	EXPECT_EQ(o1, o2);
+}
+
+TEST(ObjectEquality, SealedProperties) {
+	AmfObject o1, o2;
+
+	o1.addSealedProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o2);
+	o2.addSealedProperty("foo", AmfString("qux"));
+	EXPECT_NE(o1, o2);
+	o2.addSealedProperty("foo", AmfNull());
+	EXPECT_NE(o1, o2);
+	o2.addSealedProperty("foo", AmfString("bar"));
+	EXPECT_EQ(o1, o2);
+
+	AmfObject o3("foo", false, false);
+	o3.addSealedProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o3);
+
+	AmfObject o4("", true, false);
+	o4.addSealedProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o4);
+
+	AmfObject o5("", false, true);
+	o5.addSealedProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o5);
+
+	o1.addSealedProperty("qux", AmfNull());
+	EXPECT_NE(o1, o2);
+	o1.addSealedProperty("qux", AmfUndefined());
+	EXPECT_NE(o1, o2);
+	o2.addSealedProperty("qux", AmfNull());
+	EXPECT_NE(o1, o2);
+	o2.addSealedProperty("qux", AmfUndefined());
+	EXPECT_EQ(o1, o2);
+}
+
+TEST(ObjectEquality, CheckOnlyPropsInTraits) {
+	AmfObject o1, o2;
+
+	o1.addSealedProperty("foo", AmfInteger(1));
+	o2.sealedProperties["foo"] = AmfItemPtr(AmfInteger(1));
+	EXPECT_NE(o1, o2);
+
+	o2.addSealedProperty("foo", AmfInteger(1));
+	EXPECT_EQ(o1, o2);
+}
+
+TEST(ObjectEquality, DynamicAndSealed) {
+	AmfObject o1, o2;
+
+	o1.addSealedProperty("foo", AmfString("bar"));
+	o2.addDynamicProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o2);
+
+	o1.addDynamicProperty("foo", AmfString("bar"));
+	o2.addSealedProperty("foo", AmfString("bar"));
+	EXPECT_EQ(o1, o2);
+}
+
+TEST(ObjectEquality, MixedTypes) {
+	AmfObject o;
+	AmfString s("foo");
+	AmfNull n;
+	AmfUndefined u;
+
+	EXPECT_NE(o, s);
+	EXPECT_NE(o, n);
+	EXPECT_NE(o, u);
 }

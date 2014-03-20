@@ -26,6 +26,11 @@ public:
 		value = std::vector<u8>(begin, end);
 	}
 
+	bool operator==(const AmfItem& other) const {
+		const AmfByteArray* p = dynamic_cast<const AmfByteArray*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		std::vector<u8> buf = AmfInteger(value.size()).asLength(AMF_BYTEARRAY);
 

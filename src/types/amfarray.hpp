@@ -3,11 +3,12 @@
 #define AMFARRAY_HPP
 
 #include <map>
-#include <memory>
 
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
+
+#include "utils/amfitemptr.hpp"
 
 namespace amf {
 
@@ -30,6 +31,11 @@ public:
 			insert(it.first, it.second);
 	}
 
+	bool operator==(const AmfItem& other) const {
+		const AmfArray* p = dynamic_cast<const AmfArray*>(&other);
+		return p != nullptr && dense == p->dense && associative == p->associative;
+	}
+
 	template<class T>
 	void push_back(const T& item) {
 		static_assert(std::is_base_of<AmfItem, T>::value, "Elements must extend AmfItem");
@@ -41,7 +47,7 @@ public:
 	void insert(const std::string key, const T& item) {
 		static_assert(std::is_base_of<AmfItem, T>::value, "Elements must extend AmfItem");
 
-		associative[key] = std::shared_ptr<AmfItem>(new T(item));
+		associative[key] = AmfItemPtr(new T(item));
 	}
 
 	template<class T>
@@ -85,8 +91,8 @@ public:
 		return buf;
 	}
 
-	std::vector<std::shared_ptr<AmfItem>> dense;
-	std::map<std::string, std::shared_ptr<AmfItem>> associative;
+	std::vector<AmfItemPtr> dense;
+	std::map<std::string, AmfItemPtr> associative;
 };
 
 } // namespace amf
