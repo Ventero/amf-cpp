@@ -353,7 +353,7 @@ TEST(VectorSerializationTest, VectorNamedObject) {
 	isEqual(expected, vector);
 }
 
-TEST(VectorSerializationTest, VectorIntConstructible) {
+TEST(VectorTypeTest, VectorIntConstructible) {
 	static_assert(std::is_constructible<AmfVector<int>>::value,
 		"AmfVector<int> should be constructible");
 
@@ -362,14 +362,14 @@ TEST(VectorSerializationTest, VectorIntConstructible) {
 
 // disable these tests on Windows for now until I figured out a way to make them work
 #ifndef _WIN32
-TEST(VectorSerializationTest, VectorLongLongNotConstructible) {
+TEST(VectorTypeTest, VectorLongLongNotConstructible) {
 	static_assert(!std::is_constructible<AmfVector<long long>>::value,
 		"AmfVector<long long> should not be constructible");
 
 	SUCCEED();
 }
 
-TEST(VectorSerializationTest, VectorFloatNotConstructible) {
+TEST(VectorTypeTest, VectorFloatNotConstructible) {
 	static_assert(!std::is_constructible<AmfVector<float>>::value,
 		"AmfVector<float> should not be constructible");
 
