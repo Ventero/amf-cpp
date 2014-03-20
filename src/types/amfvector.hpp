@@ -12,23 +12,26 @@
 namespace amf {
 
 template<typename T>
-struct VectorMarker;
+struct VectorProperties;
 
 template<>
-struct VectorMarker<int> {
-	static const u8 value = AMF_VECTOR_INT;
+struct VectorProperties<int> {
+	static const u8 marker = AMF_VECTOR_INT;
+	static const unsigned int size = 4;
 	typedef void type;
 };
 
 template<>
-struct VectorMarker<unsigned int> {
-	static const u8 value = AMF_VECTOR_UINT;
+struct VectorProperties<unsigned int> {
+	static const u8 marker = AMF_VECTOR_UINT;
+	static const unsigned int size = 4;
 	typedef void type;
 };
 
 template<>
-struct VectorMarker<double> {
-	static const u8 value = AMF_VECTOR_DOUBLE;
+struct VectorProperties<double> {
+	static const u8 marker = AMF_VECTOR_DOUBLE;
+	static const unsigned int size = 8;
 	typedef void type;
 };
 
@@ -36,7 +39,7 @@ template<typename T, class Enable = void>
 class AmfVector;
 
 template<typename T>
-class AmfVector<T, typename VectorMarker<T>::type> : public AmfItem {
+class AmfVector<T, typename VectorProperties<T>::type> : public AmfItem {
 public:
 	AmfVector() : values({}), fixed(false) { };
 	AmfVector(std::vector<T> vector, bool fixed = false) :
@@ -52,7 +55,8 @@ public:
 
 	std::vector<u8> serialize() const {
 		// U29V value
-		std::vector<u8> buf = AmfInteger(values.size()).asLength(VectorMarker<T>::value);
+		std::vector<u8> buf = AmfInteger(values.size()).asLength(
+			VectorProperties<T>::marker);
 
 		// fixed-vector marker
 		buf.push_back(fixed ? 0x01 : 0x00);
@@ -62,7 +66,7 @@ public:
 			// ints are encoded as U32, not U29
 			T netvalue = hton(it);
 			const u8* bytes = reinterpret_cast<const u8*>(&netvalue);
-			buf.insert(buf.end(), bytes, bytes + sizeof(T));
+			buf.insert(buf.end(), bytes, bytes + VectorProperties<T>::size);
 		}
 
 		return buf;
