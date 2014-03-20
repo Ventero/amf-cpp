@@ -25,8 +25,16 @@ public:
 	void addTraits(const AmfObjectTraits& traits);
 	AmfObjectTraits getTraits(int index);
 
-	template<typename T> void addObject(const T& object);
-	template<typename T> T getObject(int index);
+	template<typename T>
+	void addObject(const T& object) {
+		objects.emplace_back(new T(object));
+	}
+
+	template<typename T>
+	T getObject(int index) {
+		T* ptr = static_cast<T*>(objects.at(index).get());
+		return T(*ptr);
+	}
 
 private:
 	std::vector<std::shared_ptr<AmfString>> strings;

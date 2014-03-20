@@ -31,26 +31,4 @@ AmfObjectTraits DeserializationContext::getTraits(int index) {
 	return AmfObjectTraits(*traits.at(index));
 }
 
-template<typename T>
-void DeserializationContext::addObject(const T& object) {
-	objects.emplace_back(new T(object));
-}
-
-template<typename T>
-T DeserializationContext::getObject(int index) {
-	T* ptr = static_cast<T*>(objects.at(index).get());
-	return T(*ptr);
-}
-
-// explicit instantiations
-#define INSTANCIATE(T) \
-	template void DeserializationContext::addObject<T>(const T&); \
-	template T DeserializationContext::getObject<T>(int)
-
-INSTANCIATE(AmfByteArray);
-INSTANCIATE(AmfDate);
-INSTANCIATE(AmfXml);
-INSTANCIATE(AmfXmlDocument);
-
-#undef INSTANCIATE
 } // namespace amf
