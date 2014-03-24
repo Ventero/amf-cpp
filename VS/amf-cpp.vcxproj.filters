@@ -32,6 +32,7 @@
     </ClInclude>
     <ClInclude Include="..\src\amf.hpp" />
     <ClInclude Include="..\src\amfpacket.hpp" />
+    <ClInclude Include="..\src\deserializationcontext.hpp" />
     <ClInclude Include="..\src\serializer.hpp" />
     <ClInclude Include="..\src\types\amfvector.hpp">
       <Filter>types</Filter>
@@ -53,6 +54,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\deserializationcontext.cpp" />
     <ClCompile Include="..\src\serializer.cpp" />
   </ItemGroup>
 </Project>
