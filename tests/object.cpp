@@ -1,10 +1,13 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfbool.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
+#include "types/amfnull.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfundefined.hpp"
 
 TEST(ObjectSerializationTest, EmptyDynamicAnonymousObject) {
 	AmfObjectTraits traits("", true, false);
@@ -244,4 +247,101 @@ TEST(ObjectSerializationTest, OnlySerializeDynamicPropsOnDynamicObjects) {
 		0x03, // 0b0011, U29O-traits, not dynamic, 0 sealed properties
 		0x01 // class-name "" (anonymous object)
 	}, obj);
+}
+
+TEST(ObjectSerializationTest, Externalizable) {
+	auto externalizer = [] (const AmfObject* o) -> v8 {
+		return v8 { u8(o->sealedProperties.size() * 3) };
+	};
+
+	AmfObject obj("foo", false, true);
+	obj.externalizer = externalizer;
+
+	isEqual(v8 {
+		// AMF_OBJECT
+		0x0a,
+		// U29O-traits-ext
+		0x07,
+		// class name "foo"
+		0x07, 0x66, 0x6f, 0x6f,
+		// 3 * 0 members
+		0x00
+	}, obj);
+
+	AmfObject obj2("foo", true, true);
+	obj2.externalizer = externalizer;
+	isEqual(v8 {
+		// identical to the one above, as dynamic = true shouldn't make a difference
+		0x0a,
+		0x07,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x00
+	}, obj2);
+
+	obj.addSealedProperty("foo", AmfString("bar"));
+	isEqual(v8 {
+		// AMF_OBJECT
+		0x0a,
+		// U29O-traits-ext
+		0x07,
+		// class name "foo"
+		0x07, 0x66, 0x6f, 0x6f,
+		// 3 * 1 members
+		0x03
+	}, obj);
+
+	obj.addDynamicProperty("dyn", AmfBool(true));
+	isEqual(v8 {
+		// again, identical to the one above
+		0x0a,
+		0x07,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x03
+	}, obj);
+
+	obj.addSealedProperty("a", AmfUndefined());
+	obj.addSealedProperty("b", AmfNull());
+	isEqual(v8 {
+		0x0a,
+		0x07,
+		0x07, 0x66, 0x6f, 0x6f,
+		// 3 properties -> 9
+		0x09
+	}, obj);
+
+	auto propNameSerializer = [] (const AmfObject* o) -> v8 {
+		v8 buf;
+		for (const auto& it : o->dynamicProperties) {
+			v8 s = AmfString(it.first).serialize();
+			buf.insert(buf.end(), s.begin(), s.end());
+		}
+		return buf;
+	};
+	AmfObject obj3("x", false, true);
+	obj3.externalizer = propNameSerializer;
+	obj3.addDynamicProperty("foo", AmfInteger(1));
+	isEqual(v8 {
+		// AMF_OBJECT
+		0x0a,
+		// U29O-traits-ext
+		0x07,
+		// class name "x"
+		0x03, 0x78,
+		// AmfString "foo"
+		0x06, 0x07, 0x66, 0x6f, 0x6f
+	}, obj3);
+
+	obj3.addDynamicProperty("foo", AmfString("overwritten"));
+	isEqual(v8 {
+		// same as above
+		0x0a,
+		0x07,
+		0x03, 0x78,
+		0x06, 0x07, 0x66, 0x6f, 0x6f
+	}, obj3);
+}
+
+TEST(ObjectSerializationTest, ExternalizableThrowsWithoutExternalizer) {
+	AmfObject obj("", true, true);
+	ASSERT_THROW(obj.serialize(), std::bad_function_call);
 }

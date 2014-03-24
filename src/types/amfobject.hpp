@@ -23,7 +23,6 @@ public:
 	std::vector<std::string> attributes;
 	bool dynamic;
 	bool externalizable;
-	std::function<std::vector<u8>(const AmfObject*)> externalizer;
 };
 
 class AmfObject : public AmfItem {
@@ -59,7 +58,7 @@ public:
 
 			// externalized value = *(U8)
 			// note: this may throw if externalizer is not properly initialized
-			std::vector<u8> externalized(traits.externalizer(this));
+			std::vector<u8> externalized(externalizer(this));
 			buf.insert(buf.end(), externalized.begin(), externalized.end());
 			return buf;
 		}
@@ -139,6 +138,8 @@ public:
 
 	std::map<std::string, std::shared_ptr<AmfItem>> sealedProperties;
 	std::map<std::string, std::shared_ptr<AmfItem>> dynamicProperties;
+
+	std::function<v8(const AmfObject*)> externalizer;
 
 private:
 	AmfObjectTraits traits;
