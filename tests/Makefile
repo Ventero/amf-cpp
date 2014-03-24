@@ -16,12 +16,10 @@ CPPFLAGS += -I../src
 # Tests produced by this Makefile
 TESTS = main
 # Tests used by the main test
-SUBTESTS = array bool bytearray date dictionary double integer null object \
-           packet serializer string undefined vector xml xmldocument
+SUBTESTS = array bool bytearray deserializer date dictionary double integer \
+           null object packet serializer string undefined vector xml xmldocument
 # precompiled header name
 PCH = amftest.hpp
-# Object files
-OBJ = ../src/serializer.o ../src/deserializationcontext.o
 
 all : $(TESTS)
 
@@ -39,7 +37,7 @@ main.o : main.cpp $(GTEST_HEADERS) $(PCH).gch
 $(addsuffix .o,$(SUBTESTS)) : %.o : %.cpp $(GTEST_HEADERS) $(PCH).gch
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-main : main.o $(addsuffix .o,$(SUBTESTS)) $(OBJ) gtest-all.o
+main : main.o $(addsuffix .o,$(SUBTESTS)) ../libamf.a gtest-all.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
 $(PCH).gch: $(PCH)

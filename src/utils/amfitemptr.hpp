@@ -16,6 +16,12 @@ public:
 	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
 	AmfItemPtr(const T& ref) : std::shared_ptr<AmfItem>(new T(ref)) { }
 
+	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
+	T as() const {
+		T* ptr = static_cast<T*>(get());
+		return T(*ptr);
+	}
+
 	bool operator==(const AmfItemPtr& other) const {
 		return *this->get() == *other.get();
 	}

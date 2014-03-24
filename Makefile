@@ -7,7 +7,7 @@ ifneq ($(shell $(CXX) --version | grep clang),)
 	endif
 endif
 
-SRC = src/serializer.cpp src/deserializationcontext.cpp
+SRC = src/serializer.cpp src/deserializationcontext.cpp src/deserializer.cpp
 OBJ = $(SRC:.cpp=.o)
 
 .PHONY: all clean debug dist-clean release test
@@ -26,7 +26,7 @@ clean:
 dist-clean: clean
 	$(MAKE) -C tests clean
 
-test: $(OBJ)
+test: libamf.a
 	$(MAKE) -C tests
 	tests/main
 

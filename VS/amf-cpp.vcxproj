@@ -77,6 +77,7 @@
     <ClInclude Include="..\src\amf.hpp" />
     <ClInclude Include="..\src\amfpacket.hpp" />
     <ClInclude Include="..\src\deserializationcontext.hpp" />
+    <ClInclude Include="..\src\deserializer.hpp" />
     <ClInclude Include="..\src\serializer.hpp" />
     <ClInclude Include="..\src\types\amfarray.hpp" />
     <ClInclude Include="..\src\types\amfbool.hpp" />
@@ -97,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\deserializationcontext.cpp" />
+    <ClCompile Include="..\src\deserializer.cpp" />
     <ClCompile Include="..\src\serializer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
