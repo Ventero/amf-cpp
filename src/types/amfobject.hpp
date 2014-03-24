@@ -111,7 +111,10 @@ public:
 
 	template<class T>
 	void addSealedProperty(std::string name, const T& value) {
-		traits.attributes.push_back(name);
+		auto* a = &traits.attributes;
+		if (std::find(a->begin(), a->end(), name) == a->end())
+			traits.attributes.push_back(name);
+
 		sealedProperties[name] = std::shared_ptr<AmfItem>(new T(value));
 	}
 
