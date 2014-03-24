@@ -22,3 +22,10 @@ TEST(NullEquality, MixedType) {
 	AmfBool b(false);
 	EXPECT_NE(n, b);
 }
+
+TEST(NullDeserialization, SimpleValue) {
+	deserialize(AmfNull(), v8 { }, 0);
+	deserialize(AmfNull(), v8 { 0x00 }, 1);
+	deserialize(AmfNull(), v8 { AMF_NULL }, 1);
+	deserialize(AmfNull(), v8 { 0x00, 0x00, 0x00 }, 3);
+}

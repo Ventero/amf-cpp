@@ -22,3 +22,10 @@ TEST(UndefinedEquality, MixedType) {
 	AmfBool b(false);
 	EXPECT_NE(u, b);
 }
+
+TEST(UndefinedDeserialization, SimpleValue) {
+	deserialize(AmfUndefined(), v8 { }, 0);
+	deserialize(AmfUndefined(), v8 { 0x00 }, 1);
+	deserialize(AmfUndefined(), v8 { AMF_UNDEFINED }, 1);
+	deserialize(AmfUndefined(), v8 { 0x00, 0x00, 0x00 }, 3);
+}

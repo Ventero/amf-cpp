@@ -20,6 +20,11 @@ public:
 	std::vector<u8> serialize() const {
 		return std::vector<u8>{ AMF_NULL };
 	}
+
+	static AmfNull deserialize(v8::const_iterator&, v8::const_iterator, DeserializationContext&) {
+		return AmfNull();
+	}
+
 };
 
 } // namespace amf
