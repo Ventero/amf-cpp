@@ -4,6 +4,7 @@
 #include "amfpacket.hpp"
 #include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
+#include "types/amfnull.hpp"
 #include "types/amfstring.hpp"
 
 TEST(PacketTest, SingleMessage) {
@@ -236,4 +237,16 @@ TEST(PacketTest, HeaderAndMessage) {
 		0x11, // AMF3 object marker
 		0x09, 0x01, 0x01 // empty AmfArray
 	}, packet);
+}
+
+TEST(PacketTest, TooManyHeaders) {
+	AmfPacket p;
+	p.headers = std::vector<PacketHeader>(65536, PacketHeader("Foo", false, AmfNull()));
+	ASSERT_THROW(p.serialize(), std::length_error);
+}
+
+TEST(PacketTest, TooManyMessages) {
+	AmfPacket p;
+	p.messages = std::vector<PacketMessage>(65536, PacketMessage("Foo", "", AmfNull()));
+	ASSERT_THROW(p.serialize(), std::length_error);
 }

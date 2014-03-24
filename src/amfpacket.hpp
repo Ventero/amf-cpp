@@ -4,8 +4,6 @@
 
 #include "types/amfitem.hpp"
 
-#include <cassert>
-
 namespace amf {
 
 enum Amf0Marker : u8 {
@@ -82,9 +80,11 @@ public:
 	AmfPacket() { };
 
 	v8 serialize() const {
-		// TODO: replace with std::length_error?
-		assert(headers.size() < 65536 && "Too many headers");
-		assert(messages.size() < 65536 && "Too many messages");
+		if (headers.size() >= 65536)
+			throw std::length_error("AmfPacket::serialize too many headers");
+
+		if (messages.size() >= 65536)
+			throw std::length_error("AmfPacket::serialize too many messages");
 
 		v8 buf = {
 			0x00, 0x03 // Version is always AMF3
