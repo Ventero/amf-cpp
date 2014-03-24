@@ -26,8 +26,7 @@ public:
 		return buf;
 	}
 
-	template<typename Iter>
-	static AmfDouble deserialize(Iter& it, Iter end, DeserializationContext&) {
+	static AmfDouble deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
 		v8 data(it, end);
 
 		if(data.size() < 8)

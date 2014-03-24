@@ -107,7 +107,7 @@ TEST(DateDeserializationTest, ObjectCache) {
 
 TEST(DateDeserializationTest, NotEnoughBytes) {
 	v8 data = { 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22 };
-	auto it = data.begin();
+	auto it = data.cbegin();
 	DeserializationContext ctx;
 	ASSERT_THROW(AmfDate::deserialize(it, data.end(), ctx), std::out_of_range);
 }

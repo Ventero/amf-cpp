@@ -66,8 +66,7 @@ public:
 		return buf;
 	}
 
-	template<typename Iter>
-	static AmfInteger deserialize(Iter& it, Iter end, DeserializationContext&) {
+	static AmfInteger deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
 		v8 data(it, end);
 		int i = 0;
 		int val = 0;

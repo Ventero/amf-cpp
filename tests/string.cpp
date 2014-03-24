@@ -180,7 +180,7 @@ TEST(StringDeserialization, MultiByteLength) {
 
 TEST(StringDeserialization, EmptyIterator) {
 	v8 empty { };
-	auto begin = empty.begin();
+	auto begin = empty.cbegin();
 	DeserializationContext ctx;
 	ASSERT_THROW({
 		AmfString::deserialize(begin, empty.end(), ctx);

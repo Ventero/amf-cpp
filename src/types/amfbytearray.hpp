@@ -38,8 +38,7 @@ public:
 		return buf;
 	}
 
-	template<typename Iter>
-	static AmfByteArray deserialize(Iter& it, Iter end, DeserializationContext& ctx) {
+	static AmfByteArray deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
 		int type = AmfInteger::deserialize(it, end, ctx);
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfByteArray>(type >> 1);

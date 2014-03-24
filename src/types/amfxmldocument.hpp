@@ -26,8 +26,7 @@ public:
 		return buf;
 	}
 
-	template<typename Iter>
-	static AmfXmlDocument deserialize(Iter& it, Iter end, DeserializationContext& ctx) {
+	static AmfXmlDocument deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
 		int type = AmfInteger::deserialize(it, end, ctx).value;
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfXmlDocument>(type >> 1);
