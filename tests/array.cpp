@@ -32,8 +32,7 @@ TEST(ArraySerializationTest, StrictMixedArray) {
 	AmfInteger v0(0);
 	AmfString v1("value");
 	AmfDouble v2(3.1);
-	AmfObjectTraits traits("", true, false);
-	AmfObject v3(traits);
+	AmfObject v3("", true, false);
 
 	AmfArray array;
 	array.push_back(v0);

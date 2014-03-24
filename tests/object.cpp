@@ -10,8 +10,7 @@
 #include "types/amfundefined.hpp"
 
 TEST(ObjectSerializationTest, EmptyDynamicAnonymousObject) {
-	AmfObjectTraits traits("", true, false);
-	AmfObject obj(traits);
+	AmfObject obj("", true, false);
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
@@ -22,8 +21,7 @@ TEST(ObjectSerializationTest, EmptyDynamicAnonymousObject) {
 }
 
 TEST(ObjectSerializationTest, DynamicAnonymousObject) {
-	AmfObjectTraits traits("", true, false);
-	AmfObject obj(traits);
+	AmfObject obj("", true, false);
 
 	obj.addDynamicProperty("prop", AmfString("val"));
 
@@ -40,8 +38,8 @@ TEST(ObjectSerializationTest, DynamicAnonymousObject) {
 
 TEST(ObjectSerializationTest, SealedAnonymousObject) {
 	{
-		AmfObjectTraits traits("", false, false);
-		AmfObject obj(traits);
+		SCOPED_TRACE("One property");
+		AmfObject obj("", false, false);
 		obj.addSealedProperty("sealedProp", AmfString("value"));
 
 		isEqual(v8 {
@@ -59,8 +57,8 @@ TEST(ObjectSerializationTest, SealedAnonymousObject) {
 	}
 
 	{
-		AmfObjectTraits traits("", false, false);
-		AmfObject obj(traits);
+		SCOPED_TRACE("Two properties");
+		AmfObject obj("", false, false);
 
 		obj.addSealedProperty("sealedProp", AmfString("value"));
 		obj.addSealedProperty("otherSealedProp", AmfString("otherValue"));
@@ -86,9 +84,7 @@ TEST(ObjectSerializationTest, SealedAnonymousObject) {
 }
 
 TEST(ObjectSerializationTest, DynamicSealedAnonymousObject) {
-	AmfObjectTraits traits("", true, false);
-
-	AmfObject obj(traits);
+	AmfObject obj("", true, false);
 
 	obj.addSealedProperty("sealedProp", AmfString("value"));
 	obj.addDynamicProperty("dynamicProp", AmfString("dynamicValue"));
@@ -114,8 +110,7 @@ TEST(ObjectSerializationTest, DynamicSealedAnonymousObject) {
 }
 
 TEST(ObjectSerializationTest, SealedNamedObject) {
-	AmfObjectTraits traits("de.ventero.AmfTest", false, false);
-	AmfObject obj(traits);
+	AmfObject obj("de.ventero.AmfTest", false, false);
 
 	obj.addSealedProperty("sealedProp", AmfString("value"));
 
@@ -136,8 +131,7 @@ TEST(ObjectSerializationTest, SealedNamedObject) {
 }
 
 TEST(ObjectSerializationTest, DynamicSealedNamedObject) {
-	AmfObjectTraits traits("de.ventero.AmfTest", true, false);
-	AmfObject obj(traits);
+	AmfObject obj("de.ventero.AmfTest", true, false);
 
 	obj.addSealedProperty("sealedProp", AmfDouble(3.14159));
 	obj.addDynamicProperty("dynamicProp", AmfInteger(17));
@@ -165,8 +159,7 @@ TEST(ObjectSerializationTest, DynamicSealedNamedObject) {
 }
 
 TEST(ObjectSerializationTest, EmptySealedAnonymousObject) {
-	AmfObjectTraits traits("", false, false);
-	AmfObject obj(traits);
+	AmfObject obj("", false, false);
 
 	isEqual(v8 {
 		0x0a, // AMF_OBJECT
@@ -176,8 +169,7 @@ TEST(ObjectSerializationTest, EmptySealedAnonymousObject) {
 }
 
 TEST(ObjectSerializationTest, SerializeOnlyPropsInTraits) {
-	AmfObjectTraits traits("", false, false);
-	AmfObject obj(traits);
+	AmfObject obj("", false, false);
 
 	obj.addSealedProperty("sealedProp", AmfInteger(0x05ffeffe));
 

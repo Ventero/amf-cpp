@@ -12,8 +12,6 @@
 
 namespace amf {
 
-class AmfObject;
-// TODO: nested class?
 class AmfObjectTraits {
 public:
 	AmfObjectTraits(std::string className, bool dynamic, bool externalizable) :
@@ -30,7 +28,6 @@ public:
 	AmfObject() : traits("", false, false) { };
 	AmfObject(std::string className, bool dynamic, bool externalizable) :
 		traits(AmfObjectTraits(className, dynamic, externalizable)) { };
-	AmfObject(AmfObjectTraits traits) : traits(traits) { };
 
 	std::vector<u8> serialize() const {
 		/* AmfObject is defined as
@@ -145,6 +142,8 @@ public:
 	std::function<v8(const AmfObject*)> externalizer;
 
 private:
+	AmfObject(AmfObjectTraits traits) : traits(traits) { };
+
 	AmfObjectTraits traits;
 };
 
