@@ -48,8 +48,7 @@ AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator 
 		case AMF_DATE:
 			return AmfItemPtr(AmfDate::deserialize(it, end, ctx));
 		case AMF_ARRAY:
-			//return AmfItemPtr(AmfArray::deserialize(it, end, ctx));
-			throw std::invalid_argument("Deserializer::deserialize AmfArray");
+			return AmfItemPtr(AmfArray::deserialize(it, end, ctx));
 		case AMF_OBJECT:
 			//return AmfItemPtr(AmfObject::deserialize(it, end, ctx));
 			throw std::invalid_argument("Deserializer::deserialize AmfObject");
