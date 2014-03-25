@@ -21,7 +21,10 @@ public:
 		return std::vector<u8>{ AMF_UNDEFINED };
 	}
 
-	static AmfUndefined deserialize(v8::const_iterator&, v8::const_iterator, DeserializationContext&) {
+	static AmfUndefined deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+		if (it == end || *it++ != AMF_UNDEFINED)
+			throw std::invalid_argument("AmfUndefined: Invalid type marker");
+
 		return AmfUndefined();
 	}
 

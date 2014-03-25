@@ -27,7 +27,10 @@ public:
 	}
 
 	static AmfXmlDocument deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
-		int type = AmfInteger::deserialize(it, end, ctx).value;
+		if (it == end || *it++ != AMF_XMLDOC)
+			throw std::invalid_argument("AmfXmlDocument: Invalid type marker");
+
+		int type = AmfInteger::deserializeValue(it, end);
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfXmlDocument>(type >> 1);
 

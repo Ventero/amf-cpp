@@ -27,6 +27,9 @@ public:
 	}
 
 	static AmfDouble deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+		if (it == end || *it++ != AMF_DOUBLE)
+			throw std::invalid_argument("AmfDouble: Invalid type marker");
+
 		v8 data(it, end);
 
 		if(data.size() < 8)

@@ -48,7 +48,10 @@ public:
 	}
 
 	static AmfDate deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
-		int type = AmfInteger::deserialize(it, end, ctx);
+		if (it == end || *it++ != AMF_DATE)
+			throw std::invalid_argument("AmfDate: Invalid type marker");
+
+		int type = AmfInteger::deserializeValue(it, end);
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfDate>(type >> 1);
 

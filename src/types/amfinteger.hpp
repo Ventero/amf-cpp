@@ -67,6 +67,13 @@ public:
 	}
 
 	static AmfInteger deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+		if (it == end || *it++ != AMF_INTEGER)
+			throw std::invalid_argument("AmfInteger: Invalid type marker");
+
+		return AmfInteger(deserializeValue(it, end));
+	}
+
+	static int deserializeValue(v8::const_iterator& it, v8::const_iterator end) {
 		v8 data(it, end);
 		int i = 0;
 		int val = 0;
@@ -87,7 +94,7 @@ public:
 
 		it += i;
 
-		return AmfInteger(val);
+		return val;
 	}
 
 	int value;

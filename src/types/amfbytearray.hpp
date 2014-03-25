@@ -39,7 +39,10 @@ public:
 	}
 
 	static AmfByteArray deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
-		int type = AmfInteger::deserialize(it, end, ctx);
+		if (it == end || *it++ != AMF_BYTEARRAY)
+			throw std::invalid_argument("AmfByteArray: Invalid type marker");
+
+		int type = AmfInteger::deserializeValue(it, end);
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfByteArray>(type >> 1);
 
