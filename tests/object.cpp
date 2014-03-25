@@ -399,7 +399,8 @@ TEST(ObjectEquality, EmptyObject) {
 }
 
 TEST(ObjectEquality, DynamicProperties) {
-	AmfObject o1, o2;
+	AmfObject o1("", true, false);
+	AmfObject o2("", true, false);
 
 	o1.addDynamicProperty("foo", AmfString("bar"));
 	EXPECT_NE(o1, o2);
@@ -416,11 +417,15 @@ TEST(ObjectEquality, DynamicProperties) {
 
 	AmfObject o4("", true, false);
 	o4.addDynamicProperty("foo", AmfString("bar"));
-	EXPECT_NE(o1, o4);
+	EXPECT_EQ(o1, o4);
 
 	AmfObject o5("", false, true);
 	o5.addDynamicProperty("foo", AmfString("bar"));
 	EXPECT_NE(o1, o5);
+
+	AmfObject o6("", false, false);
+	o5.addDynamicProperty("foo", AmfString("bar"));
+	EXPECT_NE(o1, o6);
 
 	o1.addDynamicProperty("qux", AmfNull());
 	EXPECT_NE(o1, o2);
@@ -430,6 +435,18 @@ TEST(ObjectEquality, DynamicProperties) {
 	EXPECT_NE(o1, o2);
 	o2.addDynamicProperty("qux", AmfUndefined());
 	EXPECT_EQ(o1, o2);
+}
+
+TEST(ObjectEquality, DynamicPropertiesNonDynamicObject) {
+	AmfObject o1, o2;
+	o1.addDynamicProperty("foo", AmfUndefined());
+	EXPECT_EQ(o1, o2);
+
+	o2.addDynamicProperty("qux", AmfInteger(1));
+	EXPECT_EQ(o1, o2);
+
+	o1.addSealedProperty("foo", AmfInteger(1));
+	EXPECT_NE(o1, o2);
 }
 
 TEST(ObjectEquality, SealedProperties) {

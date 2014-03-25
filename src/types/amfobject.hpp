@@ -50,7 +50,7 @@ public:
 		if (traits != p->traits)
 			return false;
 
-		if (dynamicProperties != p->dynamicProperties)
+		if (traits.dynamic && dynamicProperties != p->dynamicProperties)
 			return false;
 
 		// we don't need to check if other.sealedProperties contains the attribute,
