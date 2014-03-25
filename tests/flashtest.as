@@ -3,11 +3,12 @@ package{
 	import flash.text.TextField;
 	import flash.utils.ByteArray;
 
+	[SWF(width="400", height="400")]
 	public class flashtest extends Sprite {
 		private var tf:TextField;
 		public function flashtest() {
 			tf = new TextField();
-			tf.width = tf.height = 300;
+			tf.width = tf.height = 400;
 			tf.wordWrap = true;
 			addChild(tf);
 
@@ -42,10 +43,18 @@ package{
 		private function dumpByteArray(b:ByteArray):void {
 			b.position = 0;
 			tf.appendText(b.bytesAvailable + "\n");
+			var cnt:int = 0;
 			while(b.bytesAvailable) {
 				var c:String = b.readUnsignedByte().toString(16);
 				if(c.length < 2) c = "0" + c;
-				tf.appendText("0x" + c + ", ");
+				tf.appendText("0x" + c);
+				if (b.bytesAvailable == 0) break;
+				if (++cnt == 12) {
+					cnt = 0;
+					tf.appendText(",\n");
+				} else {
+					tf.appendText(", ");
+				}
 			}
 			tf.appendText("\n");
 		}
