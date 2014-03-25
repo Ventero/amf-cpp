@@ -48,3 +48,20 @@ TEST(BoolEquality, ImplicitBoolConversion) {
 	EXPECT_EQ(b2, false);
 	EXPECT_NE(b2, true);
 }
+
+TEST(BoolDeserialization, SimpleValues) {
+	deserialize(AmfBool(false), v8 { 0x02 }, 0);
+	deserialize(AmfBool(true), v8 { 0x03 }, 0);
+
+	deserialize(AmfBool(true), v8 { 0x03, 0x03 }, 1);
+	deserialize(AmfBool(true), v8 { 0x03, 0x02, 0x01, 0x00 }, 3);
+}
+
+TEST(BoolDeserialization, InvalidMarker) {
+	v8 data { 0x01 };
+	auto it = data.cbegin();
+	DeserializationContext ctx;
+	ASSERT_THROW(AmfBool::deserialize(it, data.end(), ctx), std::invalid_argument);
+	// now, it == end
+	ASSERT_THROW(AmfBool::deserialize(it, data.end(), ctx), std::invalid_argument);
+}
