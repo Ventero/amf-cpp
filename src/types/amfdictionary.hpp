@@ -83,7 +83,7 @@ private:
 	}
 
 	// Flash Player doesn't support deserializing booleans and number types
-	// (AmfInteger/AmfDouble), so we have to serialize them as strings
+	// (AmfInteger/AmfDouble), so we may have to serialize them as strings
 	v8 serializeKey(const AmfItemPtr& key) const {
 		if (!asString)
 			return key->serialize();
