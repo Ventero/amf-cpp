@@ -47,6 +47,12 @@ void consistsOf(std::vector<v8> parts, const v8& data) {
 	ASSERT_TRUE(parts.empty());
 }
 
+TEST(DictionarySerializationTest, EmptyDictionary) {
+	isEqual(v8 { 0x11, 0x01, 0x00 }, AmfDictionary(false, false));
+	isEqual(v8 { 0x11, 0x01, 0x00 }, AmfDictionary(true, false));
+	isEqual(v8 { 0x11, 0x01, 0x01 }, AmfDictionary(false, true));
+	isEqual(v8 { 0x11, 0x01, 0x01 }, AmfDictionary(true, true));
+}
 
 TEST(DictionarySerializationTest, IntegerKeys) {
 	AmfDictionary d(false, false);
@@ -355,6 +361,23 @@ TEST(DictionarySerializationTest, OverwriteKeys) {
 		0x11, 0x03, 0x00,
 		0x06, 0x0B, 0x66, 0x61, 0x6C, 0x73, 0x65,
 		0x06, 0x07, 0x66, 0x6f, 0x6f
+	}, d);
+}
+
+TEST(DictionarySerializationTest, ToggleAsString) {
+	AmfDictionary d(true, false);
+	d.insert(AmfBool(false), AmfInteger(3));
+	isEqual({
+		0x11, 0x03, 0x00,
+		0x06, 0x0B, 0x66, 0x61, 0x6C, 0x73, 0x65,
+		0x04, 0x03
+	}, d);
+
+	d.asString = false;
+	isEqual({
+		0x11, 0x03, 0x00,
+		0x02,
+		0x04, 0x03
 	}, d);
 }
 

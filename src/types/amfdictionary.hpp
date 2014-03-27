@@ -23,40 +23,6 @@ public:
 	}
 };
 
-// Flash Player doesn't support deserializing booleans and number types
-// (AmfInteger/AmfDouble), so we have to serialize them as strings
-template<class T, bool>
-struct AmfDictionaryKeyConverter {
-	static AmfItemPtr convert(const T& item) {
-		return AmfItemPtr(new T(item));
-	}
-};
-
-template<>
-struct AmfDictionaryKeyConverter<AmfInteger, true> {
-	static AmfItemPtr convert(const AmfInteger& item) {
-		std::string val = std::to_string(static_cast<int>(item));
-		return AmfItemPtr(new AmfString(val));
-	}
-};
-
-template<>
-struct AmfDictionaryKeyConverter<AmfDouble, true> {
-	static AmfItemPtr convert(const AmfDouble& item) {
-		std::ostringstream str;
-		str << std::setprecision(std::numeric_limits<double>::digits10)
-		    << static_cast<double>(item);
-		return AmfItemPtr(new AmfString(str.str()));
-	}
-};
-
-template<>
-struct AmfDictionaryKeyConverter<AmfBool, true> {
-	static AmfItemPtr convert(const AmfBool& item) {
-		return AmfItemPtr(new AmfString(item ? "true" : "false"));
-	}
-};
-
 class AmfDictionary : public AmfItem {
 public:
 	AmfDictionary(bool numbersAsStrings, bool weak = false) :
@@ -91,7 +57,8 @@ public:
 		buf.push_back(weak ? 0x01 : 0x00);
 
 		for (auto it : values) {
-			auto k = it.first->serialize();
+			// convert key's value to string if necessary
+			auto k = serializeKey(it.first);
 			auto v = it.second->serialize();
 			buf.insert(buf.end(), k.begin(), k.end());
 			buf.insert(buf.end(), v.begin(), v.end());
@@ -112,13 +79,34 @@ private:
 	template<class T>
 	AmfItemPtr& operator[](const T& item) {
 		static_assert(std::is_base_of<AmfItem, T>::value, "Keys must extend AmfItem");
+		return values[AmfItemPtr(new T(item))];
+	}
 
-		auto val = asString ?
-			AmfDictionaryKeyConverter<T, true>::convert(item) :
-			AmfDictionaryKeyConverter<T, false>::convert(item);
+	// Flash Player doesn't support deserializing booleans and number types
+	// (AmfInteger/AmfDouble), so we have to serialize them as strings
+	v8 serializeKey(const AmfItemPtr& key) const {
+		if (!asString)
+			return key->serialize();
 
-		AmfItemPtr p(val);
-		return values[p];
+		AmfInteger* intval = dynamic_cast<AmfInteger*>(key.get());
+		if (intval != nullptr) {
+			std::string strval = std::to_string(intval->value);
+			return AmfString(strval).serialize();
+		}
+
+		AmfDouble* doubleval = dynamic_cast<AmfDouble*>(key.get());
+		if (doubleval != nullptr) {
+			std::ostringstream str;
+			str << std::setprecision(std::numeric_limits<double>::digits10)
+			    << doubleval->value;
+			return AmfString(str.str()).serialize();
+		}
+
+		AmfBool* boolval = dynamic_cast<AmfBool*>(key.get());
+		if (boolval != nullptr)
+			return AmfString(*boolval ? "true" : "false").serialize();
+
+		return key->serialize();
 	}
 };
 
