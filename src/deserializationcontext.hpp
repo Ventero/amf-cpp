@@ -7,6 +7,8 @@
 
 #include "amf.hpp"
 
+#include "utils/amfitemptr.hpp"
+
 namespace amf {
 
 class AmfItem;
@@ -26,8 +28,18 @@ public:
 	AmfObjectTraits getTraits(int index);
 
 	template<typename T>
-	void addObject(const T& object) {
+	int addObject(const T& object) {
 		objects.emplace_back(new T(object));
+		return objects.size() - 1;
+	}
+
+	template<typename T>
+	void setObject(int index, const T& object) {
+		objects.at(index) = AmfItemPtr(new T(object));
+	}
+
+	void addObjectPtr(AmfItemPtr object) {
+		objects.push_back(object);
 	}
 
 	template<typename T>
@@ -36,10 +48,14 @@ public:
 		return T(*ptr);
 	}
 
+	const AmfItemPtr& getObjectPtr(int index) const {
+		return objects.at(index);
+	}
+
 private:
 	std::vector<std::shared_ptr<AmfString>> strings;
 	std::vector<std::shared_ptr<AmfObjectTraits>> traits;
-	std::vector<std::shared_ptr<AmfItem>> objects;
+	std::vector<AmfItemPtr> objects;
 };
 
 } // namespace amf

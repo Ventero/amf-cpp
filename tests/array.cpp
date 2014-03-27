@@ -349,6 +349,22 @@ TEST(ArrayDeserialization, ObjectCache) {
 	deserializesTo(AmfArray(), { 0x09, 0x00, 0x01, 0x02, 0x03 }, 3, &ctx);
 }
 
+TEST(ArrayDeserialization, ReferenceIndexOrder) {
+	AmfArray a;
+	AmfByteArray b(v8 {1, 2, 3});
+	a.push_back(b);
+	a.push_back(b);
+
+	v8 data {
+		0x09, 0x05, 0x01,
+			0x0c, 0x07, 0x01, 0x02, 0x03,
+			// index 0x00 = the outer array, 0x02 = the bytearray
+			0x0c, 0x02
+	};
+	deserializesTo(a, data, 0);
+}
+
+
 TEST(ArrayDeserialization, NotEnoughBytes) {
 	DeserializationContext ctx;
 

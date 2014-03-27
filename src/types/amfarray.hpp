@@ -102,6 +102,7 @@ public:
 			return ctx.getObject<AmfArray>(type >> 1);
 
 		AmfArray ret;
+		int contextIndex = ctx.addObject<AmfArray>(ret);
 
 		// associative until UTF-8-empty
 		while (true) {
@@ -117,7 +118,7 @@ public:
 		for (int i = 0; i < length; ++i)
 			ret.dense.push_back(Deserializer::deserialize(it, end, ctx));
 
-		ctx.addObject<AmfArray>(ret);
+		ctx.setObject<AmfArray>(contextIndex, ret);
 		return ret;
 	}
 
