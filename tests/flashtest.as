@@ -1,5 +1,6 @@
 package{
 	import flash.display.Sprite;
+	import flash.net.registerClassAlias;
 	import flash.text.TextField;
 	import flash.utils.ByteArray;
 
@@ -12,21 +13,27 @@ package{
 			tf.wordWrap = true;
 			addChild(tf);
 
+			dumpValues();
+		}
+
+		private function dumpValues():void {
+			tf.text = "";
 			var b:ByteArray = new ByteArray();
-			var v:Vector.<int> = new Vector.<int>();
-			for(var z:int = 0; z < 3; ++z)
-				v.push(z);
-			b.writeObject(v);
-
+			var a:Array = [undefined, null, [], "foo"];
+			a.foo = "qux";
+			a.bar = [];
+			b.writeObject(a);
 			dumpByteArray(b);
+		}
 
+		private function readValues():void {
 			var data:Array = [
 				0x0d, 0x07, 0x00,
 				0x00, 0x00, 0x00, 0x01,
 				0x00, 0x00, 0x00, 0x02,
 				0x00, 0x00, 0x00, 0x03
 			];
-			b = createByteArray(data);
+			var b:ByteArray = createByteArray(data);
 
 			var o:* = b.readObject();
 			tf.appendText(o + "\n");
@@ -38,6 +45,22 @@ package{
 			} else {
 				tf.appendText("Vector is null\n");
 			}
+		}
+
+		private function testExternalizable():void {
+			tf.text = "";
+			registerClassAlias("Foo", Foo);
+			var b:ByteArray = new ByteArray();
+			var f:Foo = new Foo("asd");
+			var g:Foo = new Foo("bar");
+			var a:Array = [f, f, g];
+			b.writeObject(a);
+			dumpByteArray(b);
+			b.position = 0;
+			var a2:Array = b.readObject();
+			tf.appendText((a[0] as Foo).foo);
+			tf.appendText((a[1] as Foo).foo);
+			tf.appendText((a[2] as Foo).foo);
 		}
 
 		private function dumpByteArray(b:ByteArray):void {
@@ -68,5 +91,25 @@ package{
 			b.position = 0;
 			return b;
 		}
+	}
+}
+
+import flash.utils.IDataInput;
+import flash.utils.IDataOutput;
+import flash.utils.IExternalizable;
+
+class Foo implements IExternalizable {
+	public var foo:String;
+
+	public function Foo(s:String = "default") {
+		foo = s;
+	}
+
+	public function writeExternal(output:IDataOutput):void {
+		output.writeUTF(foo);
+	}
+
+	public function readExternal(input:IDataInput):void {
+		foo = input.readUTF();
 	}
 }
