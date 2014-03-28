@@ -4,6 +4,9 @@
     <Filter Include="types">
       <UniqueIdentifier>{b7ae85ae-d6ed-4eb7-9328-46e924e3058b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{a2ad5f6f-4de7-44de-9005-bed3de554419}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\types\amfbool.hpp">
