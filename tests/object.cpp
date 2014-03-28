@@ -1,7 +1,9 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
+#include "types/amfbytearray.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfnull.hpp"
@@ -515,4 +517,289 @@ TEST(ObjectEquality, MixedTypes) {
 	EXPECT_NE(o, s);
 	EXPECT_NE(o, n);
 	EXPECT_NE(o, u);
+}
+
+TEST(ObjectDeserialization, EmptyDynamicAnonymousObject) {
+	deserialize(AmfObject("", true, false), { 0x0a, 0x0b, 0x01, 0x01 });
+	deserialize(AmfObject("", true, false), { 0x0a, 0x0b, 0x01, 0x01, 0x0a }, 1);
+}
+
+TEST(ObjectDeserialization, EmptyNamedDynamicObject) {
+	deserialize(AmfObject("foo", true, false), { 0x0a, 0x0b, 0x07, 0x66, 0x6f,
+		0x6f, 0x01 });
+	deserialize(AmfObject("foo", true, false), { 0x0a, 0x0b, 0x07, 0x66, 0x6f,
+		0x6f, 0x01, 0xff, 0xff, 0xff }, 3);
+}
+
+TEST(ObjectDeserialization, DynamicAnonymousObject) {
+	AmfObject obj("", true, false);
+	obj.addDynamicProperty("foo", AmfString("bar"));
+
+	v8 data {
+		0x0a, 0x0b, 0x01, 0x07, 0x66, 0x6f, 0x6f, 0x06, 0x07, 0x62, 0x61, 0x72, 0x01
+	};
+
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, DynamicNamedObject) {
+	AmfObject obj("foo", true, false);
+	obj.addDynamicProperty("foo", AmfString("foo"));
+
+	v8 data {
+		0x0a, 0x0b, 0x07, 0x66, 0x6f, 0x6f,
+		0x00, // U29S-ref
+		0x06, 0x00,
+		0x01
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, EmptySealedAnonymousObject) {
+	deserialize(AmfObject(), { 0x0a, 0x03, 0x01 });
+}
+
+TEST(ObjectDeserialization, SealedNamedObject) {
+	AmfObject obj("foo", false, false);
+	obj.addSealedProperty("foo", AmfString("foo"));
+
+	v8 data {
+		0x0a, 0x13, 0x07, 0x66, 0x6f, 0x6f,
+		0x00,
+		0x06, 0x00
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, SealedDynamicProps) {
+	AmfObject obj("", true, false);
+	obj.addDynamicProperty("foo", AmfInteger(1));
+	obj.addSealedProperty("bar", AmfUndefined());
+
+	v8 data {
+		0x0a, 0x1b, 0x01,
+		0x07, 0x62, 0x61, 0x72,
+		0x00,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x04, 0x01,
+		0x01
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, MultipleProperties) {
+	AmfObject obj("", true, false);
+	obj.addDynamicProperty("1", AmfInteger(1));
+	obj.addDynamicProperty("2", AmfInteger(2));
+	obj.addDynamicProperty("3", AmfInteger(3));
+	obj.addSealedProperty("a", AmfByteArray(v8 { 1, 2, 3}));
+	obj.addSealedProperty("b", AmfArray());
+	obj.addSealedProperty("c", AmfBool(false));
+
+	v8 data {
+		0x0a, 0x3b, 0x01,
+		0x03, 0x61, 0x03, 0x62, 0x03, 0x63,
+		0x0c, 0x07, 0x01, 0x02, 0x03,
+		0x09, 0x01, 0x01,
+		0x02,
+		0x03, 0x31, 0x04, 0x01,
+		0x03, 0x32, 0x04, 0x02,
+		0x03, 0x33, 0x04, 0x03,
+		0x01
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, TraitsSetProperly) {
+	// to test if the sealed properties are properly added to the traits, we
+	// simply serialize the object again after deserialising, which should result
+	// in output that's identical to the input
+
+	// 2 sealed properties
+	v8 data {
+		0x0a, 0x23, 0x01,
+		0x03, 0x61, 0x03, 0x62,
+		0x02, 0x03
+	};
+	auto it = data.cbegin();
+	AmfObject obj;
+	ASSERT_NO_THROW({
+		DeserializationContext ctx;
+		obj = AmfObject::deserialize(it, data.cend(), ctx);
+	});
+
+	v8 serialized = obj.serialize();
+	EXPECT_EQ(data, serialized);
+}
+
+TEST(ObjectDeserialization, NestedObject) {
+	AmfObject obj("", true, false);
+	obj.addDynamicProperty("foo", AmfObject("", false, false));
+
+	v8 data {
+		0x0a, 0x0b, 0x01,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x0a, 0x03, 0x01,
+		0x01
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, PropertyCache) {
+	AmfObject obj("", true, false);
+	AmfObject inner;
+	obj.addDynamicProperty("foo", inner);
+	obj.addSealedProperty("bar", inner);
+
+	v8 data {
+		0x0a, 0x1b, 0x01,
+		0x07, 0x62, 0x61, 0x72,
+		0x0a, 0x03, 0x01,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x0a, 0x02,
+		0x01
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, Context) {
+	DeserializationContext ctx;
+	AmfObject obj("", true, false);
+	AmfObject obj2("", false, false);
+
+	deserialize(obj, { 0x0a, 0x0b, 0x01, 0x01 }, 0, &ctx);
+	deserialize(obj, { 0x0a, 0x00 }, 0, &ctx);
+	deserialize(obj2, { 0x0a, 0x03, 0x01, 0xff }, 1, &ctx);
+	deserialize(obj, { 0x0a, 0x00 }, 0, &ctx);
+	deserialize(obj2, { 0x0a, 0x02 }, 0, &ctx);
+}
+
+TEST(ObjectDeserialization, Externalizable) {
+	auto ext = [] (v8::const_iterator&, v8::const_iterator, DeserializationContext&) -> AmfObject {
+		return AmfObject("foobar", true, false);
+	};
+	Deserializer::externalDeserializers["asd"] = ext;
+
+	v8 data { 0x0a, 0x07, 0x07, 0x61, 0x73, 0x64 };
+	deserialize(AmfObject("foobar", true, false), data);
+}
+
+TEST(ObjectDeserialization, ExternalizableFromData) {
+	auto ext = [] (v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) -> AmfObject {
+		AmfString className = AmfString::deserializeValue(it, end, ctx);
+		return AmfObject(className, false, false);
+	};
+	Deserializer::externalDeserializers["asd"] = ext;
+
+	v8 data {
+		0x0a, 0x07,
+		0x07, 0x61, 0x73, 0x64,
+		0x0b, 0x63, 0x6c, 0x61, 0x73, 0x73
+	};
+	deserialize(AmfObject("class", false, false), data);
+}
+
+TEST(ObjectDeserialization, MissingExternalDeserializer) {
+	v8 data {
+		0x0a, 0x07,
+		0x07, 0x61, 0x73, 0x64,
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfObject::deserialize(it, data.cend(), ctx), std::out_of_range);
+}
+
+TEST(ObjectDeserialization, ExternalizableInContext) {
+	std::string name("foo");
+	// first time this is called, it returns AmfObject("foo"), afterwards AmfObject("bar");
+	auto ext = [&name] (v8::const_iterator&, v8::const_iterator, DeserializationContext&) -> AmfObject {
+		auto ret = AmfObject(name, false, false);
+		name = "bar";
+		return ret;
+	};
+
+	Deserializer::externalDeserializers["asd"] = ext;
+
+	DeserializationContext ctx;
+	deserialize(AmfObject("foo", false, false), { 0x0a, 0x07, 0x07, 0x61, 0x73, 0x64 }, 0, &ctx);
+	deserialize(AmfObject("foo", false, false), { 0x0a, 0x00 }, 0, &ctx);
+	deserialize(AmfObject("bar", false, false), { 0x0a, 0x07, 0x07, 0x61, 0x73, 0x64 }, 0, &ctx);
+	deserialize(AmfObject("bar", false, false), { 0x0a, 0x02 }, 0, &ctx);
+	deserialize(AmfObject("foo", false, false), { 0x0a, 0x00 }, 0, &ctx);
+}
+
+TEST(ObjectDeserialization, TraitRefs) {
+	AmfObject obj("foo", true, false);
+	obj.addDynamicProperty("foo", AmfNull());
+
+	DeserializationContext ctx;
+	deserialize(obj, {
+		0x0a, 0x0b,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x00,
+		0x01,
+		0x01
+	}, 0, &ctx);
+	deserialize(AmfObject("foo", true, false), { 0x0a, 0x01, 0x01 }, 0, &ctx);
+}
+
+TEST(ObjectDeserialization, ReferenceOrder) {
+	AmfObject obj("", true, false);
+	AmfByteArray ba(v8 { 1 });
+	obj.addDynamicProperty("a", ba);
+	obj.addDynamicProperty("b", ba);
+
+	v8 data {
+		0x0a, 0x0b, 0x01,
+		0x03, 0x61, 0x0c, 0x03, 0x01,
+		0x03, 0x62, 0x0c, 0x02, // 0x00 = the outer object, 0x02 = bytearray
+		0x01
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, DISABLED_SelfReference) {
+	AmfItemPtr ptr(new AmfObject("", true, false));
+	ptr.asPtr<AmfObject>()->dynamicProperties["f"] = ptr;
+	v8 data {
+		0x0a, 0x0b, 0x01,
+		0x03, 0x66,
+		0x0a, 0x00,
+		0x01
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfObject d = AmfObject::deserialize(it, data.cend(), ctx);
+	EXPECT_EQ(*ptr.asPtr<AmfObject>(), d);
+}
+
+TEST(ObjectDeserialization, DynamicObjectMissingEndMarker) {
+	DeserializationContext ctx;
+	v8 data {
+		0x0a, 0x0b, 0x01, 0x07, 0x66, 0x6f, 0x6f, 0x06, 0x07, 0x62, 0x61, 0x72
+	};
+
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfObject::deserialize(it, data.cend(), ctx), std::out_of_range);
+}
+
+TEST(ObjectDeserialization, EmptyIterator) {
+	v8 data { };
+	auto it = data.cbegin();
+	auto end = data.cend();
+	DeserializationContext ctx;
+	ASSERT_THROW(AmfObject::deserialize(it, end, ctx), std::invalid_argument);
+}
+
+TEST(ObjectDeserialization, InvalidMarker) {
+	DeserializationContext ctx;
+	v8 data { 0xff };
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfObject::deserialize(it, data.cend(), ctx), std::invalid_argument);
+
+	data = { 0x0b };
+	it = data.cbegin();
+	ASSERT_THROW(AmfObject::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }

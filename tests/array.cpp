@@ -265,6 +265,21 @@ TEST(ArrayDeserialization, MixedDenseArray) {
 	deserializesTo(a, data, 1);
 }
 
+TEST(ArrayDeserialization, MixedDenseArrayWithObject) {
+	AmfArray a;
+	a.push_back(AmfInteger(1));
+	a.push_back(AmfString("foo"));
+	a.push_back(AmfObject("", true, false));
+
+	v8 data {
+		0x09, 0x07, 0x01, 0x04, 0x01, 0x06, 0x07, 0x66, 0x6f, 0x6f, 0x0a, 0x0b,
+		0x01, 0x01,
+		0xff
+	};
+
+	deserializesTo(a, data, 1);
+}
+
 TEST(ArrayDeserialization, SparseArray) {
 	AmfArray a;
 	a.insert("foo", AmfInteger(1));

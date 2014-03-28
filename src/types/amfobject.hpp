@@ -5,6 +5,8 @@
 #include <functional>
 #include <map>
 
+#include "deserializer.hpp"
+
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
@@ -171,6 +173,65 @@ public:
 	template<class T>
 	T& getDynamicProperty(std::string name) {
 		return *static_cast<T*>(dynamicProperties.at(name).get());
+	}
+
+	static AmfObject deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		if (it == end || *it++ != AMF_OBJECT)
+			throw std::invalid_argument("AmfObject: Invalid type marker");
+
+		int type = AmfInteger::deserializeValue(it, end);
+		if ((type & 0x01) == 0x00) {
+			// 0b...0 == U29O-ref
+			return ctx.getObject<AmfObject>(type >> 1);
+		}
+
+		AmfObjectTraits traits("", false, false);
+		if ((type & 0x03) == 0x01) {
+			// 0b..01 == U29O-traits-ref
+			traits = ctx.getTraits(type >> 2);
+		} else {
+			if ((type & 0x07) == 0x07) {
+				// 0b.111 == U29O-traits-ext
+				traits.externalizable = true;
+				traits.className = AmfString::deserializeValue(it, end, ctx);
+			} else if ((type & 0x07) == 0x03) {
+				// 0b.011 == U29O-traits
+				traits.dynamic = ((type & 0x08) == 0x08);
+				traits.className = AmfString::deserializeValue(it, end, ctx);
+				int numSealed = type >> 4;
+				for (int i = 0; i < numSealed; ++i)
+					traits.attributes.push_back(AmfString::deserializeValue(it, end, ctx));
+			}
+
+			ctx.addTraits(traits);
+		}
+
+		AmfObject ret(traits);
+		int contextIndex = ctx.addObject<AmfObject>(ret);
+
+		if (traits.externalizable) {
+			ret = Deserializer::externalDeserializers.at(traits.className)(it, end, ctx);
+			ctx.setObject<AmfObject>(contextIndex, ret);
+			return ret;
+		}
+
+		for (auto name : traits.attributes) {
+			AmfItemPtr val = Deserializer::deserialize(it, end, ctx);
+			ret.sealedProperties[name] = val;
+		}
+
+		if (traits.dynamic) {
+			while (true) {
+				std::string name = AmfString::deserializeValue(it, end, ctx);
+				if (name == "") break;
+
+				AmfItemPtr val = Deserializer::deserialize(it, end, ctx);
+				ret.dynamicProperties[name] = val;
+			}
+		}
+
+		ctx.setObject<AmfObject>(contextIndex, ret);
+		return ret;
 	}
 
 	std::map<std::string, AmfItemPtr> sealedProperties;

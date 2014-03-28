@@ -19,6 +19,8 @@
 
 namespace amf {
 
+std::map<std::string, ExternalDeserializerFunction> Deserializer::externalDeserializers = { };
+
 AmfItemPtr Deserializer::deserialize(v8 data, DeserializationContext& ctx) {
 	auto it = data.cbegin();
 	return deserialize(it, data.cend(), ctx);
@@ -50,8 +52,7 @@ AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator 
 		case AMF_ARRAY:
 			return AmfItemPtr(AmfArray::deserialize(it, end, ctx));
 		case AMF_OBJECT:
-			//return AmfItemPtr(AmfObject::deserialize(it, end, ctx));
-			throw std::invalid_argument("Deserializer::deserialize AmfObject");
+			return AmfItemPtr(AmfObject::deserialize(it, end, ctx));
 		case AMF_XML:
 			return AmfItemPtr(AmfXml::deserialize(it, end, ctx));
 		case AMF_BYTEARRAY:
