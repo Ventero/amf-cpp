@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <cstdint>
 #include <stdexcept>
+#include <vector>
+
 #ifdef _WIN32
 	// Windows only runs on little endian platforms
 	#define __LITTLE_ENDIAN 1234
