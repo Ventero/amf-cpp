@@ -18,6 +18,9 @@
     <ClInclude Include="..\src\types\amfdouble.hpp">
       <Filter>types</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\types\amfdictionary.hpp">
+      <Filter>types</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\types\amfinteger.hpp">
       <Filter>types</Filter>
     </ClInclude>
