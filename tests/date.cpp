@@ -40,15 +40,15 @@ TEST(DateSerializationTest, Epoch) {
 }
 
 TEST(DateEquality, SimpleValues) {
-	AmfDate d0(136969002755000ll);
-	AmfDate d1(136969002755000ll);
+	AmfDate d0(13696900000ll);
+	AmfDate d1(13696900000ll);
 
-	std::time_t time = 136969002755;
+	std::time_t time = 13696900;
 	std::tm res;
 	amf_localtime(&res, &time);
 	AmfDate d2(&res);
 
-	std::chrono::seconds s(136969002755);
+	std::chrono::seconds s(13696900);
 	std::chrono::system_clock::time_point tp(s);
 	AmfDate d3(tp);
 
