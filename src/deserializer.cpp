@@ -70,8 +70,7 @@ AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator 
 			//return AmfItemPtr(AmfVector<T>::deserialize(it, end, ctx));
 			throw std::invalid_argument("Deserializer::deserialize AmfVector<object>");
 		case AMF_DICTIONARY:
-			//return AmfItemPtr(AmfDouble::deserialize(it, end, ctx));
-			throw std::invalid_argument("Deserializer::deserialize AmfDictionary");
+			return AmfItemPtr(AmfDictionary::deserialize(it, end, ctx));
 		default:
 			throw std::invalid_argument("Deserializer::deserialize: Invalid type byte");
 	}
