@@ -18,6 +18,8 @@
 #include "types/amfxml.hpp"
 #include "types/amfxmldocument.hpp"
 
+#include "utils/amfitemptr.hpp"
+
 template<typename T>
 static void deserializesTo(T expected, v8 data, int left = 0) {
 	SCOPED_TRACE(::testing::PrintToString(expected) + " = " + ::testing::PrintToString(data));
@@ -27,7 +29,7 @@ static void deserializesTo(T expected, v8 data, int left = 0) {
 		Deserializer d;
 		T i = d.deserialize(it, data.cend()).as<T>();
 		ASSERT_EQ(expected, i);
-		T j = d.deserialize(data).as<T>();
+		T j = *d.deserialize(data).asPtr<T>();
 		ASSERT_EQ(expected, j);
 		DeserializationContext ctx;
 		T k = Deserializer::deserialize(data, ctx).as<T>();
