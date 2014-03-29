@@ -15,7 +15,8 @@ namespace amf {
 
 class AmfObject;
 
-using ExternalDeserializerFunction = std::function<AmfObject(v8::const_iterator&, v8::const_iterator, DeserializationContext&)>;
+typedef std::function<AmfObject(v8::const_iterator&, v8::const_iterator,
+	DeserializationContext&)> ExternalDeserializerFunction;
 
 class Deserializer {
 public:
