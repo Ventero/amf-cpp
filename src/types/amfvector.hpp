@@ -79,11 +79,7 @@ public:
 	}
 
 	static AmfVector<T> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
-		if (it == end)
-			throw std::invalid_argument("AmfVector: End of iterator");
-
-		u8 marker = *it++;
-		if (marker != VectorProperties<T>::marker)
+		if (it == end || *it++ != VectorProperties<T>::marker)
 			throw std::invalid_argument("AmfVector: Invalid type marker");
 
 		int type = AmfInteger::deserializeValue(it, end);
