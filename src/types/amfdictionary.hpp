@@ -46,7 +46,7 @@ public:
 	template<class T, class V>
 	T& at(const V& key) {
 		auto ptr = (*this)[key];
-		return *static_cast<T*>(ptr.get());
+		return ptr.template as<T>();
 	}
 
 	void clear() {

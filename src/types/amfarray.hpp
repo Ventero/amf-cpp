@@ -54,12 +54,12 @@ public:
 
 	template<class T>
 	T& at(int index) {
-		return *static_cast<T*>(dense.at(index).get());
+		return dense.at(index).as<T>();
 	}
 
 	template<class T>
 	T& at(std::string key) {
-		return *static_cast<T*>(associative.at(key).get());
+		return associative.at(key).as<T>();
 	}
 
 	std::vector<u8> serialize() const {

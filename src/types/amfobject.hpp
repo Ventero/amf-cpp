@@ -167,12 +167,12 @@ public:
 		if (it == traits.attributes.end())
 			throw std::out_of_range("AmfObject::getSealedProperty");
 
-		return *static_cast<T*>(sealedProperties.at(name).get());
+		return sealedProperties.at(name).as<T>();
 	}
 
 	template<class T>
 	T& getDynamicProperty(std::string name) {
-		return *static_cast<T*>(dynamicProperties.at(name).get());
+		return dynamicProperties.at(name).as<T>();
 	}
 
 	static AmfObject deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {

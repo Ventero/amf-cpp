@@ -17,16 +17,16 @@ public:
 	AmfItemPtr(const T& ref) : std::shared_ptr<AmfItem>(new T(ref)) { }
 
 	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
-	T as() const {
-		T* ptr = static_cast<T*>(get());
-		return T(*ptr);
+	T& as() {
+		T& ref = dynamic_cast<T&>(*get());
+		return ref;
 	}
 
 	// WARNING: the pointer returned by this and get() is only valid as long as
 	//          the AmfItemPtr is still alive
 	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
-	T* asPtr() const {
-		return static_cast<T*>(get());
+	T* asPtr() {
+		return dynamic_cast<T*>(get());
 	}
 
 	bool operator==(const AmfItemPtr& other) const {
