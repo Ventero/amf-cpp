@@ -64,8 +64,7 @@ AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator 
 		case AMF_VECTOR_DOUBLE:
 			return AmfItemPtr(AmfVector<double>::deserialize(it, end, ctx));
 		case AMF_VECTOR_OBJECT:
-			//return AmfItemPtr(AmfVector<T>::deserialize(it, end, ctx));
-			throw std::invalid_argument("Deserializer::deserialize AmfVector<object>");
+			return AmfItemPtr(AmfVector<AmfItem>::deserialize(it, end, ctx));
 		case AMF_DICTIONARY:
 			return AmfItemPtr(AmfDictionary::deserialize(it, end, ctx));
 		default:

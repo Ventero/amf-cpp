@@ -1,7 +1,10 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "types/amfarray.hpp"
+#include "types/amfbool.hpp"
 #include "types/amfobject.hpp"
+#include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
 
 TEST(VectorSerializationTest, VectorIntEmpty) {
@@ -496,6 +499,18 @@ TEST(VectorEquality, MixedTypes) {
 	EXPECT_NE(v1, v4);
 }
 
+TEST(VectorEquality, VectorAmfItem) {
+	AmfVector<AmfItem> vi("", false);
+	vi.values.emplace_back(AmfObject("foo", true, false));
+	AmfVector<AmfObject> vo({}, "", false);
+	vo.push_back(AmfObject("foo", true, false));
+	EXPECT_EQ(vi, vo);
+
+	AmfVector<AmfObject> nvi = vi.as<AmfObject>();
+	EXPECT_EQ(nvi, vo);
+	EXPECT_EQ(nvi.at(0).objectTraits().className, "foo");
+}
+
 TEST(VectorDeserialization, VectorInt) {
 	AmfVector<int> vec { { 1, 2, 3 }, false };
 	v8 data {
@@ -683,7 +698,7 @@ TEST(VectorDeserialization, VectorDouble) {
 	deserialize(vec, data);
 }
 
-TEST(VectorDeserialization, ObjectCache) {
+TEST(VectorDeserialization, VectorNumberObjectCache) {
 	DeserializationContext ctx;
 
 	deserialize(AmfVector<int>({}, false), { 0x0d, 0x01, 0x00 }, 0, &ctx);
@@ -785,4 +800,152 @@ TEST(VectorDeserialization, VectorNumberInvalidMarker) {
 	it = data.cbegin();
 	EXPECT_THROW(AmfVector<int>::deserialize(it, data.cend(), ctx), std::invalid_argument);
 	EXPECT_THROW(AmfVector<unsigned int>::deserialize(it, data.cend(), ctx), std::invalid_argument);
+
+	data = { 0x10, 0x01, 0x00 };
+	it = data.cbegin();
+	EXPECT_THROW(AmfVector<int>::deserialize(it, data.cend(), ctx), std::invalid_argument);
+	EXPECT_THROW(AmfVector<unsigned int>::deserialize(it, data.cend(), ctx), std::invalid_argument);
+	EXPECT_THROW(AmfVector<double>::deserialize(it, data.cend(), ctx), std::invalid_argument);
+}
+
+template<typename T>
+static void deserializeTo(AmfVector<T> expected, v8 data, int left = 0,
+	DeserializationContext* ctx = nullptr) {
+	// deserialize uses Deserializer::deserilaize, which gives an
+	// AmfVector<AmfItem>, so we have to compare against that
+	AmfVector<AmfItem>& vi = dynamic_cast<AmfVector<AmfItem>&>(expected);
+	deserialize(vi, data, left, ctx);
+
+	// also compare against actual AmfVector<T>
+	DeserializationContext newCtx;
+	if (!ctx) ctx = &newCtx;
+	auto it = data.cbegin();
+	ASSERT_NO_THROW({
+		AmfVector<T> d = AmfVector<T>::deserialize(it, data.cend(), *ctx);
+		EXPECT_EQ(expected, d);
+	});
+}
+
+TEST(VectorDeserialization, VectorTInt) {
+	AmfVector<AmfInteger> v({1, 2, 3}, "foo", false);
+
+	v8 data {
+		0x10, 0x07, 0x00,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x04, 0x01,
+		0x04, 0x02,
+		0x04, 0x03
+	};
+	deserializeTo(v, data);
+}
+
+TEST(VectorDeserialization, VectorBool) {
+	AmfVector<AmfBool> v({false, true}, "Boolean", true);
+
+	v8 data {
+		0x10, 0x05, 0x01,
+		0x0f, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61, 0x6e,
+		0x02, 0x03,
+		0xff, 0xff
+	};
+	deserializeTo(v, data, 2);
+}
+
+TEST(VectorDeserialization, VectorArray) {
+	AmfVector<AmfArray> v({}, "", false);
+	v.push_back(AmfArray());
+	AmfArray inner;
+	inner.push_back(AmfInteger(1));
+	v.push_back(inner);
+
+	v8 data {
+		0x10, 0x05, 0x00, 0x01, 0x09, 0x01, 0x01, 0x09, 0x03, 0x01, 0x04, 0x01
+	};
+	deserializeTo(v, data, 0);
+}
+
+TEST(VectorDeserialization, VectorObject) {
+	AmfVector<AmfObject> v({}, "Foo", false);
+	AmfObject o("Foo", true, false);
+	o.addDynamicProperty("qux", AmfUndefined());
+	v.push_back(o);
+
+	v8 data {
+		0x10, 0x03, 0x00,
+		0x07, 0x46, 0x6f, 0x6f,
+		0x0a, 0x0b, 0x00,
+		0x07, 0x71, 0x75, 0x78,
+		0x00,
+		0x01
+	};
+	deserializeTo(v, data, 0);
+}
+
+TEST(VectorDeserialization, VectorObjectCache) {
+	AmfVector<AmfObject> v({}, "Foo", false);
+	AmfObject o("Foo", true, false);
+	o.addDynamicProperty("qux", AmfUndefined());
+	v.push_back(o);
+	v.push_back(o);
+
+	v8 data {
+		0x10, 0x05, 0x00,
+		0x07, 0x46, 0x6f, 0x6f,
+			0x0a, 0x0b, 0x00,
+			0x07, 0x71, 0x75, 0x78,
+			0x00,
+			0x01,
+			0x0a, 0x02
+	};
+	deserializeTo(v, data, 0);
+}
+
+TEST(VectorDeserialization, VectorIntVector) {
+	AmfVector<AmfVector<int>> v({ AmfVector<int> { {1, 2, 3 }, false } }, "", false);
+
+	v8 data {
+		0x10, 0x03, 0x00, 0x01,
+		0x0d, 0x07, 0x00,
+		0x00, 0x00, 0x00, 0x01,
+		0x00, 0x00, 0x00, 0x02,
+		0x00, 0x00, 0x00, 0x03
+	};
+	deserializeTo(v, data, 0);
+}
+
+
+TEST(VectorDeserialization, VectorItemObjectCache) {
+	DeserializationContext ctx;
+
+	deserialize(AmfVector<AmfInteger>({1}, "", false),
+		{ 0x10, 0x03, 0x00, 0x01, 0x04, 0x01 }, 0, &ctx);
+	deserialize(AmfVector<AmfBool>({}, "f", true),
+		{ 0x10, 0x01, 0x01, 0x03, 0x66, 0xff }, 1, &ctx);
+	deserialize(AmfVector<AmfInteger>({1}, "", false), { 0x10, 0x00 }, 0, &ctx);
+	deserialize(AmfVector<AmfBool>({}, "f", true), { 0x10, 0x02 }, 0, &ctx);
+}
+
+TEST(VectorDeserialization, VectorItemEmptyIterator) {
+	v8 data { };
+	auto it = data.cbegin();
+	auto end = data.cend();
+	DeserializationContext ctx;
+	EXPECT_THROW(AmfVector<AmfItem>::deserialize(it, end, ctx), std::invalid_argument);
+	EXPECT_EQ(it, end);
+	EXPECT_THROW(AmfVector<AmfBool>::deserialize(it, end, ctx), std::invalid_argument);
+	EXPECT_EQ(it, end);
+}
+
+TEST(VectorDeserialization, VectorObjectInvalidMarker) {
+	DeserializationContext ctx;
+
+	v8 data { 0x11, 0x01, 0x00 };
+	auto it = data.cbegin();
+	EXPECT_THROW(AmfVector<AmfBool>::deserialize(it, data.cend(), ctx), std::invalid_argument);
+	EXPECT_THROW(AmfVector<AmfItem>::deserialize(it, data.cend(), ctx), std::invalid_argument);
+
+	data = { 0x0d, 0x01, 0x00 };
+	it = data.cbegin();
+	EXPECT_THROW(AmfVector<AmfBool>::deserialize(it, data.cend(), ctx), std::invalid_argument);
+	EXPECT_THROW(AmfVector<AmfItem>::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
