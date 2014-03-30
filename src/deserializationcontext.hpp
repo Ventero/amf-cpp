@@ -38,18 +38,10 @@ public:
 		objects.at(index) = AmfItemPtr(new T(object));
 	}
 
-	void addObjectPtr(AmfItemPtr object) {
-		objects.push_back(object);
-	}
-
 	template<typename T>
 	T getObject(int index) {
 		T* ptr = static_cast<T*>(objects.at(index).get());
 		return T(*ptr);
-	}
-
-	const AmfItemPtr& getObjectPtr(int index) const {
-		return objects.at(index);
 	}
 
 private:
