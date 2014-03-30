@@ -40,7 +40,10 @@ public:
 
 	template<typename T>
 	T getObject(int index) {
-		T* ptr = static_cast<T*>(objects.at(index).get());
+		T* ptr = dynamic_cast<T*>(objects.at(index).get());
+		if (ptr == nullptr)
+			throw std::invalid_argument("DeserializationContext::getObject wrong type");
+
 		return T(*ptr);
 	}
 

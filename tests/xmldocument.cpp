@@ -190,11 +190,11 @@ TEST(XmlDocumentDeserializationTest, ObjectReference) {
 TEST(XmlDocumentDeserializationTest, SharesCacheWithXml) {
 	DeserializationContext ctx;
 	deserializesTo("foo", v8 { 0x07, 0x07, 0x66, 0x6f, 0x6f }, 0, &ctx);
-	deserialize(AmfXml("foo"), v8 { 0x0b, 0x00 }, 0, &ctx);
-
-	deserializesTo("bar", v8 { 0x07, 0x07, 0x62, 0x61, 0x72 }, 0, &ctx);
 	deserialize(AmfXml("foo"), v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f }, 0, &ctx);
 
-	deserializesTo("bar", v8 { 0x07, 0x02 }, 0, &ctx);
-	deserializesTo("foo", v8 { 0x07, 0x04, 0x03 }, 1, &ctx);
+	deserializesTo("bar", v8 { 0x07, 0x07, 0x62, 0x61, 0x72 }, 0, &ctx);
+	deserialize(AmfXml("foo"), v8 { 0x0b, 0x02 }, 0, &ctx);
+
+	deserializesTo("foo", v8 { 0x07, 0x00, 0x03 }, 1, &ctx);
+	deserializesTo("bar", v8 { 0x07, 0x04 }, 0, &ctx);
 }
