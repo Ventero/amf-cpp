@@ -78,6 +78,41 @@ public:
 		return buf;
 	}
 
+	static AmfVector<T> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		if (it == end)
+			throw std::invalid_argument("AmfVector: End of iterator");
+
+		u8 marker = *it++;
+		if (marker != VectorProperties<T>::marker)
+			throw std::invalid_argument("AmfVector: Invalid type marker");
+
+		int type = AmfInteger::deserializeValue(it, end);
+		if ((type & 0x01) == 0)
+			return ctx.getObject<AmfVector<T>>(type >> 1);
+
+		size_t count = type >> 1;
+
+		if(it == end)
+			throw std::out_of_range("Not enough bytes for AmfVector");
+		bool fixed = (*it++ == 0x01);
+
+		v8 data(it, end);
+		if(data.size() < count * VectorProperties<T>::size)
+			throw std::out_of_range("Not enough bytes for AmfVector");
+
+		it += count * VectorProperties<T>::size;
+
+		std::vector<T> values(count);
+		for (size_t i = 0; i < count; ++i) {
+			values[i] = ntoh(*reinterpret_cast<T*>(&data[i * VectorProperties<T>::size]));
+		}
+
+		AmfVector<T> ret(values, fixed);
+		ctx.addObject<AmfVector<T>>(ret);
+
+		return ret;
+	}
+
 	std::vector<T> values;
 	bool fixed;
 };

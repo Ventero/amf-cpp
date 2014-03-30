@@ -58,14 +58,11 @@ AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator 
 		case AMF_BYTEARRAY:
 			return AmfItemPtr(AmfByteArray::deserialize(it, end, ctx));
 		case AMF_VECTOR_INT:
-			//return AmfItemPtr(AmfVector<int>::deserialize(it, end, ctx));
-			throw std::invalid_argument("Deserializer::deserialize AmfVector<int>");
+			return AmfItemPtr(AmfVector<int>::deserialize(it, end, ctx));
 		case AMF_VECTOR_UINT:
-			//return AmfItemPtr(AmfVector<unsigned int>::deserialize(it, end, ctx));
-			throw std::invalid_argument("Deserializer::deserialize AmfVector<uint>");
+			return AmfItemPtr(AmfVector<unsigned int>::deserialize(it, end, ctx));
 		case AMF_VECTOR_DOUBLE:
-			//return AmfItemPtr(AmfVector<double>::deserialize(it, end, ctx));
-			throw std::invalid_argument("Deserializer::deserialize AmfVector<double>");
+			return AmfItemPtr(AmfVector<double>::deserialize(it, end, ctx));
 		case AMF_VECTOR_OBJECT:
 			//return AmfItemPtr(AmfVector<T>::deserialize(it, end, ctx));
 			throw std::invalid_argument("Deserializer::deserialize AmfVector<object>");
