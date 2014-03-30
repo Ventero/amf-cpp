@@ -554,7 +554,6 @@ TEST(VectorDeserialization, VectorInt32) {
 		0x7f, 0xff, 0xff, 0xff,
 		0x80, 0x00, 0x00, 0x01
 	};
-	std::cout << ::testing::PrintToString(vec.serialize()) << std::endl;
 	deserialize(vec, data);
 }
 
