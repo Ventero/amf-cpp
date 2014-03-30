@@ -234,6 +234,10 @@ public:
 		return ret;
 	}
 
+	const AmfObjectTraits& objectTraits() const {
+		return traits;
+	}
+
 	std::map<std::string, AmfItemPtr> sealedProperties;
 	std::map<std::string, AmfItemPtr> dynamicProperties;
 
