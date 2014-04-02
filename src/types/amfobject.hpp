@@ -5,6 +5,7 @@
 #include <functional>
 #include <map>
 
+#include "deserializationcontext.hpp"
 #include "deserializer.hpp"
 
 #include "types/amfitem.hpp"

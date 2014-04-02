@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "deserializationcontext.hpp"
 #include "deserializer.hpp"
 
 #include "types/amfitem.hpp"

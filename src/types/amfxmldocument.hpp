@@ -2,6 +2,8 @@
 #ifndef AMFXMLDOCUMENT_HPP
 #define AMFXMLDOCUMENT_HPP
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 #include "types/amfxml.hpp"
 

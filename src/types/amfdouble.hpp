@@ -3,6 +3,7 @@
 #define AMFDOUBLE_HPP
 
 #include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 
 namespace amf {

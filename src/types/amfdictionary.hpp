@@ -8,8 +8,10 @@
 #include <sstream>
 #include <unordered_map>
 
+#include "deserializationcontext.hpp"
 #include "deserializer.hpp"
 
+#include "types/amfbool.hpp"
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"

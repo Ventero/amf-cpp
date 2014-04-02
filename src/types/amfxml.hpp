@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 

@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 
 namespace amf {
