@@ -200,3 +200,10 @@ TEST(StringDeserialization, StringContext) {
 	deserializesTo("foobar", { 0x06, 0x02 }, 0, &ctx);
 	deserializesTo("qux", { 0x06, 0x04 }, 0, &ctx);
 }
+
+TEST(StringDeserialization, EmtpyStringNotCached) {
+	DeserializationContext ctx;
+	deserializesTo("", { 0x06, 0x01 }, 0, &ctx);
+	deserializesTo("bar", { 0x06, 0x07, 0x62, 0x61, 0x72 }, 0, &ctx);
+	deserializesTo("bar", { 0x06, 0x00 }, 0, &ctx);
+}
