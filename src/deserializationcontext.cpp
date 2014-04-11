@@ -12,6 +12,8 @@ void DeserializationContext::clear() {
 }
 
 void DeserializationContext::addString(const AmfString& str) {
+	if (str.value.emtpy()) return;
+
 	strings.emplace_back(new AmfString(str));
 }
 
