@@ -57,10 +57,8 @@ public:
 		std::string val(it, it + length);
 		it += length;
 
-		AmfString ret(val);
-		ctx.addString(ret);
-
-		return ret;
+		ctx.addString(val);
+		return val;
 	}
 
 	std::string value;

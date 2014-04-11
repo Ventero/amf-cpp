@@ -11,14 +11,14 @@ void DeserializationContext::clear() {
 	objects.clear();
 }
 
-void DeserializationContext::addString(const AmfString& str) {
-	if (str.value.emtpy()) return;
+void DeserializationContext::addString(const std::string& str) {
+	if (str.empty()) return;
 
-	strings.emplace_back(new AmfString(str));
+	strings.push_back(str);
 }
 
 AmfString DeserializationContext::getString(int index) {
-	return AmfString(*strings.at(index));
+	return strings.at(index);
 }
 
 void DeserializationContext::addTraits(const AmfObjectTraits& trait) {

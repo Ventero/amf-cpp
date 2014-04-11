@@ -21,7 +21,7 @@ public:
 
 	void clear();
 
-	void addString(const AmfString& str);
+	void addString(const std::string& str);
 	AmfString getString(int index);
 
 	void addTraits(const AmfObjectTraits& traits);
@@ -48,7 +48,7 @@ public:
 	}
 
 private:
-	std::vector<std::shared_ptr<AmfString>> strings;
+	std::vector<std::string> strings;
 	std::vector<std::shared_ptr<AmfObjectTraits>> traits;
 	std::vector<AmfItemPtr> objects;
 };
