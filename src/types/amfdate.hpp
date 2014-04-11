@@ -5,7 +5,10 @@
 #include <chrono>
 #include <ctime>
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfdouble.hpp"
+#include "types/amfinteger.hpp"
 #include "types/amfitem.hpp"
 
 namespace amf {
@@ -25,6 +28,11 @@ public:
 			duration).count();
 	}
 
+	bool operator==(const AmfItem& other) const {
+		const AmfDate* p = dynamic_cast<const AmfDate*>(&other);
+		return p != nullptr && value == p->value;
+	}
+
 	std::vector<u8> serialize() const {
 		// AmfDate is date-marker (U29O-ref | (U29D-value date-time)),
 		// where U29D-value is 1 and date-time is a int64 describing the number of
@@ -39,7 +47,27 @@ public:
 		return buf;
 	}
 
-private:
+	static AmfDate deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		if (it == end || *it++ != AMF_DATE)
+			throw std::invalid_argument("AmfDate: Invalid type marker");
+
+		int type = AmfInteger::deserializeValue(it, end);
+		if ((type & 0x01) == 0)
+			return ctx.getObject<AmfDate>(type >> 1);
+
+		v8 data(it, end);
+		if(data.size() < 8)
+			throw std::out_of_range("Not enough bytes for AmfDate");
+
+		double v = *reinterpret_cast<double*>(&data[0]);
+		it += 8;
+
+		AmfDate ret(static_cast<long long>(ntoh(v)));
+		ctx.addObject<AmfDate>(ret);
+
+		return ret;
+	}
+
 	long long value;
 };
 

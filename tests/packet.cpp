@@ -4,7 +4,9 @@
 #include "amfpacket.hpp"
 #include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
+#include "types/amfnull.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfundefined.hpp"
 
 TEST(PacketTest, SingleMessage) {
 	AmfPacket packet;
@@ -236,4 +238,72 @@ TEST(PacketTest, HeaderAndMessage) {
 		0x11, // AMF3 object marker
 		0x09, 0x01, 0x01 // empty AmfArray
 	}, packet);
+}
+
+TEST(PacketTest, TooManyHeaders) {
+	AmfPacket p;
+	p.headers = std::vector<PacketHeader>(65536, PacketHeader("Foo", false, AmfNull()));
+	ASSERT_THROW(p.serialize(), std::length_error);
+}
+
+TEST(PacketTest, TooManyMessages) {
+	AmfPacket p;
+	p.messages = std::vector<PacketMessage>(65536, PacketMessage("Foo", "", AmfNull()));
+	ASSERT_THROW(p.serialize(), std::length_error);
+}
+
+TEST(PacketEquality, Header) {
+	PacketHeader h1("foo", false, AmfNull());
+	PacketHeader h2("foo", false, AmfUndefined());
+	EXPECT_NE(h1, h2);
+
+	PacketHeader h3("foo", true, AmfNull());
+	EXPECT_NE(h1, h3);
+
+	PacketHeader h4("bar", false, AmfNull());
+	EXPECT_NE(h1, h4);
+
+	PacketHeader h5("foo", false, AmfNull());
+	EXPECT_EQ(h1, h5);
+}
+
+TEST(PacketEquality, Message) {
+	PacketMessage h1("foo", "qux", AmfNull());
+	PacketMessage h2("foo", "qux", AmfUndefined());
+	EXPECT_NE(h1, h2);
+
+	PacketMessage h3("foo", "quux", AmfNull());
+	EXPECT_NE(h1, h3);
+
+	PacketMessage h4("bar", "qux", AmfNull());
+	EXPECT_NE(h1, h4);
+
+	PacketMessage h5("foo", "qux", AmfNull());
+	EXPECT_EQ(h1, h5);
+}
+
+TEST(PacketEquality, Packet) {
+	AmfPacket p1, p2;
+	EXPECT_EQ(p1, p2);
+
+	p1.headers.emplace_back("foo", false, AmfInteger(0));
+	EXPECT_NE(p1, p2);
+	p2.headers.push_back(p1.headers.at(0));
+	EXPECT_EQ(p1, p2);
+
+	p2.messages.emplace_back("qux", "zzz", AmfString("foo"));
+	EXPECT_NE(p1, p2);
+	p1.messages.push_back(p2.messages.at(0));
+	EXPECT_EQ(p1, p2);
+}
+
+TEST(PacketEquality, MixedTypes) {
+	AmfPacket p;
+	PacketHeader h("foo", false, AmfNull());
+	PacketMessage m("foo", "", AmfNull());
+	AmfNull n;
+
+	EXPECT_NE(p, h);
+	EXPECT_NE(p, m);
+	EXPECT_NE(p, n);
 }

@@ -4,8 +4,6 @@
 
 #include "types/amfitem.hpp"
 
-#include <cassert>
-
 namespace amf {
 
 enum Amf0Marker : u8 {
@@ -16,6 +14,12 @@ class PacketHeader : public AmfItem {
 public:
 	PacketHeader(std::string name, bool mustUnderstand, const AmfItem& value) :
 		name(name), mustUnderstand(mustUnderstand), value(value.serialize()) { };
+
+	bool operator==(const AmfItem& other) const {
+		const PacketHeader* p = dynamic_cast<const PacketHeader*>(&other);
+		return p != nullptr && mustUnderstand == p->mustUnderstand &&
+			name == p->name && value == p->value;
+	}
 
 	v8 serialize() const {
 		v8 buf;
@@ -51,6 +55,12 @@ public:
 	PacketMessage(std::string targetUri, std::string responseUri, const AmfItem& value) :
 		target(targetUri), response(responseUri), value(value.serialize()) { };
 
+	bool operator==(const AmfItem& other) const {
+		const PacketMessage* p = dynamic_cast<const PacketMessage*>(&other);
+		return p != nullptr && target == p->target && response == p->response &&
+			value == p->value;
+	}
+
 	v8 serialize() const {
 		v8 buf;
 		buf.reserve(2 + target.size() + 2 + response.size() + 5 + value.size());
@@ -81,10 +91,17 @@ class AmfPacket : public AmfItem {
 public:
 	AmfPacket() { };
 
+	bool operator==(const AmfItem& other) const {
+		const AmfPacket* p = dynamic_cast<const AmfPacket*>(&other);
+		return p != nullptr && headers == p->headers && messages == p->messages;
+	}
+
 	v8 serialize() const {
-		// TODO: replace with std::length_error?
-		assert(headers.size() < 65536 && "Too many headers");
-		assert(messages.size() < 65536 && "Too many messages");
+		if (headers.size() >= 65536)
+			throw std::length_error("AmfPacket::serialize too many headers");
+
+		if (messages.size() >= 65536)
+			throw std::length_error("AmfPacket::serialize too many messages");
 
 		v8 buf = {
 			0x00, 0x03 // Version is always AMF3

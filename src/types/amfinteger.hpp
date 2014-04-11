@@ -2,8 +2,10 @@
 #ifndef AMFINTEGER_HPP
 #define AMFINTEGER_HPP
 
-#include "amfitem.hpp"
-#include "amfdouble.hpp"
+#include "deserializationcontext.hpp"
+
+#include "types/amfitem.hpp"
+#include "types/amfdouble.hpp"
 
 namespace amf {
 
@@ -12,6 +14,11 @@ public:
 	AmfInteger() : value(0) { };
 	AmfInteger(int v) : value(v) { };
 	operator int() const { return value; }
+
+	bool operator==(const AmfItem& other) const {
+		const AmfInteger* p = dynamic_cast<const AmfInteger*>(&other);
+		return p != nullptr && value == p->value;
+	}
 
 	std::vector<u8> serialize() const {
 		// According to the spec:
@@ -59,7 +66,37 @@ public:
 		return buf;
 	}
 
-private:
+	static AmfInteger deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+		if (it == end || *it++ != AMF_INTEGER)
+			throw std::invalid_argument("AmfInteger: Invalid type marker");
+
+		return AmfInteger(deserializeValue(it, end));
+	}
+
+	static int deserializeValue(v8::const_iterator& it, v8::const_iterator end) {
+		v8 data(it, end);
+		int i = 0;
+		int val = 0;
+
+		// up to 3 bytes with high bit set for values > 255
+		while (i < 3 && data.at(i) & 0x80) {
+			val <<= 7;
+			val |= data.at(i++) & 0x7F;
+		}
+
+		// last byte
+		val <<= i < 3 ? 7 : 8;
+		val |= data.at(i++);
+
+		// set sign bit to handle negative integers
+		val <<= 3;
+		val >>= 3;
+
+		it += i;
+
+		return val;
+	}
+
 	int value;
 };
 

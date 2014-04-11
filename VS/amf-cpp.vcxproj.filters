@@ -4,6 +4,9 @@
     <Filter Include="types">
       <UniqueIdentifier>{b7ae85ae-d6ed-4eb7-9328-46e924e3058b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{a2ad5f6f-4de7-44de-9005-bed3de554419}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\types\amfbool.hpp">
@@ -13,6 +16,9 @@
       <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="..\src\types\amfdouble.hpp">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\types\amfdictionary.hpp">
       <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="..\src\types\amfinteger.hpp">
@@ -32,6 +38,8 @@
     </ClInclude>
     <ClInclude Include="..\src\amf.hpp" />
     <ClInclude Include="..\src\amfpacket.hpp" />
+    <ClInclude Include="..\src\deserializationcontext.hpp" />
+    <ClInclude Include="..\src\deserializer.hpp" />
     <ClInclude Include="..\src\serializer.hpp" />
     <ClInclude Include="..\src\types\amfvector.hpp">
       <Filter>types</Filter>
@@ -51,8 +59,13 @@
     <ClInclude Include="..\src\types\amfxmldocument.hpp">
       <Filter>types</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\utils\amfitemptr.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\deserializationcontext.cpp" />
+    <ClCompile Include="..\src\deserializer.cpp" />
     <ClCompile Include="..\src\serializer.cpp" />
   </ItemGroup>
 </Project>

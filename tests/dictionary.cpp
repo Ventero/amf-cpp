@@ -1,14 +1,16 @@
 #include "amftest.hpp"
-#include "gtest/gtest-printers.h"
 
 #include "amf.hpp"
 #include "types/amfarray.hpp"
+#include "types/amfbytearray.hpp"
 #include "types/amfbool.hpp"
 #include "types/amfdictionary.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
+#include "types/amfnull.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
 
 std::vector<v8>::iterator findElement(const v8::const_iterator& start, std::vector<v8>& parts) {
@@ -44,10 +46,16 @@ void consistsOf(std::vector<v8> parts, const v8& data) {
 	ASSERT_TRUE(parts.empty());
 }
 
+TEST(DictionarySerializationTest, EmptyDictionary) {
+	isEqual(v8 { 0x11, 0x01, 0x00 }, AmfDictionary(false, false));
+	isEqual(v8 { 0x11, 0x01, 0x00 }, AmfDictionary(true, false));
+	isEqual(v8 { 0x11, 0x01, 0x01 }, AmfDictionary(false, true));
+	isEqual(v8 { 0x11, 0x01, 0x01 }, AmfDictionary(true, true));
+}
 
 TEST(DictionarySerializationTest, IntegerKeys) {
 	AmfDictionary d(false, false);
-	d[AmfInteger(3)] = AmfBool(false).serialize();
+	d.insert(AmfInteger(3), AmfBool(false));
 
 	isEqual(v8 {
 		0x11, // AMF_DICTIONARY
@@ -115,7 +123,7 @@ TEST(DictionarySerializationTest, NumberKeys) {
 
 TEST(DictionarySerializationTest, IntegerAsStringKeys) {
 	AmfDictionary d(true, false);
-	d[AmfInteger(3)] = AmfBool(false).serialize();
+	d.insert(AmfInteger(3), AmfBool(false));
 
 	isEqual(v8 {
 		0x11, // AMF_DICTIONARY
@@ -353,4 +361,200 @@ TEST(DictionarySerializationTest, OverwriteKeys) {
 		0x06, 0x0B, 0x66, 0x61, 0x6C, 0x73, 0x65,
 		0x06, 0x07, 0x66, 0x6f, 0x6f
 	}, d);
+}
+
+TEST(DictionarySerializationTest, ToggleAsString) {
+	AmfDictionary d(true, false);
+	d.insert(AmfBool(false), AmfInteger(3));
+	isEqual({
+		0x11, 0x03, 0x00,
+		0x06, 0x0B, 0x66, 0x61, 0x6C, 0x73, 0x65,
+		0x04, 0x03
+	}, d);
+
+	d.asString = false;
+	isEqual({
+		0x11, 0x03, 0x00,
+		0x02,
+		0x04, 0x03
+	}, d);
+}
+
+TEST(DictionaryEquality, EmptyDictionary) {
+	AmfDictionary d0(true);
+	AmfDictionary d1(true, false);
+	EXPECT_EQ(d0, d1);
+
+	AmfDictionary d2(false);
+	EXPECT_NE(d0, d2);
+	AmfDictionary d3(false, true);
+	EXPECT_NE(d2, d3);
+	EXPECT_NE(d0, d3);
+}
+
+TEST(DictionaryEquality, SimpleValues) {
+	AmfDictionary d0(true), d1(true), d2(false);
+	d0.insert(AmfInteger(0), AmfString("foo"));
+	d1.insert(AmfInteger(0), AmfString("foo"));
+	d2.insert(AmfInteger(0), AmfString("foo"));
+	EXPECT_EQ(d0, d1);
+	EXPECT_NE(d0, d2);
+
+	d0.insert(AmfString("qux"), AmfByteArray(v8 { 0x00 }));
+	EXPECT_NE(d0, d1);
+	d1.insert(AmfString("qux"), AmfByteArray(v8 { 0x00 }));
+	EXPECT_EQ(d0, d1);
+
+	d0.insert(AmfNull(), AmfUndefined());
+	d1.insert(AmfUndefined(), AmfNull());
+	EXPECT_NE(d0, d1);
+
+	d0.insert(AmfUndefined(), AmfNull());
+	d1.insert(AmfNull(), AmfUndefined());
+	EXPECT_EQ(d0, d1);
+}
+
+TEST(DictionaryEquality, NestedDictionary) {
+	AmfDictionary d0(true), d1(true), i(false);
+	i.insert(AmfNull(), AmfUndefined());
+	d0.insert(i, i);
+	d1.insert(i, i);
+	EXPECT_EQ(d0, d1);
+}
+
+TEST(DictionaryEquality, MixedTypes) {
+	AmfDictionary d0(false);
+	AmfArray a;
+	AmfVector<int> v;
+	AmfUndefined u;
+	EXPECT_NE(d0, a);
+	EXPECT_NE(d0, v);
+	EXPECT_NE(d0, u);
+}
+
+TEST(DictionaryDeserialization, EmptyDictionary) {
+	deserialize(AmfDictionary(false, false), v8 { 0x11, 0x01, 0x00 });
+	deserialize(AmfDictionary(false, true), v8 { 0x11, 0x01, 0x01 });
+	deserialize(AmfDictionary(false, true), v8 { 0x11, 0x01, 0x01, 0x01 }, 1);
+}
+
+TEST(DictionaryDeserialization, IntegerKeys) {
+	AmfDictionary d(false, false);
+	d.insert(AmfInteger(3), AmfBool(false));
+	v8 data {
+		0x11, 0x03, 0x00, 0x04, 0x03, 0x02,
+	};
+	deserialize(d, data, 0);
+
+	d = AmfDictionary(false, false);
+	d.insert(AmfInteger(-16384), AmfString("foo"));
+	data =  {
+		0x11, 0x03, 0x00,
+		0x04, 0xFF, 0xFF, 0xC0, 0x00,
+		0x06, 0x07, 0x66, 0x6F, 0x6F
+	};
+	deserialize(d, data, 0);
+}
+
+TEST(DictionaryDeserialization, BoolKeys) {
+	AmfDictionary d(false, false);
+	d.insert(AmfBool(false), AmfInteger(3));
+	v8 data {
+		0x11, 0x03, 0x00, 0x02, 0x04, 0x03,
+		0xff, 0xff
+	};
+	deserialize(d, data, 2);
+}
+
+TEST(DictionaryDeserialization, StringKeys) {
+	AmfDictionary d(false, false);
+	d.insert(AmfString("foo"), AmfUndefined());
+	v8 data {
+		0x11, 0x03, 0x00,
+		0x06, 0x07, 0x66, 0x6f, 0x6f,
+		0x00
+	};
+	deserialize(d, data, 0);
+}
+
+TEST(DictionaryDeserialization, ObjectKeys) {
+	AmfDictionary d(false, false);
+	d.insert(AmfObject("", true, false), AmfString("foo"));
+	v8 data {
+		0x11, 0x03, 0x00, 0x0a, 0x0b, 0x01, 0x01, 0x06, 0x07, 0x66, 0x6f, 0x6f
+	};
+	deserialize(d, data, 0);
+
+	d = AmfDictionary(false, false);
+	AmfObject o("", true, false);
+	o.addDynamicProperty("bar", AmfInteger(1));
+	d.insert(o, AmfString("foo"));
+	data = {
+		0x11, 0x03, 0x00, 0x0a, 0x0b, 0x01, 0x07, 0x62, 0x61, 0x72, 0x04, 0x01,
+		0x01, 0x06, 0x07, 0x66, 0x6f, 0x6f
+	};
+	deserialize(d, data, 0);
+}
+
+TEST(DictionaryDeserialization, NestedDictionary) {
+	AmfDictionary d(false, true);
+	AmfDictionary val(false, true);
+	val.insert(AmfString("true"), AmfBool(true));
+	d.insert(AmfDictionary(false, false), val);
+	v8 data {
+		0x11, 0x03, 0x01,
+			0x11, 0x01, 0x00,
+			0x11, 0x03, 0x01,
+				0x06, 0x09, 0x74, 0x72, 0x75, 0x65,
+				0x03
+	};
+	deserialize(d, data);
+}
+
+TEST(DictionaryDeserialization, ObjectsCorrectReferenceOrder) {
+	// circular object reference to d is index 0 -> { 0x0a, 0x02 } == o
+	AmfDictionary d(false, false);
+	AmfObject o("", true, false);
+	o.addDynamicProperty("bar", AmfInteger(1));
+	d.insert(o, AmfString("foo"));
+	d.insert(AmfString("qux"), o);
+
+	v8 data {
+		0x11, 0x05, 0x00,
+			// key 1
+			0x0a, 0x0b, 0x01,
+				0x07, 0x62, 0x61, 0x72,
+				0x04, 0x01,
+				0x01,
+			// value 1
+			0x06, 0x07, 0x66, 0x6f, 0x6f,
+			// key 2
+			0x06, 0x07, 0x71, 0x75, 0x78,
+			// value 2
+			0x0a, 0x02
+	};
+	deserialize(d, data, 0);
+}
+
+TEST(DictionaryDeserialization, NotEnoughBytes) {
+	DeserializationContext ctx;
+
+	v8 data = { 0x11 };
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfDictionary::deserialize(it, data.end(), ctx), std::out_of_range);
+
+	v8 data2 = { 0x11, 0x01 };
+	it = data2.cbegin();
+	ASSERT_THROW(AmfDictionary::deserialize(it, data2.end(), ctx), std::out_of_range);
+
+	v8 data3 = { 0x11, 0x03, 0x00 };
+	it = data3.cbegin();
+	ASSERT_THROW(AmfDictionary::deserialize(it, data3.end(), ctx), std::out_of_range);
+}
+
+TEST(DictionaryDeserialization, InvalidMarker) {
+	DeserializationContext ctx;
+	v8 data = { 0x10, 0x01, 0x00 };
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfDictionary::deserialize(it, data.end(), ctx), std::invalid_argument);
 }

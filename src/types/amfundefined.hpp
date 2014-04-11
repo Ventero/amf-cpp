@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 
 namespace amf {
@@ -12,9 +14,22 @@ class AmfUndefined : public AmfItem {
 public:
 	AmfUndefined() {}
 
+	bool operator==(const AmfItem& other) const {
+		const AmfUndefined* p = dynamic_cast<const AmfUndefined*>(&other);
+		return p != nullptr;
+	}
+
 	std::vector<u8> serialize() const {
 		return std::vector<u8>{ AMF_UNDEFINED };
 	}
+
+	static AmfUndefined deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+		if (it == end || *it++ != AMF_UNDEFINED)
+			throw std::invalid_argument("AmfUndefined: Invalid type marker");
+
+		return AmfUndefined();
+	}
+
 };
 
 } // namespace amf

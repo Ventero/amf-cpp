@@ -7,6 +7,9 @@ ifneq ($(shell $(CXX) --version | grep clang),)
 	endif
 endif
 
+SRC = src/serializer.cpp src/deserializationcontext.cpp src/deserializer.cpp
+OBJ = $(SRC:.cpp=.o)
+
 .PHONY: all clean debug dist-clean release test
 all: release
 
@@ -15,21 +18,21 @@ debug: CXXFLAGS += -g
 debug: libamf.a
 32bit: CXXFLAGS += -m32
 32bit: release
-libamf.a: libamf.a(src/serializer.o)
+libamf.a: libamf.a($(OBJ))
 
 clean:
-	rm -f *.a src/*.o .dep
+	rm -f libamf.a $(OBJ) .dep
 
 dist-clean: clean
 	$(MAKE) -C tests clean
 
-test: src/serializer.o
+test: libamf.a
 	$(MAKE) -C tests
 	tests/main
 
 .dep:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM src/serializer.cpp -MT src/serializer.o \
-		| sed 's,:, $@:,' > $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(SRC) | \
+		sed '/^[^[:space:]]/s,^,src/,;s,:, $@:,' > $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include .dep

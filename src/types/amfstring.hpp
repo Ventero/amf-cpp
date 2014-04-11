@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "deserializationcontext.hpp"
+
 #include "types/amfitem.hpp"
 #include "types/amfinteger.hpp"
 
@@ -11,9 +13,15 @@ namespace amf {
 
 class AmfString : public AmfItem {
 public:
-	AmfString(const char* v) : value(v == nullptr ? "" : v) { };
-	AmfString(std::string v) : value(v) { };
+	AmfString() { }
+	AmfString(const char* v) : value(v == nullptr ? "" : v) { }
+	AmfString(std::string v) : value(v) { }
 	operator std::string() const { return value; }
+
+	bool operator==(const AmfItem& other) const {
+		const AmfString* p = dynamic_cast<const AmfString*>(&other);
+		return p != nullptr && value == p->value;
+	}
 
 	std::vector<u8> serialize() const {
 		if(value.empty())
@@ -30,7 +38,29 @@ public:
 		return buf;
 	}
 
-private:
+	static AmfString deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		if (it == end || *it++ != AMF_STRING)
+			throw std::invalid_argument("AmfString: Invalid type marker");
+
+		return AmfString(deserializeValue(it, end, ctx));
+	}
+
+	static std::string deserializeValue(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		int type = AmfInteger::deserializeValue(it, end);
+		if ((type & 0x01) == 0)
+			return ctx.getString(type >> 1);
+
+		int length = type >> 1;
+		if (end - it < length)
+			throw std::out_of_range("Not enough bytes for AmfString");
+
+		std::string val(it, it + length);
+		it += length;
+
+		ctx.addString(val);
+		return val;
+	}
+
 	std::string value;
 };
 
