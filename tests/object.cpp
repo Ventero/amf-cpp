@@ -674,6 +674,89 @@ TEST(ObjectDeserialization, Context) {
 	deserialize(obj2, { 0x0a, 0x02 }, 0, &ctx);
 }
 
+TEST(ObjectDeserialization, ComplexNestedObject) {
+	AmfObject obj("", true, false);
+	AmfObject path("", true, false);
+	AmfObject o25("", true, false);
+	AmfObject o26("", true, false);
+	AmfArray a33;
+	AmfArray a34;
+	AmfArray a35;
+
+	a33.insert("prototype_id", AmfString("13"));
+	a34.insert("prototype_id", AmfString("13"));
+	a35.insert("prototype_id", AmfString("11"));
+
+	o25.addDynamicProperty("33", a33);
+	o25.addDynamicProperty("34", a34);
+	o25.addDynamicProperty("35", a35);
+
+	o26.addDynamicProperty("33", a33);
+
+	path.addDynamicProperty("25", o25);
+	path.addDynamicProperty("26", o26);
+
+	obj.addDynamicProperty("path", path);
+
+	v8 data {
+		// obj
+		0x0a, 0x0b, 0x01,
+			// UTF-8-vr "path"
+			0x09, 0x70, 0x61, 0x74, 0x68,
+			// path, traits ref
+			0x0a, 0x01,
+				// UTF-8-vr "25"
+				0x05, 0x32, 0x35,
+				// o25, traits ref
+				0x0a, 0x01,
+					// UTF-8-vr "33"
+					0x05, 0x33, 0x33,
+					// AmfArray a33
+					0x09, 0x01,
+						// UTF-8-vr "prototype_id"
+						0x19, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x74, 0x79, 0x70, 0x65, 0x5f, 0x69, 0x64,
+						// AmfString "13"
+						0x06, 0x05, 0x31, 0x33,
+					0x01,
+					// UTF-8-vr "34"
+					0x05, 0x33, 0x34,
+					// AmfArray
+					0x09, 0x01,
+						// string-ref "prototype_id"
+						0x06,
+						// AmfString "13"
+						0x06, 0x08,
+					0x01,
+					// UTF-8-vr "35"
+					0x05, 0x33, 0x35,
+					// AmfArray
+					0x09, 0x01,
+						// string-ref "prototype_id"
+						0x06,
+						// AmfString "11"
+						0x06, 0x05, 0x31, 0x31,
+					0x01,
+				0x01,
+				// UTF-8-vr "26"
+				0x05, 0x32, 0x36,
+				// o26 traits-ref
+				0x0a, 0x01,
+					// string-ref "33"
+					0x04,
+					// AmfArray
+					0x09, 0x01,
+						// string-ref "prototype_id"
+						0x06,
+						// AmfString "13"
+						0x06, 0x08,
+					0x01,
+				0x01,
+			0x01,
+		0x01
+	};
+	deserialize(obj, data);
+}
+
 TEST(ObjectDeserialization, Externalizable) {
 	auto ext = [] (v8::const_iterator&, v8::const_iterator, DeserializationContext&) -> AmfObject {
 		return AmfObject("foobar", true, false);
