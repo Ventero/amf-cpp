@@ -17,7 +17,7 @@ void DeserializationContext::addString(const std::string& str) {
 	strings.push_back(str);
 }
 
-AmfString DeserializationContext::getString(int index) {
+AmfString DeserializationContext::getString(size_t index) {
 	return strings.at(index);
 }
 
@@ -25,7 +25,7 @@ void DeserializationContext::addTraits(const AmfObjectTraits& trait) {
 	traits.emplace_back(new AmfObjectTraits(trait));
 }
 
-AmfObjectTraits DeserializationContext::getTraits(int index) {
+AmfObjectTraits DeserializationContext::getTraits(size_t index) {
 	return AmfObjectTraits(*traits.at(index));
 }
 

@@ -162,7 +162,7 @@ public:
 		int count = type >> 1;
 
 		AmfVector<AmfItem> ret(name, fixed);
-		int contextIndex = ctx.addObject<AmfVector<AmfItem>>(ret);
+		size_t contextIndex = ctx.addObject<AmfVector<AmfItem>>(ret);
 
 		ret.values.reserve(count);
 		for (int i = 0; i < count; ++i) {

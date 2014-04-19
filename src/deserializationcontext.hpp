@@ -22,24 +22,24 @@ public:
 	void clear();
 
 	void addString(const std::string& str);
-	AmfString getString(int index);
+	AmfString getString(size_t index);
 
 	void addTraits(const AmfObjectTraits& traits);
-	AmfObjectTraits getTraits(int index);
+	AmfObjectTraits getTraits(size_t index);
 
 	template<typename T>
-	int addObject(const T& object) {
+	size_t addObject(const T& object) {
 		objects.emplace_back(new T(object));
 		return objects.size() - 1;
 	}
 
 	template<typename T>
-	void setObject(int index, const T& object) {
+	void setObject(size_t index, const T& object) {
 		objects.at(index) = AmfItemPtr(new T(object));
 	}
 
 	template<typename T>
-	T getObject(int index) {
+	T getObject(size_t index) {
 		T* ptr = dynamic_cast<T*>(objects.at(index).get());
 		if (ptr == nullptr)
 			throw std::invalid_argument("DeserializationContext::getObject wrong type");

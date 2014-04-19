@@ -103,7 +103,7 @@ public:
 			return ctx.getObject<AmfArray>(type >> 1);
 
 		AmfArray ret;
-		int contextIndex = ctx.addObject<AmfArray>(ret);
+		size_t contextIndex = ctx.addObject<AmfArray>(ret);
 
 		// associative until UTF-8-empty
 		while (true) {

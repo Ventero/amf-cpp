@@ -84,7 +84,7 @@ public:
 
 		bool weak = (*it++ == 0x01);
 		AmfDictionary ret(false, weak);
-		int contextIndex = ctx.addObject<AmfDictionary>(ret);
+		size_t contextIndex = ctx.addObject<AmfDictionary>(ret);
 
 		int size = type >> 1;
 		for (int i = 0; i < size; ++i) {
