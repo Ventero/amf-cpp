@@ -458,6 +458,22 @@ TEST(VectorTypeTest, VectorFloatNotConstructible) {
 
 	SUCCEED();
 }
+
+TEST(VectorTypeTest, VectorAmfSubclassConstructible) {
+	static_assert(std::is_constructible<AmfVector<AmfBool>, std::vector<AmfBool>, std::string>::value,
+		"AmfVector<AmfByteArray> should be constructible");
+
+	SUCCEED();
+
+}
+
+TEST(VectorTypeTest, VectorNonAmfSubclassNotConstructible) {
+	static_assert(!std::is_constructible<AmfVector<DeserializationContext>, std::vector<DeserializationContext>, std::string>::value,
+		"AmfVector<DeserializationContext> should not be constructible");
+
+	SUCCEED();
+
+}
 #endif
 
 TEST(VectorEquality, IntVector) {
