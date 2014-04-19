@@ -13,13 +13,13 @@
 #include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
 
-std::vector<v8>::iterator findElement(const v8::const_iterator& start, std::vector<v8>& parts) {
+static std::vector<v8>::iterator findElement(const v8::const_iterator& start, std::vector<v8>& parts) {
 	return std::find_if(parts.begin(), parts.end(), [=] (const v8& part) {
 		return std::equal(part.begin(), part.end(), start);
 	});
 }
 
-void consistsOf(std::vector<v8> parts, const v8& data) {
+static void consistsOf(std::vector<v8> parts, const v8& data) {
 	auto it = data.begin();
 	while (it != data.end()) {
 		if (parts.empty()) {
