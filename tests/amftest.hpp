@@ -22,7 +22,7 @@ static inline void isEqual(const std::vector<u8>& expected, const AmfItem& value
 }
 
 template<typename T>
-void deserialize(T expected, const v8& data, int expectedLeft = 0,
+void deserialize(const T& expected, const v8& data, int expectedLeft = 0,
 		DeserializationContext* ctx = nullptr) {
 	SCOPED_TRACE(::testing::PrintToString(expected) + " = " + ::testing::PrintToString(data));
 

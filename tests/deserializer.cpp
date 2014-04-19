@@ -21,7 +21,7 @@
 #include "utils/amfitemptr.hpp"
 
 template<typename T>
-static void deserializesTo(T expected, v8 data, int left = 0) {
+static void deserializesTo(const T& expected, v8 data, int left = 0) {
 	SCOPED_TRACE(::testing::PrintToString(expected) + " = " + ::testing::PrintToString(data));
 
 	auto it = data.cbegin();

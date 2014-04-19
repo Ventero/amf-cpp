@@ -891,11 +891,11 @@ TEST(VectorDeserialization, VectorNumberInvalidMarker) {
 }
 
 template<typename T>
-static void deserializeTo(AmfVector<T> expected, v8 data, int left = 0,
+static void deserializeTo(const AmfVector<T>& expected, v8 data, int left = 0,
 	DeserializationContext* ctx = nullptr) {
 	// deserialize uses Deserializer::deserilaize, which gives an
 	// AmfVector<AmfItem>, so we have to compare against that
-	AmfVector<AmfItem>& vi = dynamic_cast<AmfVector<AmfItem>&>(expected);
+	auto vi = dynamic_cast<const AmfVector<AmfItem>&>(expected);
 	deserialize(vi, data, left, ctx);
 
 	// also compare against actual AmfVector<T>
