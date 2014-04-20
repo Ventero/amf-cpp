@@ -17,7 +17,7 @@ void DeserializationContext::addString(const std::string& str) {
 	strings.push_back(str);
 }
 
-AmfString DeserializationContext::getString(size_t index) {
+std::string DeserializationContext::getString(size_t index) {
 	return strings.at(index);
 }
 

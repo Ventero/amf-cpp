@@ -11,9 +11,7 @@
 
 namespace amf {
 
-class AmfItem;
 class AmfObjectTraits;
-class AmfString;
 
 class DeserializationContext {
 public:
@@ -22,7 +20,7 @@ public:
 	void clear();
 
 	void addString(const std::string& str);
-	AmfString getString(size_t index);
+	std::string getString(size_t index);
 
 	void addTraits(const AmfObjectTraits& traits);
 	AmfObjectTraits getTraits(size_t index);
