@@ -29,6 +29,11 @@ public:
 		return dynamic_cast<T*>(get());
 	}
 
+	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
+	const T* asPtr() const {
+		return dynamic_cast<T*>(get());
+	}
+
 	bool operator==(const AmfItemPtr& other) const {
 		return *this->get() == *other.get();
 	}

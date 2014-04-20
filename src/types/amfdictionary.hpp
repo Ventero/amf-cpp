@@ -118,13 +118,13 @@ private:
 		if (!asString)
 			return key->serialize();
 
-		AmfInteger* intval = dynamic_cast<AmfInteger*>(key.get());
+		const AmfInteger* intval = key.asPtr<AmfInteger>();
 		if (intval != nullptr) {
 			std::string strval = std::to_string(intval->value);
 			return AmfString(strval).serialize();
 		}
 
-		AmfDouble* doubleval = dynamic_cast<AmfDouble*>(key.get());
+		const AmfDouble* doubleval = key.asPtr<AmfDouble>();
 		if (doubleval != nullptr) {
 			std::ostringstream str;
 			str << std::setprecision(std::numeric_limits<double>::digits10)
@@ -132,7 +132,7 @@ private:
 			return AmfString(str.str()).serialize();
 		}
 
-		AmfBool* boolval = dynamic_cast<AmfBool*>(key.get());
+		const AmfBool* boolval = key.asPtr<AmfBool>();
 		if (boolval != nullptr)
 			return AmfString(*boolval ? "true" : "false").serialize();
 
