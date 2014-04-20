@@ -1,6 +1,5 @@
 #include "deserializationcontext.hpp"
 
-#include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
 
 namespace amf {
@@ -22,11 +21,11 @@ std::string DeserializationContext::getString(size_t index) {
 }
 
 void DeserializationContext::addTraits(const AmfObjectTraits& trait) {
-	traits.emplace_back(new AmfObjectTraits(trait));
+	traits.push_back(trait);
 }
 
 AmfObjectTraits DeserializationContext::getTraits(size_t index) {
-	return AmfObjectTraits(*traits.at(index));
+	return traits.at(index);
 }
 
 } // namespace amf

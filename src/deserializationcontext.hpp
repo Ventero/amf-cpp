@@ -8,10 +8,9 @@
 #include "amf.hpp"
 
 #include "utils/amfitemptr.hpp"
+#include "utils/amfobjecttraits.hpp"
 
 namespace amf {
-
-class AmfObjectTraits;
 
 class DeserializationContext {
 public:
@@ -47,7 +46,7 @@ public:
 
 private:
 	std::vector<std::string> strings;
-	std::vector<std::shared_ptr<AmfObjectTraits>> traits;
+	std::vector<AmfObjectTraits> traits;
 	std::vector<AmfItemPtr> objects;
 };
 
