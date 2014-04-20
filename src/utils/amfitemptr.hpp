@@ -31,7 +31,7 @@ public:
 
 	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
 	const T* asPtr() const {
-		return dynamic_cast<T*>(get());
+		return dynamic_cast<const T*>(get());
 	}
 
 	bool operator==(const AmfItemPtr& other) const {
