@@ -53,7 +53,7 @@ gtest_main.o: $(GTEST_SRCS_)
 		-c $(GTEST_DIR)/src/gtest_main.cc
 
 .dep:
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(addsuffix .cpp,$(TESTS) $(SUBTESTS)) | \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(SUBTESTS)) | \
 		sed 's,:, $@:,' > $@
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $(PCH).gch $(PCH) | \
 		sed 's,:, $@:,' >> $@
