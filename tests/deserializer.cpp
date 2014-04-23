@@ -135,6 +135,22 @@ TEST(DeserializerTest, VectorDouble) {
 		0xbf, 0xf3, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0xff }, 1);
 }
 
+TEST(DeserializerTest, VectorAmfItem) {
+	AmfVector<AmfInteger> v({1, 2, 3}, "foo", false);
+	// Need to pass a AmfVector<AmfItem> to compare against, as that's what
+	// Deserializer::deserialize returns
+	AmfVector<AmfItem> vc = v;
+	v8 data {
+		0x10, 0x07, 0x00,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x04, 0x01,
+		0x04, 0x02,
+		0x04, 0x03
+	};
+
+	deserializesTo(vc, data);
+}
+
 TEST(DeserializerTest, InstanceContext) {
 	AmfByteArray ba(v8 { 0x1 });
 	v8 data {

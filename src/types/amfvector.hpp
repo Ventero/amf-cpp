@@ -186,8 +186,8 @@ public:
 };
 
 template<typename T>
-class AmfVector<T, typename std::enable_if<std::
-	is_base_of<AmfItem, T>::value>::type> : public AmfVector<AmfItem> {
+class AmfVector<T, typename std::enable_if<
+	std::is_base_of<AmfItem, T>::value>::type> : public AmfVector<AmfItem> {
 public:
 	AmfVector(std::vector<T> vector, std::string type, bool fixed = false) :
 		AmfVector<AmfItem>(type, fixed) {
