@@ -187,3 +187,10 @@ TEST(DeserializerTest, UnknownType) {
 	ASSERT_THROW(d.deserialize({ AMF_DICTIONARY + 1 }), std::invalid_argument);
 	ASSERT_THROW(d.deserialize({ 0xff }), std::invalid_argument);
 }
+
+TEST(DeserializerTest, IncorrectTypeRef) {
+	Deserializer d;
+	ASSERT_EQ(AmfArray(), d.deserialize(v8 { 0x09, 0x01, 0x01 }).as<AmfArray>());
+	ASSERT_EQ(AmfArray(), d.deserialize(v8 { 0x09, 0x00 }).as<AmfArray>());
+	ASSERT_THROW(d.deserialize(v8 { 0x10, 0x00 }), std::invalid_argument);
+}
