@@ -61,7 +61,7 @@ TEST(BoolDeserialization, InvalidMarker) {
 	v8 data { 0x01 };
 	auto it = data.cbegin();
 	DeserializationContext ctx;
-	ASSERT_THROW(AmfBool::deserialize(it, data.end(), ctx), std::invalid_argument);
+	ASSERT_THROW(AmfBool::deserialize(it, data.cend(), ctx), std::invalid_argument);
 	// now, it == end
-	ASSERT_THROW(AmfBool::deserialize(it, data.end(), ctx), std::invalid_argument);
+	ASSERT_THROW(AmfBool::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }

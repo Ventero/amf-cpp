@@ -74,7 +74,7 @@ AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator 
 
 AmfItemPtr Deserializer::deserialize(v8 buf) {
 	auto it = buf.cbegin();
-	return deserialize(it, buf.end(), ctx);
+	return deserialize(it, buf.cend(), ctx);
 }
 
 } // namespace amf

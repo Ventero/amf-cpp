@@ -541,20 +541,20 @@ TEST(DictionaryDeserialization, NotEnoughBytes) {
 
 	v8 data = { 0x11 };
 	auto it = data.cbegin();
-	ASSERT_THROW(AmfDictionary::deserialize(it, data.end(), ctx), std::out_of_range);
+	ASSERT_THROW(AmfDictionary::deserialize(it, data.cend(), ctx), std::out_of_range);
 
 	v8 data2 = { 0x11, 0x01 };
 	it = data2.cbegin();
-	ASSERT_THROW(AmfDictionary::deserialize(it, data2.end(), ctx), std::out_of_range);
+	ASSERT_THROW(AmfDictionary::deserialize(it, data2.cend(), ctx), std::out_of_range);
 
 	v8 data3 = { 0x11, 0x03, 0x00 };
 	it = data3.cbegin();
-	ASSERT_THROW(AmfDictionary::deserialize(it, data3.end(), ctx), std::out_of_range);
+	ASSERT_THROW(AmfDictionary::deserialize(it, data3.cend(), ctx), std::out_of_range);
 }
 
 TEST(DictionaryDeserialization, InvalidMarker) {
 	DeserializationContext ctx;
 	v8 data = { 0x10, 0x01, 0x00 };
 	auto it = data.cbegin();
-	ASSERT_THROW(AmfDictionary::deserialize(it, data.end(), ctx), std::invalid_argument);
+	ASSERT_THROW(AmfDictionary::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }

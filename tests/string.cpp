@@ -190,7 +190,7 @@ TEST(StringDeserialization, EmptyIterator) {
 	auto begin = empty.cbegin();
 	DeserializationContext ctx;
 	ASSERT_THROW({
-		AmfString::deserialize(begin, empty.end(), ctx);
+		AmfString::deserialize(begin, empty.cend(), ctx);
 	}, std::invalid_argument);
 }
 

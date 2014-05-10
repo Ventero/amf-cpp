@@ -385,20 +385,20 @@ TEST(ArrayDeserialization, NotEnoughBytes) {
 
 	v8 data = { 0x09 };
 	auto it = data.cbegin();
-	ASSERT_THROW(AmfArray::deserialize(it, data.end(), ctx), std::out_of_range);
+	ASSERT_THROW(AmfArray::deserialize(it, data.cend(), ctx), std::out_of_range);
 
 	v8 data2 = { 0x09, 0x01 };
 	it = data2.cbegin();
-	ASSERT_THROW(AmfArray::deserialize(it, data2.end(), ctx), std::out_of_range);
+	ASSERT_THROW(AmfArray::deserialize(it, data2.cend(), ctx), std::out_of_range);
 
 	v8 data3 = { 0x09, 0x03, 0x01 };
 	it = data3.cbegin();
-	ASSERT_THROW(AmfArray::deserialize(it, data3.end(), ctx), std::out_of_range);
+	ASSERT_THROW(AmfArray::deserialize(it, data3.cend(), ctx), std::out_of_range);
 }
 
 TEST(ArrayDeserialization, InvalidMarker) {
 	v8 data = { 0x0a };
 	auto it = data.cbegin();
 	DeserializationContext ctx;
-	ASSERT_THROW(AmfArray::deserialize(it, data.end(), ctx), std::invalid_argument);
+	ASSERT_THROW(AmfArray::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
