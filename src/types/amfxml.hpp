@@ -22,7 +22,7 @@ public:
 	}
 
 	std::vector<u8> serialize() const {
-		std::vector<u8> buf = AmfInteger(value.size()).asLength(AMF_XML);
+		std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_XML);
 
 		// the actual data is simply encoded as UTF8-chars
 		buf.insert(buf.end(), value.begin(), value.end());

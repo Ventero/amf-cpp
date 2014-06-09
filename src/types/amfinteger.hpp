@@ -57,10 +57,8 @@ public:
 		}
 	}
 
-	std::vector<u8> asLength(u8 marker) {
-		AmfInteger length(value << 1 | 1);
-
-		std::vector<u8> buf = length.serialize();
+	static std::vector<u8> asLength(size_t value, u8 marker) {
+		std::vector<u8> buf = AmfInteger(value << 1 | 1).serialize();
 		buf[0] = marker;
 
 		return buf;

@@ -30,7 +30,7 @@ public:
 		// AmfString = string-marker UTF-8-vr
 		// with UTF-8-vr = U29S-value *(UTF8-char)
 		// U29S-value encodes the length of the following string
-		std::vector<u8> buf = AmfInteger(value.size()).asLength(AMF_STRING);
+		std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_STRING);
 
 		// now, append the actual string.
 		buf.insert(buf.end(), value.begin(), value.end());

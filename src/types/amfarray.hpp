@@ -72,7 +72,7 @@ public:
 		 * )
 		 */
 		// U29A-value
-		std::vector<u8> buf = AmfInteger(dense.size()).asLength(AMF_ARRAY);
+		std::vector<u8> buf = AmfInteger::asLength(dense.size(), AMF_ARRAY);
 
 		for (const auto& it : associative) {
 			auto name = AmfString(it.first).serialize();

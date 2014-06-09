@@ -71,17 +71,9 @@ TEST(IntegerSerializationTest, LargeNegativeIntegerAsDouble) {
 }
 
 TEST(IntegerAsLengthTest, SimpleValue) {
-	isEqual(v8 { 0x05, 0x07 }, AmfInteger(3).asLength(0x05));
-	isEqual(v8 { 0x06, 0x07 }, AmfInteger(3).asLength(0x06));
-	isEqual(v8 { 0x01, 0x87, 0x7F }, AmfInteger(511).asLength(0x01));
-}
-
-TEST(IntegerAsLengthTest, ValueNotModified) {
-	// tests that a call to AmfInteger#asLength doesn't modify the actual
-	// value of the AmfInteger
-	AmfInteger val(17);
-	isEqual(v8 { 0x0A, 0x23 }, val.asLength(0x0a));
-	isEqual(v8 { 0x04, 0x11 }, val.serialize());
+	isEqual(v8 { 0x05, 0x07 }, AmfInteger::asLength(3, 0x05));
+	isEqual(v8 { 0x06, 0x07 }, AmfInteger::asLength(3, 0x06));
+	isEqual(v8 { 0x01, 0x87, 0x7F }, AmfInteger::asLength(511, 0x01));
 }
 
 TEST(IntegerEquality, SimpleValues) {

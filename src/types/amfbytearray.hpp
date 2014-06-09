@@ -32,7 +32,7 @@ public:
 	}
 
 	std::vector<u8> serialize() const {
-		std::vector<u8> buf = AmfInteger(value.size()).asLength(AMF_BYTEARRAY);
+		std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_BYTEARRAY);
 
 		buf.insert(buf.end(), value.begin(), value.end());
 		return buf;

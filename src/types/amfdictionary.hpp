@@ -56,7 +56,7 @@ public:
 	}
 
 	std::vector<u8> serialize() const {
-		std::vector<u8> buf = AmfInteger(values.size()).asLength(AMF_DICTIONARY);
+		std::vector<u8> buf = AmfInteger::asLength(values.size(), AMF_DICTIONARY);
 
 		buf.push_back(weak ? 0x01 : 0x00);
 
