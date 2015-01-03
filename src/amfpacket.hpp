@@ -109,14 +109,14 @@ public:
 
 		v8 header_count = network_bytes<uint16_t>(headers.size());
 		buf.insert(buf.end(), header_count.begin(), header_count.end());
-		for(const PacketHeader& header : headers) {
+		for (const PacketHeader& header : headers) {
 			const v8& val = header.serialize();
 			buf.insert(buf.end(), val.begin(), val.end());
 		}
 
 		v8 message_count = network_bytes<uint16_t>(messages.size());
 		buf.insert(buf.end(), message_count.begin(), message_count.end());
-		for(const PacketMessage& message : messages) {
+		for (const PacketMessage& message : messages) {
 			const v8& val = message.serialize();
 			buf.insert(buf.end(), val.begin(), val.end());
 		}

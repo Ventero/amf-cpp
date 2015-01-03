@@ -105,7 +105,7 @@ public:
 
 		// only encode *(dynamic-member) (including the end marker) if the object
 		// is actually dynamic
-		if(traits.dynamic) {
+		if (traits.dynamic) {
 			// dynamic-members = UTF-8-vr value-type
 			for (const auto& it : dynamicProperties) {
 				AmfString attribute(it.first);

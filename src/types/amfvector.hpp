@@ -70,7 +70,7 @@ public:
 		// fixed-vector marker
 		buf.push_back(fixed ? 0x01 : 0x00);
 
-		for(const T& it : values) {
+		for (const T& it : values) {
 			// values are encoded in network byte order
 			// ints are encoded as U32, not U29
 			T netvalue = hton(it);
@@ -92,12 +92,12 @@ public:
 		unsigned int stride = VectorProperties<T>::size;
 		size_t count = type >> 1;
 
-		if(it == end)
+		if (it == end)
 			throw std::out_of_range("Not enough bytes for AmfVector");
 
 		bool fixed = (*it++ == 0x01);
 
-		if(end - it < count * stride)
+		if (end - it < count * stride)
 			throw std::out_of_range("Not enough bytes for AmfVector");
 
 		std::vector<T> values(count);
@@ -159,7 +159,7 @@ public:
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfVector<AmfItem>>(type >> 1);
 
-		if(it == end)
+		if (it == end)
 			throw std::out_of_range("Not enough bytes for AmfVector");
 		bool fixed = (*it++ == 0x01);
 

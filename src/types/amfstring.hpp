@@ -24,7 +24,7 @@ public:
 	}
 
 	std::vector<u8> serialize() const {
-		if(value.empty())
+		if (value.empty())
 			return std::vector<u8>{ AMF_STRING, 0x01 };
 
 		// AmfString = string-marker UTF-8-vr
