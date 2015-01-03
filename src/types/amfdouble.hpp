@@ -31,14 +31,14 @@ public:
 		if (it == end || *it++ != AMF_DOUBLE)
 			throw std::invalid_argument("AmfDouble: Invalid type marker");
 
-		v8 data(it, end);
-
-		if(data.size() < 8)
+		// Dates are always encoded as 64bit double in network order.
+		if (end - it < 8)
 			throw std::out_of_range("Not enough bytes for AmfDouble");
 
+		double v;
+		std::copy(it, it + 8, reinterpret_cast<u8 *>(&v));
 		it += 8;
 
-		double v = *reinterpret_cast<double*>(&data[0]);
 		return AmfDouble(ntoh(v));
 	}
 

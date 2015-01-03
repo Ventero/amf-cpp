@@ -89,21 +89,26 @@ public:
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfVector<T>>(type >> 1);
 
+		unsigned int stride = VectorProperties<T>::size;
 		size_t count = type >> 1;
 
 		if(it == end)
 			throw std::out_of_range("Not enough bytes for AmfVector");
+
 		bool fixed = (*it++ == 0x01);
 
-		v8 data(it, end);
-		if(data.size() < count * VectorProperties<T>::size)
+		if(end - it < count * stride)
 			throw std::out_of_range("Not enough bytes for AmfVector");
-
-		it += count * VectorProperties<T>::size;
 
 		std::vector<T> values(count);
 		for (size_t i = 0; i < count; ++i) {
-			values[i] = ntoh(*reinterpret_cast<T*>(&data[i * VectorProperties<T>::size]));
+			// Convert value bytes to requested type.
+			T val;
+			std::copy(it, it + stride, reinterpret_cast<u8 *>(&val));
+			it += stride;
+
+			// Values are stored in network order.
+			values[i] = ntoh(val);
 		}
 
 		AmfVector<T> ret(values, fixed);

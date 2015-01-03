@@ -55,11 +55,11 @@ public:
 		if ((type & 0x01) == 0)
 			return ctx.getObject<AmfDate>(type >> 1);
 
-		v8 data(it, end);
-		if(data.size() < 8)
+		if (end - it < 8)
 			throw std::out_of_range("Not enough bytes for AmfDate");
 
-		double v = *reinterpret_cast<double*>(&data[0]);
+		double v;
+		std::copy(it, it + 8, reinterpret_cast<u8 *>(&v));
 		it += 8;
 
 		AmfDate ret(static_cast<long long>(ntoh(v)));

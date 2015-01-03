@@ -72,25 +72,30 @@ public:
 	}
 
 	static int deserializeValue(v8::const_iterator& it, v8::const_iterator end) {
-		v8 data(it, end);
+		// Byte counter
 		int i = 0;
+		// Integer value, limited to 29 bits.
 		int val = 0;
 
+		if (it == end)
+			throw std::out_of_range("Not enough bytes for AmfInteger");
+
 		// up to 3 bytes with high bit set for values > 255
-		while (i < 3 && data.at(i) & 0x80) {
+		while (i++ < 3 && *it & 0x80) {
 			val <<= 7;
-			val |= data.at(i++) & 0x7F;
+			val |= (*it++ & 0x7F);
+
+			if (it == end)
+				throw std::out_of_range("Not enough bytes for AmfInteger");
 		}
 
 		// last byte
-		val <<= i < 3 ? 7 : 8;
-		val |= data.at(i++);
+		val <<= (i <= 3 ? 7 : 8);
+		val |= *it++;
 
 		// set sign bit to handle negative integers
 		val <<= 3;
 		val >>= 3;
-
-		it += i;
 
 		return val;
 	}

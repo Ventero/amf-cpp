@@ -26,8 +26,10 @@ clean:
 dist-clean: clean
 	$(MAKE) -C tests clean
 
-test: libamf.a
+build-test: libamf.a
 	$(MAKE) -C tests
+
+test: build-test
 	tests/main
 
 .dep:
