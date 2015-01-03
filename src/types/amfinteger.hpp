@@ -58,6 +58,11 @@ public:
 	}
 
 	static std::vector<u8> asLength(size_t value, u8 marker) {
+		// Lengths are serialized as U29, where 1 bit is the sign bit and 1 bit is
+		// used as non-reference marker, which leaves us 27 bits for the actual value.
+		if (value >= (1 << 27))
+			throw std::invalid_argument("Length outside of valid range for AmfInteger.");
+
 		std::vector<u8> buf = AmfInteger(value << 1 | 1).serialize();
 		buf[0] = marker;
 

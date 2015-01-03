@@ -76,6 +76,17 @@ TEST(IntegerAsLengthTest, SimpleValue) {
 	isEqual(v8 { 0x01, 0x87, 0x7F }, AmfInteger::asLength(511, 0x01));
 }
 
+TEST(IntegerAsLengthTest, ValueRange) {
+	// Lengths are serialized as U29, where 1 bit is the sign bit and 1 bit is
+	// used as non-reference marker, which leaves us 27 bits for the actual value.
+	// This test checks that only values that can actually be serialized to an U29
+	// are accepted.
+	ASSERT_THROW(AmfInteger::asLength(1 << 27, 0x01), std::invalid_argument);
+	ASSERT_NO_THROW(AmfInteger::asLength((1 << 27) - 1, 0x01));
+
+	isEqual(v8 { 0x0C, 0xBF, 0xFF, 0xFF, 0xFF }, AmfInteger::asLength((1 << 27) - 1, 0x0C));
+}
+
 TEST(IntegerEquality, SimpleValues) {
 	AmfInteger i1(0);
 	AmfInteger i2(1);
