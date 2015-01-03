@@ -203,3 +203,27 @@ TEST(IntegerDeserializationTest, BytesLeft) {
 	deserializesTo(0xffffffe, { 0x04, 0xBF, 0xFF, 0xFF, 0xFE, 0xFF }, 1);
 	deserializesTo(-1, { 0x04, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 }, 1);
 }
+
+TEST(IntegerDeserializationTest, NotEnoughBytes) {
+	DeserializationContext ctx;
+
+	v8 data = { 0x04 };
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfInteger::deserialize(it, data.cend(), ctx), std::out_of_range);
+
+	data = { 0x04, 0x80 };
+	it = data.cbegin();
+	ASSERT_THROW(AmfInteger::deserialize(it, data.cend(), ctx), std::out_of_range);
+
+	data = { 0x04, 0x80, 0x80 };
+	it = data.cbegin();
+	ASSERT_THROW(AmfInteger::deserialize(it, data.cend(), ctx), std::out_of_range);
+
+	data = { 0x04, 0x80, 0x81, 0x82 };
+	it = data.cbegin();
+	ASSERT_THROW(AmfInteger::deserialize(it, data.cend(), ctx), std::out_of_range);
+
+	data = { 0x04, 0x80, 0x81, 0x82, 0x83 };
+	it = data.cbegin();
+	ASSERT_NO_THROW(AmfInteger::deserialize(it, data.cend(), ctx));
+}
