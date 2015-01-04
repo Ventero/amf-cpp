@@ -7,7 +7,7 @@ namespace amf {
 class AmfObjectTraits {
 public:
 	AmfObjectTraits(std::string className, bool dynamic, bool externalizable) :
-		className(className), dynamic(dynamic), externalizable(externalizable) { };
+		className(className), dynamic(dynamic), externalizable(externalizable) { }
 
 	bool operator==(const AmfObjectTraits& other) const {
 		return dynamic == other.dynamic &&

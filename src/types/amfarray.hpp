@@ -17,7 +17,7 @@ namespace amf {
 
 class AmfArray : public AmfItem {
 public:
-	AmfArray() { };
+	AmfArray() { }
 
 	template<class V>
 	AmfArray(std::vector<V> densePart) {

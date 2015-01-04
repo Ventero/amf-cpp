@@ -19,9 +19,9 @@ namespace amf {
 
 class AmfObject : public AmfItem {
 public:
-	AmfObject() : traits("", false, false) { };
+	AmfObject() : traits("", false, false) { }
 	AmfObject(std::string className, bool dynamic, bool externalizable) :
-		traits(AmfObjectTraits(className, dynamic, externalizable)) { };
+		traits(AmfObjectTraits(className, dynamic, externalizable)) { }
 
 	bool operator==(const AmfItem& other) const {
 		const AmfObject* p = dynamic_cast<const AmfObject*>(&other);
@@ -224,7 +224,7 @@ public:
 	std::function<v8(const AmfObject*)> externalizer;
 
 private:
-	AmfObject(AmfObjectTraits traits) : traits(traits) { };
+	AmfObject(AmfObjectTraits traits) : traits(traits) { }
 
 	AmfObjectTraits traits;
 };

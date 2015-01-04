@@ -29,8 +29,8 @@ namespace amf {
 
 class Serializer {
 public:
-	Serializer() {};
-	~Serializer() {};
+	Serializer() { }
+	~Serializer() { }
 
 	Serializer& operator<<(const AmfItem& item);
 

@@ -13,8 +13,8 @@ namespace amf {
 
 class AmfXml : public AmfItem {
 public:
-	AmfXml() { };
-	AmfXml(std::string value) : value(value) { };
+	AmfXml() { }
+	AmfXml(std::string value) : value(value) { }
 
 	bool operator==(const AmfItem& other) const {
 		const AmfXml* p = dynamic_cast<const AmfXml*>(&other);

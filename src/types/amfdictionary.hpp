@@ -30,7 +30,7 @@ public:
 class AmfDictionary : public AmfItem {
 public:
 	AmfDictionary(bool numbersAsStrings, bool weak = false) :
-		asString(numbersAsStrings), weak(weak) { };
+		asString(numbersAsStrings), weak(weak) { }
 
 	bool operator==(const AmfItem& other) const {
 		const AmfDictionary* p = dynamic_cast<const AmfDictionary*>(&other);

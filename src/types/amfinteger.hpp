@@ -11,8 +11,8 @@ namespace amf {
 
 class AmfInteger : public AmfItem {
 public:
-	AmfInteger() : value(0) { };
-	AmfInteger(int v) : value(v) { };
+	AmfInteger() : value(0) { }
+	AmfInteger(int v) : value(v) { }
 	operator int() const { return value; }
 
 	bool operator==(const AmfItem& other) const {

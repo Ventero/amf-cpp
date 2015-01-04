@@ -11,8 +11,8 @@ namespace amf {
 
 class AmfXmlDocument : public AmfItem {
 public:
-	AmfXmlDocument() { };
-	AmfXmlDocument(std::string value) : value(value) { };
+	AmfXmlDocument() { }
+	AmfXmlDocument(std::string value) : value(value) { }
 
 	bool operator==(const AmfItem& other) const {
 		const AmfXmlDocument* p = dynamic_cast<const AmfXmlDocument*>(&other);

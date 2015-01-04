@@ -45,9 +45,9 @@ class AmfVector;
 template<typename T>
 class AmfVector<T, typename VectorProperties<T>::type> : public AmfItem {
 public:
-	AmfVector() : values({}), fixed(false) { };
+	AmfVector() : values({}), fixed(false) { }
 	AmfVector(std::vector<T> vector, bool fixed = false) :
-		values(vector), fixed(fixed) { };
+		values(vector), fixed(fixed) { }
 
 	bool operator==(const AmfItem& other) const {
 		const AmfVector<T>* p = dynamic_cast<const AmfVector<T>*>(&other);
@@ -97,7 +97,7 @@ public:
 
 		bool fixed = (*it++ == 0x01);
 
-		if (end - it < static_cast<std::ptrdiff_t>(count * stride))
+		if (static_cast<size_t>(end - it) < count * stride)
 			throw std::out_of_range("Not enough bytes for AmfVector");
 
 		std::vector<T> values(count);
@@ -198,7 +198,7 @@ public:
 		AmfVector<AmfItem>(type, fixed) {
 		for (const auto& it : vector)
 			push_back(it);
-	};
+	}
 
 	bool operator==(const AmfItem& other) const {
 		const AmfVector<T>* p = dynamic_cast<const AmfVector<T>*>(&other);

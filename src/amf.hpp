@@ -12,7 +12,7 @@
 	#define __LITTLE_ENDIAN 1234
 	#define __BIG_ENDIAN 4321
 	#define __BYTE_ORDER __LITTLE_ENDIAN
-#elif __APPLE__
+#elif defined(__APPLE__)
 	#include <machine/endian.h>
 #else
 	#include <endian.h>
@@ -49,7 +49,7 @@ v8 network_bytes(T x) {
 
 template<typename T>
 T read_network(v8::const_iterator& it, v8::const_iterator end) {
-	if (end - it < static_cast<std::ptrdiff_t>(sizeof(T)))
+	if (static_cast<size_t>(end - it) < sizeof(T))
 		throw std::out_of_range("Not enough bytes to read");
 
 	T val;
