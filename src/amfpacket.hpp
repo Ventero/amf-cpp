@@ -2,6 +2,9 @@
 #ifndef AMFPACKET_HPP
 #define AMFPACKET_HPP
 
+#include "deserializationcontext.hpp"
+#include "deserializer.hpp"
+
 #include "types/amfitem.hpp"
 #include "types/amfnull.hpp"
 
@@ -47,6 +50,40 @@ public:
 		return buf;
 	}
 
+	static PacketHeader deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		uint16_t name_len = read_network<uint16_t>(it, end);
+
+		// Check for enough bytes for name and must understand flag.
+		if (end - it < name_len + 1)
+			throw std::out_of_range("Not enough bytes for PacketHeader");
+
+		std::string name(it, it + name_len);
+		it += name_len;
+
+		bool mustUnderstand = (*it++ == 0x01);
+
+		uint32_t value_len = read_network<uint32_t>(it, end);
+		// If the value length is (U32)-1 the actual length is unknown, thus require
+		// at least one byte for the type marker.
+		if (value_len == 0xFFFFFFFF) {
+			value_len = 1;
+		}
+
+		// Check that we have enough data left for the AVM object marker and value.
+		// Note that the byte for the object marker is already included in value_len.
+		// If value_len is invalid (i.e. 0), this check always fails.
+		if (end - it < value_len)
+			throw std::out_of_range("Not enough bytes for PacketHeader");
+
+		if (*it++ != AVMPLUS_OBJECT)
+			throw std::invalid_argument("PacketHeader: Invalid type marker");
+
+		PacketHeader header(name, mustUnderstand, AmfNull());
+		header.value = Deserializer::deserialize(it, end, ctx);
+
+		return header;
+	}
+
 	template<typename T>
 	T& getValue() {
 		return value.as<T>();
@@ -90,6 +127,43 @@ public:
 		buf.insert(buf.end(), value_data.begin(), value_data.end());
 
 		return buf;
+	}
+
+	static PacketMessage deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		uint16_t target_len = read_network<uint16_t>(it, end);
+		if (end - it < target_len)
+			throw std::out_of_range("Not enough bytes for PacketMessage");
+
+		std::string target(it, it + target_len);
+		it += target_len;
+
+		uint16_t response_len = read_network<uint16_t>(it, end);
+		if (end - it < response_len)
+			throw std::out_of_range("Not enough bytes for PacketMessage");
+
+		std::string response(it, it + response_len);
+		it += response_len;
+
+		uint32_t value_len = read_network<uint32_t>(it, end);
+		// If the value length is (U32)-1 the actual length is unknown, thus require
+		// at least one byte for the type marker.
+		if (value_len == 0xFFFFFFFF) {
+			value_len = 1;
+		}
+
+		// Check that we have enough data left for the AVM object marker and value.
+		// Note that the byte for the object marker is already included in value_len.
+		// If value_len is invalid (i.e. 0), this check always fails.
+		if (end - it < value_len)
+			throw std::out_of_range("Not enough bytes for PacketMessage");
+
+		if (*it++ != AVMPLUS_OBJECT)
+			throw std::invalid_argument("PacketMessage: Invalid type marker");
+
+		PacketMessage message(target, response, AmfNull());
+		message.value = Deserializer::deserialize(it, end, ctx);
+
+		return message;
 	}
 
 	template<typename T>
@@ -139,6 +213,31 @@ public:
 		}
 
 		return buf;
+	}
+
+	static AmfPacket deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+		// 2 bytes required for version, header count and message count each.
+		if (end - it < 2 + 2 + 2)
+			throw std::out_of_range("Not enough bytes for AmfPacket");
+
+		if (*it++ != 0x00 || *it++ != 0x03)
+			throw std::invalid_argument("AmfPacket: Invalid type marker");
+
+		AmfPacket p;
+
+		uint16_t headers = read_network<uint16_t>(it, end);
+		p.headers.reserve(headers);
+		for (int h = 0; h < headers; ++h) {
+			p.headers.push_back(PacketHeader::deserialize(it, end, ctx));
+		}
+
+		uint16_t messages = read_network<uint16_t>(it, end);
+		p.messages.reserve(messages);
+		for (int m = 0; m < messages; ++m) {
+			p.messages.push_back(PacketMessage::deserialize(it, end, ctx));
+		}
+
+		return p;
 	}
 
 	std::vector<PacketHeader> headers;

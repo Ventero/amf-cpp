@@ -47,6 +47,18 @@ v8 network_bytes(T x) {
 	return v8(bytes, bytes + sizeof(T));
 }
 
+template<typename T>
+T read_network(v8::const_iterator& it, v8::const_iterator end) {
+	if (end - it < static_cast<std::ptrdiff_t>(sizeof(T)))
+		throw std::out_of_range("Not enough bytes to read");
+
+	T val;
+	std::copy(it, it + sizeof(T), reinterpret_cast<u8 *>(&val));
+	it += sizeof(T);
+
+	return ntoh(val);
+}
+
 } // namespace amf
 
 #endif
