@@ -97,7 +97,7 @@ public:
 
 		bool fixed = (*it++ == 0x01);
 
-		if (end - it < count * stride)
+		if (end - it < static_cast<std::ptrdiff_t>(count * stride))
 			throw std::out_of_range("Not enough bytes for AmfVector");
 
 		std::vector<T> values(count);
