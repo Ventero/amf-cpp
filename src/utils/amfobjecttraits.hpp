@@ -2,6 +2,9 @@
 #ifndef AMFOBJECTTRAITS_HPP
 #define AMFOBJECTTRAITS_HPP
 
+#include <string>
+#include <vector>
+
 namespace amf {
 
 class AmfObjectTraits {

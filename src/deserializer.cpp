@@ -19,7 +19,7 @@
 
 namespace amf {
 
-std::map<std::string, ExternalDeserializerFunction> Deserializer::externalDeserializers = { };
+std::map<std::string, ExternalDeserializerFunction> Deserializer::externalDeserializers({ });
 
 AmfItemPtr Deserializer::deserialize(v8 data, DeserializationContext& ctx) {
 	auto it = data.cbegin();
