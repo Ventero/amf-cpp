@@ -35,12 +35,8 @@ public:
 		if (traits.dynamic && dynamicProperties != p->dynamicProperties)
 			return false;
 
-		// we don't need to check if other.sealedProperties contains the attribute,
-		// as this is taken care of by the traits equality check
-		for (const std::string& it : traits.attributes) {
-			if (sealedProperties.at(it) != p->sealedProperties.at(it))
-				return false;
-		}
+		if (sealedProperties != p->sealedProperties)
+			return false;
 
 		if (traits.externalizable && externalizer(this) != p->externalizer(p))
 			return false;
