@@ -72,7 +72,7 @@ public:
 		// Check that we have enough data left for the AVM object marker and value.
 		// Note that the byte for the object marker is already included in value_len.
 		// If value_len is invalid (i.e. 0), this check always fails.
-		if (end - it < value_len)
+		if (static_cast<uint32_t>(end - it) < value_len)
 			throw std::out_of_range("Not enough bytes for PacketHeader");
 
 		if (*it++ != AVMPLUS_OBJECT)
@@ -154,7 +154,7 @@ public:
 		// Check that we have enough data left for the AVM object marker and value.
 		// Note that the byte for the object marker is already included in value_len.
 		// If value_len is invalid (i.e. 0), this check always fails.
-		if (end - it < value_len)
+		if (static_cast<uint32_t>(end - it) < value_len)
 			throw std::out_of_range("Not enough bytes for PacketMessage");
 
 		if (*it++ != AVMPLUS_OBJECT)
