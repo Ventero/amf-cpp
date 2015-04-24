@@ -95,11 +95,25 @@
     <ClInclude Include="..\src\types\amfxml.hpp" />
     <ClInclude Include="..\src\types\amfxmldocument.hpp" />
     <ClInclude Include="..\src\utils\amfitemptr.hpp" />
+    <ClInclude Include="..\src\utils\amfobjecttraits.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\amfpacket.cpp" />
     <ClCompile Include="..\src\deserializationcontext.cpp" />
     <ClCompile Include="..\src\deserializer.cpp" />
     <ClCompile Include="..\src\serializer.cpp" />
+    <ClCompile Include="..\src\types\amfarray.cpp" />
+    <ClCompile Include="..\src\types\amfbool.cpp" />
+    <ClCompile Include="..\src\types\amfbytearray.cpp" />
+    <ClCompile Include="..\src\types\amfdate.cpp" />
+    <ClCompile Include="..\src\types\amfdictionary.cpp" />
+    <ClCompile Include="..\src\types\amfdouble.cpp" />
+    <ClCompile Include="..\src\types\amfinteger.cpp" />
+    <ClCompile Include="..\src\types\amfobject.cpp" />
+    <ClCompile Include="..\src\types\amfstring.cpp" />
+    <ClCompile Include="..\src\types\amfvector.cpp" />
+    <ClCompile Include="..\src\types\amfxml.cpp" />
+    <ClCompile Include="..\src\types\amfxmldocument.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
