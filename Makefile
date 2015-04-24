@@ -7,7 +7,7 @@ ifneq ($(shell $(CXX) --version | grep clang),)
 	endif
 endif
 
-SRC = src/serializer.cpp src/deserializationcontext.cpp src/deserializer.cpp
+SRC = $(wildcard src/*.cpp) $(wildcard src/types/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 .PHONY: all clean debug dist-clean release test
@@ -34,7 +34,7 @@ test: build-test
 
 .dep:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(SRC) | \
-		sed '/^[^[:space:]]/s,^,src/,;s,:, $@:,' > $@
+		sed '/^[^[:space:]]/s,^[^:]*: \([^[:space:]]*\)/,\1/&,;s,:, $@:,' > $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include .dep

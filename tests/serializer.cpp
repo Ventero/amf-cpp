@@ -2,7 +2,10 @@
 
 #include "amf.hpp"
 #include "serializer.hpp"
-
+#include "types/amfdouble.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfnull.hpp"
+#include "types/amfstring.hpp"
 
 TEST(SerializerTest, SingleValue) {
 	Serializer s;

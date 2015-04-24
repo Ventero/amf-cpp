@@ -4,7 +4,9 @@
 #include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
 #include "types/amfbytearray.hpp"
+#include "types/amfinteger.hpp"
 #include "types/amfobject.hpp"
+#include "types/amfstring.hpp"
 #include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
 

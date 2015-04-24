@@ -2,6 +2,7 @@
 
 #include "amf.hpp"
 #include "types/amfbool.hpp"
+#include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
 
 static void isEqual(const std::vector<u8>& expected, int value) {

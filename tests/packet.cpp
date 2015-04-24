@@ -4,6 +4,8 @@
 #include "amfpacket.hpp"
 #include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
+#include "types/amfdouble.hpp"
+#include "types/amfinteger.hpp"
 #include "types/amfnull.hpp"
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"

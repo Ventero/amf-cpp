@@ -8,7 +8,6 @@
 
 #include "amf.hpp"
 #include "deserializationcontext.hpp"
-
 #include "utils/amfitemptr.hpp"
 
 namespace amf {

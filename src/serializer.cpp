@@ -1,5 +1,7 @@
 #include "serializer.hpp"
 
+#include "types/amfitem.hpp"
+
 namespace amf {
 
 Serializer& Serializer::operator<<(const AmfItem& item) {

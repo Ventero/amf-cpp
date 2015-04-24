@@ -2,29 +2,17 @@
 #ifndef AMFDICTIONARY_HPP
 #define AMFDICTIONARY_HPP
 
-#include <functional>
-#include <iomanip>
-#include <limits>
-#include <sstream>
 #include <unordered_map>
 
-#include "deserializationcontext.hpp"
-#include "deserializer.hpp"
-
-#include "types/amfbool.hpp"
 #include "types/amfitem.hpp"
-#include "types/amfinteger.hpp"
-#include "types/amfstring.hpp"
-
 #include "utils/amfitemptr.hpp"
 
 namespace amf {
+
+class DeserializationContext;
+
 struct AmfDictionaryHash {
-public:
-	std::size_t operator()(const AmfItemPtr& val) const {
-		auto s = val->serialize();
-		return std::hash<std::string>()(std::string(s.begin(), s.end()));
-	}
+	std::size_t operator()(const AmfItemPtr& val) const;
 };
 
 class AmfDictionary : public AmfItem {
@@ -32,11 +20,7 @@ public:
 	AmfDictionary(bool numbersAsStrings, bool weak = false) :
 		asString(numbersAsStrings), weak(weak) { }
 
-	bool operator==(const AmfItem& other) const {
-		const AmfDictionary* p = dynamic_cast<const AmfDictionary*>(&other);
-		return p != nullptr && asString == p->asString && weak == p->weak &&
-			values == p->values;
-	}
+	bool operator==(const AmfItem& other) const;
 
 	template<class T, class V>
 	void insert(const T& key, const V& value) {
@@ -55,47 +39,8 @@ public:
 		values.clear();
 	}
 
-	std::vector<u8> serialize() const {
-		std::vector<u8> buf = AmfInteger::asLength(values.size(), AMF_DICTIONARY);
-
-		buf.push_back(weak ? 0x01 : 0x00);
-
-		for (auto it : values) {
-			// convert key's value to string if necessary
-			auto k = serializeKey(it.first);
-			auto v = it.second->serialize();
-			buf.insert(buf.end(), k.begin(), k.end());
-			buf.insert(buf.end(), v.begin(), v.end());
-		}
-
-		return buf;
-	}
-
-	static AmfDictionary deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
-		if (it == end || *it++ != AMF_DICTIONARY)
-			throw std::invalid_argument("AmfDictionary: Invalid type marker");
-
-		int type = AmfInteger::deserializeValue(it, end);
-		if ((type & 0x01) == 0x00)
-			return ctx.getObject<AmfDictionary>(type >> 1);
-
-		if (it == end)
-			throw std::out_of_range("Not enough bytes for AmfDictionary");
-
-		bool weak = (*it++ == 0x01);
-		AmfDictionary ret(false, weak);
-		size_t contextIndex = ctx.addObject<AmfDictionary>(ret);
-
-		int size = type >> 1;
-		for (int i = 0; i < size; ++i) {
-			AmfItemPtr key = Deserializer::deserialize(it, end, ctx);
-			AmfItemPtr val = Deserializer::deserialize(it, end, ctx);
-			ret.values[key] = val;
-		}
-
-		ctx.setObject<AmfDictionary>(contextIndex, ret);
-		return ret;
-	}
+	std::vector<u8> serialize() const;
+	static AmfDictionary deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
 	bool asString;
 	bool weak;
@@ -114,30 +59,7 @@ private:
 
 	// Flash Player doesn't support deserializing booleans and number types
 	// (AmfInteger/AmfDouble), so we may have to serialize them as strings
-	v8 serializeKey(const AmfItemPtr& key) const {
-		if (!asString)
-			return key->serialize();
-
-		const AmfInteger* intval = key.asPtr<AmfInteger>();
-		if (intval != nullptr) {
-			std::string strval = std::to_string(intval->value);
-			return AmfString(strval).serialize();
-		}
-
-		const AmfDouble* doubleval = key.asPtr<AmfDouble>();
-		if (doubleval != nullptr) {
-			std::ostringstream str;
-			str << std::setprecision(std::numeric_limits<double>::digits10)
-			    << doubleval->value;
-			return AmfString(str.str()).serialize();
-		}
-
-		const AmfBool* boolval = key.asPtr<AmfBool>();
-		if (boolval != nullptr)
-			return AmfString(*boolval ? "true" : "false").serialize();
-
-		return key->serialize();
-	}
+	v8 serializeKey(const AmfItemPtr& key) const;
 };
 
 } // namespace amf

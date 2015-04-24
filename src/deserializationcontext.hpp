@@ -2,11 +2,9 @@
 #ifndef DESERIALIZATIONCONTEXT_HPP
 #define DESERIALIZATIONCONTEXT_HPP
 
-#include <memory>
 #include <vector>
 
 #include "amf.hpp"
-
 #include "utils/amfitemptr.hpp"
 #include "utils/amfobjecttraits.hpp"
 

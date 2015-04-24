@@ -5,6 +5,7 @@
 #include "amf.hpp"
 #include "types/amfarray.hpp"
 #include "types/amfbytearray.hpp"
+#include "types/amfinteger.hpp"
 #include "types/amfvector.hpp"
 
 TEST(ByteArraySerializationTest, SimpleValues) {

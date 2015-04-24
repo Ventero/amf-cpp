@@ -1,6 +1,7 @@
 #include "amftest.hpp"
 
 #include "amf.hpp"
+#include "deserializer.hpp"
 #include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
 #include "types/amfbytearray.hpp"

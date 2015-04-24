@@ -2,6 +2,8 @@
 
 #include "amf.hpp"
 #include "types/amfdate.hpp"
+#include "types/amfinteger.hpp"
+#include "types/amfdouble.hpp"
 
 #ifdef _WIN32
 #define amf_localtime(res, time) localtime_s(res, time)
