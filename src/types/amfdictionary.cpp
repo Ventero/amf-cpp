@@ -13,7 +13,7 @@
 
 namespace amf {
 
-std::size_t AmfDictionaryHash::operator()(const AmfItemPtr& val) const {
+size_t AmfDictionaryHash::operator()(const AmfItemPtr& val) const {
 	auto s = val->serialize();
 	return std::hash<std::string>()(std::string(s.begin(), s.end()));
 }

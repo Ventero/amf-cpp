@@ -12,7 +12,7 @@ namespace amf {
 class DeserializationContext;
 
 struct AmfDictionaryHash {
-	std::size_t operator()(const AmfItemPtr& val) const;
+	size_t operator()(const AmfItemPtr& val) const;
 };
 
 class AmfDictionary : public AmfItem {
