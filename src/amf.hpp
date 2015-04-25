@@ -9,9 +9,9 @@
 
 #ifdef _WIN32
 	// Windows only runs on little endian platforms
-	#define __LITTLE_ENDIAN 1234
-	#define __BIG_ENDIAN 4321
-	#define __BYTE_ORDER __LITTLE_ENDIAN
+	#define LITTLE_ENDIAN 1234
+	#define BIG_ENDIAN 4321
+	#define BYTE_ORDER LITTLE_ENDIAN
 #elif defined(__APPLE__)
 	#include <machine/endian.h>
 #else
@@ -30,10 +30,10 @@ T swap_endian(T x) {
 	return x;
 }
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#if BYTE_ORDER == LITTLE_ENDIAN
 #define hton(x) swap_endian(x)
 #define ntoh(x) swap_endian(x)
-#elif __BYTE_ORDER == __BIG_ENDIAN
+#elif BYTE_ORDER == BIG_ENDIAN
 #define hton(x) (x)
 #define ntoh(x) (x)
 #else

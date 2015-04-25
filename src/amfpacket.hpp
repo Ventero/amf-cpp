@@ -61,7 +61,7 @@ private:
 
 class AmfPacket : public AmfItem {
 public:
-	AmfPacket() { };
+	AmfPacket() { }
 
 	bool operator==(const AmfItem& other) const;
 	v8 serialize() const;
