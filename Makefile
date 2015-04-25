@@ -18,7 +18,9 @@ debug: CXXFLAGS += -g
 debug: libamf.a
 32bit: CXXFLAGS += -m32
 32bit: release
-libamf.a: libamf.a($(OBJ))
+
+libamf.a: $(OBJ)
+	ar rv $@ $^
 
 clean:
 	rm -f libamf.a $(OBJ) .dep
