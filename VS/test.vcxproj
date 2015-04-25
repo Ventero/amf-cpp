@@ -91,25 +91,29 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\tests\amftest.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\tests\array.cpp" />
-    <ClCompile Include="..\tests\bool.cpp" />
-    <ClCompile Include="..\tests\bytearray.cpp" />
-    <ClCompile Include="..\tests\date.cpp" />
-    <ClCompile Include="..\tests\dictionary.cpp" />
-    <ClCompile Include="..\tests\double.cpp" />
-    <ClCompile Include="..\tests\integer.cpp" />
-    <ClCompile Include="..\tests\null.cpp" />
-    <ClCompile Include="..\tests\object.cpp" />
+    <ClCompile Include="..\tests\deserializationcontext.cpp" />
+    <ClCompile Include="..\tests\deserializer.cpp" />
     <ClCompile Include="..\tests\packet.cpp" />
     <ClCompile Include="..\tests\serializer.cpp" />
-    <ClCompile Include="..\tests\string.cpp" />
-    <ClCompile Include="..\tests\undefined.cpp" />
-    <ClCompile Include="..\tests\vector.cpp" />
-    <ClCompile Include="..\tests\xml.cpp" />
-    <ClCompile Include="..\tests\xmldocument.cpp" />
+    <ClCompile Include="..\tests\types\array.cpp" />
+    <ClCompile Include="..\tests\types\bool.cpp" />
+    <ClCompile Include="..\tests\types\bytearray.cpp" />
+    <ClCompile Include="..\tests\types\date.cpp" />
+    <ClCompile Include="..\tests\types\dictionary.cpp" />
+    <ClCompile Include="..\tests\types\double.cpp" />
+    <ClCompile Include="..\tests\types\integer.cpp" />
+    <ClCompile Include="..\tests\types\null.cpp" />
+    <ClCompile Include="..\tests\types\object.cpp" />
+    <ClCompile Include="..\tests\types\string.cpp" />
+    <ClCompile Include="..\tests\types\undefined.cpp" />
+    <ClCompile Include="..\tests\types\vector.cpp" />
+    <ClCompile Include="..\tests\types\xml.cpp" />
+    <ClCompile Include="..\tests\types\xmldocument.cpp" />
+    <ClCompile Include="..\tests\utils\amfitemptr.cpp" />
+    <ClCompile Include="..\tests\utils\amfobjecttraits.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\tests\amftest.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

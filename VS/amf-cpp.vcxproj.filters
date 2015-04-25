@@ -9,16 +9,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\amf.hpp" />
+    <ClInclude Include="..\src\amfpacket.hpp" />
+    <ClInclude Include="..\src\deserializationcontext.hpp" />
+    <ClInclude Include="..\src\deserializer.hpp" />
+    <ClInclude Include="..\src\serializer.hpp" />
+    <ClInclude Include="..\src\types\amfarray.hpp">
+      <Filter>types</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\types\amfbool.hpp">
       <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="..\src\types\amfbytearray.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\types\amfdouble.hpp">
+    <ClInclude Include="..\src\types\amfdate.hpp">
       <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="..\src\types\amfdictionary.hpp">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\types\amfdouble.hpp">
       <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="..\src\types\amfinteger.hpp">
@@ -30,27 +41,16 @@
     <ClInclude Include="..\src\types\amfnull.hpp">
       <Filter>types</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\types\amfobject.hpp">
+      <Filter>types</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\types\amfstring.hpp">
       <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="..\src\types\amfundefined.hpp">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\amf.hpp" />
-    <ClInclude Include="..\src\amfpacket.hpp" />
-    <ClInclude Include="..\src\deserializationcontext.hpp" />
-    <ClInclude Include="..\src\deserializer.hpp" />
-    <ClInclude Include="..\src\serializer.hpp" />
     <ClInclude Include="..\src\types\amfvector.hpp">
-      <Filter>types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\types\amfarray.hpp">
-      <Filter>types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\types\amfdate.hpp">
-      <Filter>types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\types\amfobject.hpp">
       <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="..\src\types\amfxml.hpp">
@@ -62,10 +62,50 @@
     <ClInclude Include="..\src\utils\amfitemptr.hpp">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\utils\amfobjecttraits.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\amfpacket.cpp" />
     <ClCompile Include="..\src\deserializationcontext.cpp" />
     <ClCompile Include="..\src\deserializer.cpp" />
     <ClCompile Include="..\src\serializer.cpp" />
+    <ClCompile Include="..\src\types\amfarray.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfbool.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfbytearray.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfdate.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfdictionary.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfdouble.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfinteger.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfobject.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfstring.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfvector.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfxml.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\types\amfxmldocument.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
