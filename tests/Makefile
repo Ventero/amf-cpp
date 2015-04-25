@@ -15,7 +15,7 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 CPPFLAGS += -I../src -I.
 
 # Source files
-SRC = $(wildcard *.cpp) $(wildcard types/*.cpp)
+SRC = $(wildcard *.cpp) $(wildcard types/*.cpp) $(wildcard utils/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 # Precompiled header name
