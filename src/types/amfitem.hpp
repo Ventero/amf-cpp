@@ -32,7 +32,7 @@ enum AmfMarker : u8 {
 class AmfItem {
 public:
 	AmfItem() = default;
-	virtual ~AmfItem() = default;
+	virtual ~AmfItem() { };
 	AmfItem(const AmfItem& other) = default;
 
 	virtual std::vector<u8> serialize() const = 0;
