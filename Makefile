@@ -10,7 +10,7 @@ endif
 SRC = $(wildcard src/*.cpp) $(wildcard src/types/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
-.PHONY: all clean debug dist-clean release test
+.PHONY: all release debug 32bit clean dist-clean build-test test
 all: release
 
 release: libamf.a
