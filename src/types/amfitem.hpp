@@ -31,9 +31,7 @@ enum AmfMarker : u8 {
 
 class AmfItem {
 public:
-	AmfItem() = default;
 	virtual ~AmfItem() { };
-	AmfItem(const AmfItem& other) = default;
 
 	virtual std::vector<u8> serialize() const = 0;
 	virtual bool operator==(const AmfItem&) const = 0;
