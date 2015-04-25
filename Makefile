@@ -36,6 +36,6 @@ test: build-test
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM $(SRC) | \
 		sed '/^[^[:space:]]/s,^[^:]*: \([^[:space:]]*\)/,\1/&,;s,:, $@:,' > $@
 
-ifneq ($(MAKECMDGOALS),clean)
+ifeq ($(filter $(MAKECMDGOALS),clean dist-clean),)
 -include .dep
 endif
