@@ -17,10 +17,10 @@ public:
 	void clear();
 
 	void addString(const std::string& str);
-	std::string getString(size_t index);
+	const std::string & getString(size_t index);
 
 	void addTraits(const AmfObjectTraits& traits);
-	AmfObjectTraits getTraits(size_t index);
+	const AmfObjectTraits & getTraits(size_t index);
 
 	template<typename T>
 	size_t addObject(const T& object) {
@@ -34,12 +34,13 @@ public:
 	}
 
 	template<typename T>
-	T getObject(size_t index) {
-		T* ptr = dynamic_cast<T*>(objects.at(index).get());
-		if (ptr == nullptr)
+	const T & getObject(size_t index) {
+		const AmfItemPtr & ptr = objects.at(index);
+
+		if (ptr.asPtr<T>() == nullptr)
 			throw std::invalid_argument("DeserializationContext::getObject wrong type");
 
-		return T(*ptr);
+		return ptr.as<T>();
 	}
 
 private:

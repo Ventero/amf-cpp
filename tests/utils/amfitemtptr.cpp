@@ -26,6 +26,11 @@ TEST(AmfItemPtrTest, AsReference) {
 
 	EXPECT_EQ(AmfInteger(33), ptr.as<AmfInteger>());
 	EXPECT_THROW(ptr.as<AmfDouble>(), std::bad_cast);
+
+	// Const version.
+	const AmfItemPtr cptr(new AmfDouble(42.0));
+	EXPECT_EQ(AmfDouble(42.0), cptr.as<AmfDouble>());
+	EXPECT_THROW(cptr.as<AmfInteger>(), std::bad_cast);
 }
 
 TEST(AmfItemPtrTest, AsPointer) {

@@ -18,8 +18,12 @@ public:
 
 	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
 	T& as() {
-		T& ref = dynamic_cast<T&>(*get());
-		return ref;
+		return dynamic_cast<T&>(*get());;
+	}
+
+	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
+	const T& as() const {
+		return dynamic_cast<const T&>(*get());
 	}
 
 	// WARNING: the pointer returned by this and get() is only valid as long as
