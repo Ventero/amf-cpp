@@ -86,7 +86,7 @@ v8 AmfDictionary::serializeKey(const AmfItemPtr& key) const {
 
 	const AmfBool* boolval = key.asPtr<AmfBool>();
 	if (boolval != nullptr)
-		return AmfString(*boolval ? "true" : "false").serialize();
+		return AmfString(boolval->value ? "true" : "false").serialize();
 
 	return key->serialize();
 }
