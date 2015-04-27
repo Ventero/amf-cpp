@@ -10,20 +10,45 @@ This project is licensed under the MIT/X11 license. See [LICENSE](https://github
 
 # Documentation #
 
-So far, only serialization is supported, and the serialization API is still subject
-to change. Proper documentation will follow once the API is stabilized.
+Both serialization and deserialization of AMF3 objects are implemented. However,
+the API is still subject to change, proper documentation will follow once the
+API is stabilized.
 
-If you want to try the serialization, simply create the AMF objects (see `types/amf*.hpp`)
-and insert them into a `Serializer` object. To get the serialized data as `std::vector<uint8_t>`,
-call the `.data()` member function.
+The general usage pattern for serialization is to first create the desired AMF
+object instance (see `src/types/amf*.hpp`) and then serialize it through a
+`Serializer` object, from which you can then get the serialized data as
+`std::vector<uint8_t>`.
+
+Deserialization of raw AMF3 data can be done through a `Deserializer` object.
+Simply pass a pair of iterators or a `std::vector<uint8_t>` to its `.deserialize`
+method, and you will receive a generic `AmfItemPtr`, which can be converted to
+an AMF object of the correct type.
 
 ```C++
-Serializer serializer;
-serializer << AmfDouble(3.14159) << AmfInteger(17);
-AmfVector<int> vec({ 1, 2, 3 });
+// Serialization:
+// First, create the serializer.
+amf::Serializer serializer;
+// Then construct some values and serialize them.
+serializer << amf::AmfDouble(3.14159) << amf::AmfInteger(17);
+amf::AmfVector<int> vec({ 1, 2, 3 });
 serializer << vec;
 
-std::vector<uint8_t> data = serializer.data();
+// Finally, get the serialized data.
+// amf::v8 is a typedef for `std::vector<uint8_t>`
+amf::v8 data = serializer.data();
+
+// Deserialization:
+// Create a deserializer.
+amf::Deserializer deserializer;
+// Re-use `data` as example input for deserialization.
+auto it = data.cbegin();
+amf::AmfDouble d = deserializer.deserialize(it, data.cend()).as<amf::AmfDouble>();
+amf::AmfInteger i = deserializer.deserialize(it, data.cend()).as<amf::AmfInteger>();
+amf::AmfVector<int> v = deserializer.deserialize(it, data.cend()).as<amf::AmfVector<int>>();
+
+// If you only want to deserialize a single object, you can instead pass in the
+// vector directly.
+amf::AmfDouble d2 = deserializer.deserialize(data).as<amf::AmfDouble>();
 ```
 
 # Build instructions #
@@ -39,8 +64,8 @@ explicitly builds a 32bit library. `make test` builds and runs the unit tests.
 
 ## Windows ##
 
-Since this project makes heavy use of C++11 features, the Visual Studio 2013
-preview is required to compile it.
+Since this project makes heavy use of C++11 features, Visual Studio 2013 or later
+is required to compile it.
 
 To build the library, simply open `amf-cpp.sln` and build the `amf-cpp` project.
 To run the unit tests, build and run the `test` project.
