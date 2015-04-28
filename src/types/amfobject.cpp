@@ -105,14 +105,14 @@ std::vector<u8> AmfObject::serialize() const {
 	return buf;
 }	
 
-AmfObject AmfObject::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
 	if (it == end || *it++ != AMF_OBJECT)
 		throw std::invalid_argument("AmfObject: Invalid type marker");
 
 	int type = AmfInteger::deserializeValue(it, end);
 	if ((type & 0x01) == 0x00) {
 		// 0b...0 == U29O-ref
-		return ctx.getObject<AmfObject>(type >> 1);
+		return ctx.getPointer<AmfObject>(type >> 1);
 	}
 
 	AmfObjectTraits traits("", false, false);
@@ -136,13 +136,13 @@ AmfObject AmfObject::deserialize(v8::const_iterator& it, v8::const_iterator end,
 		ctx.addTraits(traits);
 	}
 
-	AmfObject ret(traits);
-	size_t contextIndex = ctx.addObject<AmfObject>(ret);
+	AmfItemPtr ptr(new AmfObject(traits));
+	AmfObject & ret = ptr.as<AmfObject>();
+	ctx.addPointer(ptr);
 
 	if (traits.externalizable) {
 		ret = Deserializer::externalDeserializers.at(traits.className)(it, end, ctx);
-		ctx.setObject<AmfObject>(contextIndex, ret);
-		return ret;
+		return ptr;
 	}
 
 	for (auto name : traits.attributes) {
@@ -160,8 +160,11 @@ AmfObject AmfObject::deserialize(v8::const_iterator& it, v8::const_iterator end,
 		}
 	}
 
-	ctx.setObject<AmfObject>(contextIndex, ret);
-	return ret;
+	return ptr;
+}
+
+AmfObject AmfObject::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	return deserializePtr(it, end, ctx).as<AmfObject>();
 }
 
 } // namespace amf

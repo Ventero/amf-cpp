@@ -27,8 +27,14 @@ public:
 		return objects.size() - 1;
 	}
 
+	template<typename T>
 	AmfItemPtr getPointer(size_t index) {
-		return objects.at(index);
+		const AmfItemPtr & ptr = objects.at(index);
+
+		if (ptr.asPtr<T>() == nullptr)
+			throw std::invalid_argument("DeserializationContext::getPointer wrong type");
+
+		return ptr;
 	}
 
 	template<typename T>
@@ -44,11 +50,7 @@ public:
 
 	template<typename T>
 	const T & getObject(size_t index) {
-		const AmfItemPtr & ptr = objects.at(index);
-
-		if (ptr.asPtr<T>() == nullptr)
-			throw std::invalid_argument("DeserializationContext::getObject wrong type");
-
+		AmfItemPtr ptr = getPointer<T>(index);
 		return ptr.as<T>();
 	}
 

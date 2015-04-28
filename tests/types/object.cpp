@@ -843,9 +843,9 @@ TEST(ObjectDeserialization, ReferenceOrder) {
 	deserialize(obj, data);
 }
 
-TEST(ObjectDeserialization, DISABLED_SelfReference) {
-	AmfItemPtr ptr(new AmfObject("", true, false));
-	ptr.asPtr<AmfObject>()->dynamicProperties["f"] = ptr;
+TEST(ObjectDeserialization, SelfReference) {
+	// Dynamic, non-externalizable Object containing property "f", which
+	// points to itself.
 	v8 data {
 		0x0a, 0x0b, 0x01,
 		0x03, 0x66,
@@ -855,8 +855,25 @@ TEST(ObjectDeserialization, DISABLED_SelfReference) {
 
 	DeserializationContext ctx;
 	auto it = data.cbegin();
-	AmfObject d = AmfObject::deserialize(it, data.cend(), ctx);
-	EXPECT_EQ(*ptr.asPtr<AmfObject>(), d);
+	AmfItemPtr ptr = AmfObject::deserializePtr(it, data.cend(), ctx);
+	const AmfObject & d = ptr.as<AmfObject>();
+	EXPECT_EQ(ptr.get(), d.dynamicProperties.at("f").get());
+}
+
+TEST(ObjectDeserialization, SelfReferenceIncorrectType) {
+	v8 data {
+		0x0a, 0x0b, 0x01,
+		0x03, 0x66,
+		0x09, 0x01, 0x01,
+		0x03, 0x67,
+		// Object with reference index pointing to array
+		0x0a, 0x02,
+		0x01
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfObject::deserializePtr(it, data.cend(), ctx), std::invalid_argument);
 }
 
 TEST(ObjectDeserialization, DynamicObjectMissingEndMarker) {

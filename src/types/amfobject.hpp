@@ -52,6 +52,7 @@ public:
 		return dynamicProperties.at(name).as<T>();
 	}
 
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 	static AmfObject deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
 	const AmfObjectTraits& objectTraits() const {

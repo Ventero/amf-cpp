@@ -52,7 +52,7 @@ AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator 
 		case AMF_ARRAY:
 			return AmfArray::deserializePtr(it, end, ctx);
 		case AMF_OBJECT:
-			return AmfItemPtr(AmfObject::deserialize(it, end, ctx));
+			return AmfObject::deserializePtr(it, end, ctx);
 		case AMF_XML:
 			return AmfItemPtr(AmfXml::deserialize(it, end, ctx));
 		case AMF_BYTEARRAY:

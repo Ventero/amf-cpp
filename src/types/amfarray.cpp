@@ -53,7 +53,7 @@ AmfItemPtr AmfArray::deserializePtr(v8::const_iterator& it, v8::const_iterator e
 
 	int type = AmfInteger::deserializeValue(it, end);
 	if ((type & 0x01) == 0)
-		return ctx.getPointer(type >> 1);
+		return ctx.getPointer<AmfArray>(type >> 1);
 
 	// Create the return value and store it in the deserialization context.
 	// By having the context point to the actual array we're constructing here
