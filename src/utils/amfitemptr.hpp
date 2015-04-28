@@ -10,11 +10,11 @@ namespace amf {
 
 class AmfItemPtr : private std::shared_ptr<AmfItem> {
 public:
-	AmfItemPtr() : std::shared_ptr<AmfItem>() { }
-	AmfItemPtr(AmfItem* ptr) : std::shared_ptr<AmfItem>(ptr) { }
+	explicit AmfItemPtr() : std::shared_ptr<AmfItem>() { }
+	explicit AmfItemPtr(AmfItem* ptr) : std::shared_ptr<AmfItem>(ptr) { }
 
 	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
-	AmfItemPtr(const T& ref) : std::shared_ptr<AmfItem>(new T(ref)) { }
+	explicit AmfItemPtr(const T& ref) : std::shared_ptr<AmfItem>(new T(ref)) { }
 
 	template<typename T, typename std::enable_if<std::is_base_of<AmfItem, T>::value, int>::type = 0>
 	T& as() {
