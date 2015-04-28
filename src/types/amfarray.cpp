@@ -20,21 +20,25 @@ std::vector<u8> AmfArray::serialize() const {
 	 * 	(U29A-value *(assoc-value) UTF-8-empty *(value-type))
 	 * )
 	 */
+
 	// U29A-value
 	std::vector<u8> buf = AmfInteger::asLength(dense.size(), AMF_ARRAY);
 
+	// *(assoc-value) = (UTF-8-vr value-type)
 	for (const auto& it : associative) {
 		auto name = AmfString(it.first).serialize();
-		auto s = it.second->serialize();
+		auto value = it.second->serialize();
 
-		// skip AmfString marker
+		// UTF-8-vr, so skip the AmfString marker.
 		buf.insert(buf.end(), name.begin() + 1, name.end());
-		buf.insert(buf.end(), s.begin(), s.end());
+		// value-type
+		buf.insert(buf.end(), value.begin(), value.end());
 	}
 
 	// UTF-8-empty
 	buf.push_back(0x01);
 
+	// *(value-type)
 	for (const auto& it : dense) {
 		auto s = it->serialize();
 		buf.insert(buf.end(), s.begin(), s.end());
@@ -43,16 +47,21 @@ std::vector<u8> AmfArray::serialize() const {
 	return buf;
 }
 
-AmfArray AmfArray::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfItemPtr AmfArray::deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
 	if (it == end || *it++ != AMF_ARRAY)
 		throw std::invalid_argument("AmfArray: Invalid type marker");
 
 	int type = AmfInteger::deserializeValue(it, end);
 	if ((type & 0x01) == 0)
-		return ctx.getObject<AmfArray>(type >> 1);
+		return ctx.getPointer(type >> 1);
 
-	AmfArray ret;
-	size_t contextIndex = ctx.addObject<AmfArray>(ret);
+	// Create the return value and store it in the deserialization context.
+	// By having the context point to the actual array we're constructing here
+	// instead of a copy, we enable circular references.
+	AmfItemPtr ret(new AmfArray());
+	ctx.addPointer(ret);
+
+	AmfArray & array = ret.as<AmfArray>();
 
 	// associative until UTF-8-empty
 	while (true) {
@@ -60,16 +69,19 @@ AmfArray AmfArray::deserialize(v8::const_iterator& it, v8::const_iterator end, D
 		if (name == "") break;
 
 		AmfItemPtr val = Deserializer::deserialize(it, end, ctx);
-		ret.associative[name] = val;
+		array.associative[name] = val;
 	}
 
 	// dense
 	int length = type >> 1;
 	for (int i = 0; i < length; ++i)
-		ret.dense.push_back(Deserializer::deserialize(it, end, ctx));
+		array.dense.push_back(Deserializer::deserialize(it, end, ctx));
 
-	ctx.setObject<AmfArray>(contextIndex, ret);
 	return ret;
+}
+
+AmfArray AmfArray::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	return deserializePtr(it, end, ctx).as<AmfArray>();
 }
 
 } // namespace amf

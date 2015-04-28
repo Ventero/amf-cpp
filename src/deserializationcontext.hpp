@@ -22,6 +22,15 @@ public:
 	void addTraits(const AmfObjectTraits& traits);
 	const AmfObjectTraits & getTraits(size_t index);
 
+	size_t addPointer(const AmfItemPtr & ptr) {
+		objects.push_back(ptr);
+		return objects.size() - 1;
+	}
+
+	AmfItemPtr getPointer(size_t index) {
+		return objects.at(index);
+	}
+
 	template<typename T>
 	size_t addObject(const T& object) {
 		objects.emplace_back(new T(object));

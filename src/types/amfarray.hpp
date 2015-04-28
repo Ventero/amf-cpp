@@ -51,12 +51,23 @@ public:
 	}
 
 	template<class T>
+	const T& at(int index) const {
+		return dense.at(index).as<T>();
+	}
+
+	template<class T>
 	T& at(std::string key) {
+		return associative.at(key).as<T>();
+	}
+
+	template<class T>
+	const T& at(std::string key) const {
 		return associative.at(key).as<T>();
 	}
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize() const;
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 	static AmfArray deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
 	std::vector<AmfItemPtr> dense;

@@ -403,3 +403,37 @@ TEST(ArrayDeserialization, InvalidMarker) {
 	DeserializationContext ctx;
 	ASSERT_THROW(AmfArray::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
+
+
+TEST(ArrayDeserialization, SelfReference) {
+	// Array containing 3 integers in dense part and a reference to itself
+	// in the associative part.
+	v8 data {
+		0x09,
+		0x07,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x09, 0x00,
+		0x01,
+		0x04, 0x01,
+		0x04, 0x02,
+		0x04, 0x03
+	};
+
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfItemPtr ptr = AmfArray::deserializePtr(it, data.cend(), ctx);
+	AmfArray & d = ptr.as<AmfArray>();
+
+	EXPECT_EQ(1, d.at<AmfInteger>(0));
+	EXPECT_EQ(2, d.at<AmfInteger>(1));
+	EXPECT_EQ(3, d.at<AmfInteger>(2));
+
+	EXPECT_EQ(ptr.get(), d.associative.at("foo").get());
+	const AmfArray & ref = d.associative.at("foo").as<AmfArray>();
+
+	// Verify changes to the outer array are reflected in the inner one.
+	d.push_back(AmfInteger(4));
+	EXPECT_EQ(4, d.at<AmfInteger>(3));
+	EXPECT_EQ(4, ref.at<AmfInteger>(3));
+}
