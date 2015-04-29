@@ -96,14 +96,14 @@ std::vector<u8> AmfVector<AmfItem>::serialize() const {
 	return buf;
 }
 
-AmfVector<AmfItem> AmfVector<AmfItem>::deserialize(
+AmfItemPtr AmfVector<AmfItem>::deserializePtr(
 	v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
 	if (it == end || *it++ != AMF_VECTOR_OBJECT)
 		throw std::invalid_argument("AmfVector<Object>: Invalid type marker");
 
 	int type = AmfInteger::deserializeValue(it, end);
 	if ((type & 0x01) == 0)
-		return ctx.getObject<AmfVector<AmfItem>>(type >> 1);
+		return ctx.getPointer<AmfVector<AmfItem>>(type >> 1);
 
 	if (it == end)
 		throw std::out_of_range("Not enough bytes for AmfVector");
@@ -112,16 +112,21 @@ AmfVector<AmfItem> AmfVector<AmfItem>::deserialize(
 	std::string name = AmfString::deserializeValue(it, end, ctx);
 	int count = type >> 1;
 
-	AmfVector<AmfItem> ret(name, fixed);
-	size_t contextIndex = ctx.addObject<AmfVector<AmfItem>>(ret);
+	AmfItemPtr ptr(new AmfVector<AmfItem>(name, fixed));
+	AmfVector<AmfItem> & vec = ptr.as<AmfVector>();
+	ctx.addPointer(ptr);
 
-	ret.values.reserve(count);
+	vec.values.reserve(count);
 	for (int i = 0; i < count; ++i) {
-		ret.values.push_back(Deserializer::deserialize(it, end, ctx));
+		vec.values.push_back(Deserializer::deserialize(it, end, ctx));
 	}
 
-	ctx.setObject<AmfVector<AmfItem>>(contextIndex, ret);
-	return ret;
+	return ptr;
+}
+
+AmfVector<AmfItem> AmfVector<AmfItem>::deserialize(
+	v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	return deserializePtr(it, end, ctx).as<AmfVector<AmfItem>>();
 }
 
 template class AmfVector<int>;

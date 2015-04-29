@@ -70,6 +70,7 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize() const;
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 	static AmfVector<AmfItem> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
 	template<typename V, typename std::enable_if<std::is_base_of<AmfItem, V>::value, int>::type = 0>

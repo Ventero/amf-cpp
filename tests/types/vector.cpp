@@ -1049,3 +1049,22 @@ TEST(VectorDeserialization, VectorObjectInvalidMarker) {
 	EXPECT_THROW(AmfVector<AmfBool>::deserialize(it, data.cend(), ctx), std::invalid_argument);
 	EXPECT_THROW(AmfVector<AmfItem>::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
+
+TEST(VectorDeserialization, SelfReference) {
+	v8 data {
+		0x10, 0x03, 0x00, 0x01, 0x10, 0x00
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfItemPtr ptr = AmfVector<AmfItem>::deserializePtr(it, data.cend(), ctx);
+	AmfVector<AmfItem> & d = ptr.as<AmfVector<AmfItem>>();
+
+	EXPECT_EQ(ptr.get(), d.values.at(0).get());
+
+	AmfVector<AmfVector<AmfItem>> v = d.as<AmfVector<AmfItem>>();
+	EXPECT_EQ(ptr.get(), v.at(0).values.at(0).get());
+
+	AmfVector<AmfVector<AmfItem>> vv = v.at(0).as<AmfVector<AmfItem>>();
+	EXPECT_EQ(ptr.get(), vv.at(0).values.at(0).get());
+}
