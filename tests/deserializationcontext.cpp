@@ -59,12 +59,27 @@ TEST(DeserializationContextTest, Item) {
 	// Verify that a copy is made.
 	i.value = 21;
 	ASSERT_EQ(AmfInteger(17), ctx.getObject<AmfInteger>(1));
+}
 
-	// Check that replacing an object works.
-	ctx.setObject(0, AmfDouble(1.0));
-	ASSERT_EQ(AmfDouble(1.0), ctx.getObject<AmfDouble>(0));
-	ASSERT_EQ(AmfInteger(17), ctx.getObject<AmfInteger>(1));
-	ASSERT_THROW(ctx.getObject<AmfNull>(0), std::invalid_argument);
+TEST(DeserializationContext, Pointer) {
+	DeserializationContext ctx;
+
+	ASSERT_THROW(ctx.getPointer<AmfInteger>(0), std::out_of_range);
+
+	ctx.addPointer(AmfItemPtr(AmfNull()));
+	ASSERT_EQ(AmfNull(), ctx.getPointer<AmfNull>(0).as<AmfNull>());
+	ASSERT_EQ(AmfNull(), ctx.getObject<AmfNull>(0));
+	ASSERT_THROW(ctx.getPointer<AmfInteger>(0), std::invalid_argument);
+	ASSERT_THROW(ctx.getObject<AmfInteger>(0), std::invalid_argument);
+	ASSERT_THROW(ctx.getPointer<AmfNull>(1), std::out_of_range);
+	ASSERT_THROW(ctx.getObject<AmfNull>(1), std::out_of_range);
+
+	ctx.addObject(AmfInteger(11));
+	ASSERT_EQ(AmfNull(), ctx.getPointer<AmfNull>(0).as<AmfNull>());
+	ASSERT_EQ(AmfInteger(11), ctx.getPointer<AmfInteger>(1).as<AmfInteger>());
+	ASSERT_EQ(AmfInteger(11), ctx.getObject<AmfInteger>(1));
+	ASSERT_THROW(ctx.getPointer<AmfDouble>(1), std::invalid_argument);
+	ASSERT_THROW(ctx.getObject<AmfDouble>(1), std::invalid_argument);
 }
 
 TEST(DeserializationContextTest, Clear) {

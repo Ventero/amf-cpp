@@ -22,9 +22,8 @@ public:
 	void addTraits(const AmfObjectTraits& traits);
 	const AmfObjectTraits & getTraits(size_t index);
 
-	size_t addPointer(const AmfItemPtr & ptr) {
+	void addPointer(const AmfItemPtr & ptr) {
 		objects.push_back(ptr);
-		return objects.size() - 1;
 	}
 
 	template<typename T>
@@ -38,14 +37,8 @@ public:
 	}
 
 	template<typename T>
-	size_t addObject(const T& object) {
+	void addObject(const T& object) {
 		objects.emplace_back(new T(object));
-		return objects.size() - 1;
-	}
-
-	template<typename T>
-	void setObject(size_t index, const T& object) {
-		objects.at(index) = AmfItemPtr(new T(object));
 	}
 
 	template<typename T>
