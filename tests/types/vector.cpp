@@ -1068,3 +1068,16 @@ TEST(VectorDeserialization, SelfReference) {
 	AmfVector<AmfVector<AmfItem>> vv = v.at(0).as<AmfVector<AmfItem>>();
 	EXPECT_EQ(ptr.get(), vv.at(0).values.at(0).get());
 }
+
+TEST(VectorDeserialization, SelfReferenceConcreteType) {
+	v8 data {
+		0x10, 0x03, 0x00, 0x01, 0x10, 0x00
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfVector<AmfVector<AmfItem>> v = AmfVector<AmfVector<AmfItem>>::deserialize(it, data.cend(), ctx);
+	EXPECT_EQ(v.values.at(0).get(), v.at(0).values.at(0).get());
+	EXPECT_EQ(v.values.at(0).get(), v.at(0).values.at(0).as<AmfVector<AmfItem>>().values.at(0).get());
+
+}
