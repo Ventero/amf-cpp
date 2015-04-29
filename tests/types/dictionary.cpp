@@ -477,6 +477,18 @@ TEST(DictionaryDeserialization, StringKeys) {
 	deserialize(d, data, 0);
 }
 
+TEST(DictionaryDeserialization, FlashBug) {
+	AmfDictionary d(false, false);
+	d.insert(AmfString("x"), AmfString("g"));
+
+	v8 data {
+		0x11, 0x03, 0x00, 0x06, 0x03, 0x78, 0x06, 0x03, 0x67
+	};
+
+	// Flash deserializes this to a dictionary with .x = undefined ...
+	deserialize(d, data, 0);
+}
+
 TEST(DictionaryDeserialization, ObjectKeys) {
 	AmfDictionary d(false, false);
 	d.insert(AmfObject("", true, false), AmfString("foo"));
