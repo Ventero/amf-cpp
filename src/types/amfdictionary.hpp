@@ -40,6 +40,7 @@ public:
 	}
 
 	std::vector<u8> serialize() const;
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 	static AmfDictionary deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
 	bool asString;

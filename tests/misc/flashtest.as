@@ -22,9 +22,9 @@ package{
 			tf.text = "";
 			var b:ByteArray = new ByteArray();
 			var a:Dictionary = new Dictionary();
-			var o:Object = {"bar": 1};
-			a[o] = "foo";
-			a["qux"] = o;
+			a["x"] = a;
+			tf.appendText(a.toString() + "\n");
+			tf.appendText(a["x"].toString() + "\n");
 			b.writeObject(a);
 			dumpByteArray(b);
 		}
@@ -48,13 +48,13 @@ package{
 			];
 			*/
 			var data:Array = [
-				0x0a, 0x00
+				0x11, 0x03, 0x00, 0x06, 0x03, 0x78, 0x00
 			];
 			var b:ByteArray = createByteArray(data);
 
 			var o:* = b.readObject();
 			tf.appendText(o + "\n");
-			tf.appendText(o.f + "\n");
+			tf.appendText(o.x + "\n");
 		}
 
 		private function testExternalizable():void {

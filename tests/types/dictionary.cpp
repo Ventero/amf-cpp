@@ -558,3 +558,25 @@ TEST(DictionaryDeserialization, InvalidMarker) {
 	auto it = data.cbegin();
 	ASSERT_THROW(AmfDictionary::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
+
+TEST(DictionaryDeserialization, SelfReference) {
+	v8 data {
+		0x11,
+		0x03,
+		0x00,
+		0x06, 0x03, 0x78,
+		0x11, 0x00
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfItemPtr ptr = AmfDictionary::deserializePtr(it, data.cend(), ctx);
+	AmfDictionary & d = ptr.as<AmfDictionary>();
+
+	AmfItemPtr key(new AmfString("x"));
+	const AmfItemPtr & inner = d.values.at(key);
+	EXPECT_EQ(ptr.get(), inner.get());
+
+	const AmfItemPtr & inner2 = inner.as<AmfDictionary>().values.at(key);
+	EXPECT_EQ(ptr.get(), inner2.get());
+}

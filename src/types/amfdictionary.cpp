@@ -40,30 +40,35 @@ std::vector<u8> AmfDictionary::serialize() const {
 	return buf;
 }
 
-AmfDictionary AmfDictionary::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfItemPtr AmfDictionary::deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
 	if (it == end || *it++ != AMF_DICTIONARY)
 		throw std::invalid_argument("AmfDictionary: Invalid type marker");
 
 	int type = AmfInteger::deserializeValue(it, end);
 	if ((type & 0x01) == 0x00)
-		return ctx.getObject<AmfDictionary>(type >> 1);
+		return ctx.getPointer<AmfDictionary>(type >> 1);
 
 	if (it == end)
 		throw std::out_of_range("Not enough bytes for AmfDictionary");
 
 	bool weak = (*it++ == 0x01);
-	AmfDictionary ret(false, weak);
-	size_t contextIndex = ctx.addObject<AmfDictionary>(ret);
+
+	AmfItemPtr ptr(new AmfDictionary(false, weak));
+	AmfDictionary & dict = ptr.as<AmfDictionary>();
+	ctx.addPointer(ptr);
 
 	int size = type >> 1;
 	for (int i = 0; i < size; ++i) {
 		AmfItemPtr key = Deserializer::deserialize(it, end, ctx);
 		AmfItemPtr val = Deserializer::deserialize(it, end, ctx);
-		ret.values[key] = val;
+		dict.values[key] = val;
 	}
 
-	ctx.setObject<AmfDictionary>(contextIndex, ret);
-	return ret;
+	return ptr;
+}
+
+AmfDictionary AmfDictionary::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	return deserializePtr(it, end, ctx).as<AmfDictionary>();
 }
 
 v8 AmfDictionary::serializeKey(const AmfItemPtr& key) const {
