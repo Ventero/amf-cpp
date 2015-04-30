@@ -130,7 +130,7 @@ AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator 
 			traits.className = AmfString::deserializeValue(it, end, ctx);
 			int numSealed = type >> 4;
 			for (int i = 0; i < numSealed; ++i)
-				traits.attributes.push_back(AmfString::deserializeValue(it, end, ctx));
+				traits.attributes.insert(AmfString::deserializeValue(it, end, ctx));
 		}
 
 		ctx.addTraits(traits);

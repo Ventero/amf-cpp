@@ -3,7 +3,7 @@
 #define AMFOBJECTTRAITS_HPP
 
 #include <string>
-#include <vector>
+#include <set>
 
 namespace amf {
 
@@ -24,7 +24,7 @@ public:
 	}
 
 	std::string className;
-	std::vector<std::string> attributes;
+	std::set<std::string> attributes;
 	bool dynamic;
 	bool externalizable;
 };

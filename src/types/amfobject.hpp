@@ -17,17 +17,14 @@ class AmfObject : public AmfItem {
 public:
 	AmfObject() : traits("", false, false) { }
 	AmfObject(std::string className, bool dynamic, bool externalizable) :
-		traits(AmfObjectTraits(className, dynamic, externalizable)) { }
+		traits(className, dynamic, externalizable) { }
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize() const;
 
 	template<class T>
 	void addSealedProperty(std::string name, const T& value) {
-		auto* a = &traits.attributes;
-		if (std::find(a->begin(), a->end(), name) == a->end())
-			traits.attributes.push_back(name);
-
+		traits.attributes.insert(name);
 		sealedProperties[name] = AmfItemPtr(new T(value));
 	}
 
@@ -38,9 +35,7 @@ public:
 
 	template<class T>
 	T& getSealedProperty(std::string name) {
-		const auto& it = std::find(traits.attributes.begin(),
-			traits.attributes.end(), name);
-
+		auto it = traits.attributes.find(name);
 		if (it == traits.attributes.end())
 			throw std::out_of_range("AmfObject::getSealedProperty");
 
