@@ -30,4 +30,8 @@ TEST(AmfObjectTraitsTest, Equality) {
 
 	obj1e.attributes.insert("attr");
 	EXPECT_EQ(obj1, obj1e);
+
+	// Verify attributes can't be duplicated.
+	obj1.attributes.insert("attr");
+	EXPECT_EQ(obj1, obj1e);
 }
