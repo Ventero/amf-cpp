@@ -4,11 +4,11 @@
 
 #include <vector>
 
-#include "deserializationcontext.hpp"
-
 #include "types/amfitem.hpp"
 
 namespace amf {
+
+class DeserializationContext;
 
 class AmfUndefined : public AmfItem {
 public:
