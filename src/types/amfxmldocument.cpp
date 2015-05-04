@@ -12,10 +12,12 @@ bool AmfXmlDocument::operator==(const AmfItem& other) const {
 }
 
 std::vector<u8> AmfXmlDocument::serialize() const {
-	// XMLDocument is identical to XML (except for the object marker),
-	// so simply forward everything to the AmfXml implementation
-	std::vector<u8> buf = AmfXml(value).serialize();
-	buf[0] = AMF_XMLDOC;
+	// Encode the type marker + length.
+	std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_XMLDOC);
+
+	// Encode the data. According to the spec it's encoded as UTF-8 chars.
+	// We leave it up to the caller to ensure that's the case.
+	buf.insert(buf.end(), value.begin(), value.end());
 
 	return buf;
 }
