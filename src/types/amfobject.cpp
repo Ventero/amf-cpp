@@ -140,8 +140,8 @@ AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator 
 	ctx.addPointer(ptr);
 
 	if (traits.externalizable) {
-		auto deserializer = Deserializer::externalDeserializers.at(traits.className);
-		return deserializer(it, end, ctx);
+		ret = Deserializer::externalDeserializers.at(traits.className)(it, end, ctx);
+		return ptr;
 	}
 
 	for (auto name : traits.attributes) {
