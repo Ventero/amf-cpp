@@ -112,7 +112,7 @@ public:
 		return AmfVector<AmfItem>::deserialize(it, end, ctx).as<T>();
 	}
 
-private:	
+private:
 	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 };
 

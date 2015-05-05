@@ -45,7 +45,6 @@ std::vector<u8> AmfObject::serialize() const {
 	// serialized class name with AmfString marker
 	std::vector<u8> name(className.serialize());
 
-	// TODO: need to handle trait refs?
 	if (traits.externalizable) {
 		// U29O-traits-ext = 0b0111 = 0x07
 		buf.push_back(0x07);
@@ -103,7 +102,7 @@ std::vector<u8> AmfObject::serialize() const {
 	}
 
 	return buf;
-}	
+}
 
 AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
 	if (it == end || *it++ != AMF_OBJECT)
@@ -141,8 +140,8 @@ AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator 
 	ctx.addPointer(ptr);
 
 	if (traits.externalizable) {
-		ret = Deserializer::externalDeserializers.at(traits.className)(it, end, ctx);
-		return ptr;
+		auto deserializer = Deserializer::externalDeserializers.at(traits.className);
+		return deserializer(it, end, ctx);
 	}
 
 	for (auto name : traits.attributes) {
