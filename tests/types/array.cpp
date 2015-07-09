@@ -446,3 +446,14 @@ TEST(ArrayDeserialization, SelfReference) {
 	EXPECT_EQ(4, d.at<AmfInteger>(3));
 	EXPECT_EQ(4, ref.at<AmfInteger>(3));
 }
+
+TEST(ArrayDeserialization, Utf8VrReference) {
+	v8 data { 0x09, 0x01, 0x03, 0x78, 0x06, 0x00, 0x01 };
+
+	AmfArray array;
+	array.insert("x", AmfString("x"));
+
+	DeserializationContext ctx;
+	deserializesTo(array, data, 0, &ctx);
+	deserializesTo(array, { 0x09, 0x01, 0x00, 0x06, 0x00, 0x01 }, 0, &ctx);
+}

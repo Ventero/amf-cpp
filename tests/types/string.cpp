@@ -3,6 +3,7 @@
 #include "amf.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfobject.hpp"
 #include "types/amfxml.hpp"
 #include "types/amfxmldocument.hpp"
 
@@ -210,4 +211,20 @@ TEST(StringDeserialization, EmtpyStringNotCached) {
 	deserializesTo("", { 0x06, 0x01 }, 0, &ctx);
 	deserializesTo("bar", { 0x06, 0x07, 0x62, 0x61, 0x72 }, 0, &ctx);
 	deserializesTo("bar", { 0x06, 0x00 }, 0, &ctx);
+}
+
+TEST(StringDeserialization, Utf8Cached) {
+	DeserializationContext ctx;
+	AmfObject obj("foo", true, false);
+	obj.addDynamicProperty("bar", AmfString("qux"));
+	deserialize(obj, {
+		0x0a, 0x0b, 0x07, 0x66, 0x6f, 0x6f,
+		0x07, 0x62, 0x61, 0x72,
+		0x06, 0x07, 0x71, 0x75, 0x78,
+		0x01
+	}, 0, &ctx);
+
+	deserializesTo("foo", { 0x06, 0x00 }, 0, &ctx);
+	deserializesTo("bar", { 0x06, 0x02 }, 0, &ctx);
+	deserializesTo("qux", { 0x06, 0x04 }, 0, &ctx);
 }
