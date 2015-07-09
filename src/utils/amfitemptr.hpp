@@ -39,7 +39,7 @@ public:
 	}
 
 	bool operator==(const AmfItemPtr& other) const {
-		return *this->get() == *other.get();
+		return this->get() == other.get() || *this->get() == *other.get();
 	}
 
 	bool operator!=(const AmfItemPtr& other) const {
