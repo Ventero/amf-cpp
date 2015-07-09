@@ -19,7 +19,7 @@ public:
 	void addString(const std::string& str);
 	const std::string & getString(size_t index);
 
-	void addTraits(const AmfObjectTraits& traits);
+	void addTraits(const AmfObjectTraits& trait);
 	const AmfObjectTraits & getTraits(size_t index);
 
 	void addPointer(const AmfItemPtr & ptr) {
