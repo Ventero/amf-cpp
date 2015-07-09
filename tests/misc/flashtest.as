@@ -21,12 +21,15 @@ package{
 		private function dumpValues():void {
 			tf.text = "";
 			var b:ByteArray = new ByteArray();
-			var a:Dictionary = new Dictionary();
-			a["x"] = a;
-			tf.appendText(a.toString() + "\n");
-			tf.appendText(a["x"].toString() + "\n");
+			var a:Array = [];
+			a["x"] = "x";
+			b.writeObject(a);
 			b.writeObject(a);
 			dumpByteArray(b);
+		}
+
+		private function log(o:*):void {
+			tf.appendText(o + "\n");
 		}
 
 		private function readValues():void {
@@ -48,13 +51,14 @@ package{
 			];
 			*/
 			var data:Array = [
-				0x11, 0x03, 0x00, 0x06, 0x03, 0x78, 0x00
+				0x09, 0x05, 0x01,
+					0x09, 0x01, 0x03, 0x78, 0x06, 0x00, 0x01,
+					0x09, 0x01, 0x00, 0x06, 0x00, 0x01,
 			];
 			var b:ByteArray = createByteArray(data);
 
 			var o:* = b.readObject();
-			tf.appendText(o + "\n");
-			tf.appendText(o.x + "\n");
+			log(o); log(o.length); log(o[0].x); log(o[1].x);
 		}
 
 		private function testExternalizable():void {
