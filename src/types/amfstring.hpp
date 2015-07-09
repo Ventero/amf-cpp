@@ -19,6 +19,7 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize() const;
+	std::vector<u8> serializeValue() const;
 	static AmfString deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 	static std::string deserializeValue(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 

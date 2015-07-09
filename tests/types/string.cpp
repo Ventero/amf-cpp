@@ -75,6 +75,16 @@ TEST(StringSerializationTest, Unicode) {
 		           0xC4, 0xA7 }, "”]²³¶ŧ↓øħ”“łµæðµ→³øħ");
 }
 
+TEST(StringSerializationTest, SerializeValue) {
+	isEqual(v8 { 0x01 }, AmfString("").serializeValue());
+	isEqual(v8 { 0x07, 0x62, 0x61, 0x72 }, AmfString("bar").serializeValue());
+	isEqual(v8 { 0x0D, 0x62, 0x6F, 0x6F, 0x66, 0x61, 0x72 }, AmfString("boofar").serializeValue());
+	isEqual(v8 { 0x07, 0x71, 0x75, 0x78 }, AmfString("qux").serializeValue());
+	isEqual(v8 { 0x07, 0x71, 0x75, 0x7A }, AmfString("quz").serializeValue());
+	isEqual(v8 { 0x09, 0x71, 0x75, 0x75, 0x78 }, AmfString("quux").serializeValue());
+	isEqual(v8 { 0x07, 0x22, 0x27, 0x5C }, AmfString("\"'\\").serializeValue());
+}
+
 TEST(StringEquality, SimpleValues) {
 	AmfString s1;
 	AmfString s2("");

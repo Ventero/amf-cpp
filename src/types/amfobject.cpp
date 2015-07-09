@@ -42,14 +42,14 @@ std::vector<u8> AmfObject::serialize() const {
 	std::vector<u8> buf = { AMF_OBJECT };
 
 	AmfString className(traits.className);
-	// serialized class name with AmfString marker
-	std::vector<u8> name(className.serialize());
+	// serialized class name as UTF-8-vr
+	std::vector<u8> name(className.serializeValue());
 
 	if (traits.externalizable) {
 		// U29O-traits-ext = 0b0111 = 0x07
 		buf.push_back(0x07);
 		// class-name
-		buf.insert(buf.end(), name.begin() + 1, name.end());
+		buf.insert(buf.end(), name.begin(), name.end());
 
 		// externalized value = *(U8)
 		// note: this may throw if externalizer is not properly initialized
@@ -66,14 +66,13 @@ std::vector<u8> AmfObject::serialize() const {
 	std::vector<u8> marker(AmfInteger(traitMarker).serialize());
 	buf.insert(buf.end(), marker.begin() + 1, marker.end());
 
-	// class-name, skip the AmfString marker
-	buf.insert(buf.end(), name.begin() + 1, name.end());
+	// class-name
+	buf.insert(buf.end(), name.begin(), name.end());
 
 	// sealed property names = *(UTF-8-vr)
 	for (const std::string& attribute : traits.attributes) {
-		std::vector<u8> attr(AmfString(attribute).serialize());
-		// skip AmfString marker
-		buf.insert(buf.end(), attr.begin() + 1, attr.end());
+		std::vector<u8> attr(AmfString(attribute).serializeValue());
+		buf.insert(buf.end(), attr.begin(), attr.end());
 	}
 
 	// sealed property values = *(value-type)
@@ -88,10 +87,8 @@ std::vector<u8> AmfObject::serialize() const {
 		// dynamic-members = UTF-8-vr value-type
 		for (const auto& it : dynamicProperties) {
 			AmfString attribute(it.first);
-			const std::vector<u8> name(attribute.serialize());
-
-			// skip AmfString marker again
-			buf.insert(buf.end(), name.begin() + 1, name.end());
+			const std::vector<u8> name(attribute.serializeValue());
+			buf.insert(buf.end(), name.begin(), name.end());
 
 			auto s = it.second->serialize();
 			buf.insert(buf.end(), s.begin(), s.end());

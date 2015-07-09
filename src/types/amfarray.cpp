@@ -26,11 +26,11 @@ std::vector<u8> AmfArray::serialize() const {
 
 	// *(assoc-value) = (UTF-8-vr value-type)
 	for (const auto& it : associative) {
-		auto name = AmfString(it.first).serialize();
+		auto name = AmfString(it.first).serializeValue();
 		auto value = it.second->serialize();
 
-		// UTF-8-vr, so skip the AmfString marker.
-		buf.insert(buf.end(), name.begin() + 1, name.end());
+		// UTF-8-vr
+		buf.insert(buf.end(), name.begin(), name.end());
 		// value-type
 		buf.insert(buf.end(), value.begin(), value.end());
 	}

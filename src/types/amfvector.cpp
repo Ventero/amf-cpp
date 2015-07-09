@@ -84,9 +84,8 @@ std::vector<u8> AmfVector<AmfItem>::serialize() const {
 	buf.push_back(fixed ? 0x01 : 0x00);
 
 	// object type name
-	std::vector<u8> typeName = AmfString(type).serialize();
-	// skip the AMF_STRING marker
-	buf.insert(buf.end(), typeName.begin() + 1, typeName.end());
+	std::vector<u8> typeName = AmfString(type).serializeValue();
+	buf.insert(buf.end(), typeName.begin(), typeName.end());
 
 	for (const auto& it : values) {
 		auto s = it->serialize();

@@ -11,13 +11,26 @@ bool AmfString::operator==(const AmfItem& other) const {
 }
 
 std::vector<u8> AmfString::serialize() const {
-	if (value.empty())
-		return std::vector<u8>{ AMF_STRING, 0x01 };
-
 	// AmfString = string-marker UTF-8-vr
-	// with UTF-8-vr = U29S-value *(UTF8-char)
+	std::vector<u8> buf { AMF_STRING };
+
+	// Get the UTF-8-vr and append.
+	std::vector<u8> value = serializeValue();
+	buf.insert(buf.end(), value.begin(), value.end());
+
+	return buf;
+}
+
+std::vector<u8> AmfString::serializeValue() const {
+	if (value.empty())
+		return std::vector<u8> { 0x01 };
+
+	// UTF-8-vr = U29S-value *(UTF8-char)
 	// U29S-value encodes the length of the following string
 	std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_STRING);
+
+	// Get rid of the type marker.
+	buf.erase(buf.begin());
 
 	// now, append the actual string.
 	buf.insert(buf.end(), value.begin(), value.end());
