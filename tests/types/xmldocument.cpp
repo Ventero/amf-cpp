@@ -9,10 +9,10 @@ TEST(XmlDocumentSerializationTest, EmptyXmlString) {
 	AmfXmlDocument val;
 
 	v8 expected { 0x07, 0x01 };
-	ASSERT_EQ(expected, val.serialize());
+	isEqual(expected, val);
 
 	val = AmfXmlDocument("");
-	ASSERT_EQ(expected, val.serialize());
+	isEqual(expected, val);
 }
 
 TEST(XmlDocumentSerializationTest, XmlString) {

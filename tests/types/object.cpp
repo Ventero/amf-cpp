@@ -629,8 +629,7 @@ TEST(ObjectDeserialization, TraitsSetProperly) {
 		obj = AmfObject::deserialize(it, data.cend(), ctx);
 	});
 
-	v8 serialized = obj.serialize();
-	EXPECT_EQ(data, serialized);
+	isEqual(data, obj);
 }
 
 TEST(ObjectDeserialization, NestedObject) {

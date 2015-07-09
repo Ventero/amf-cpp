@@ -322,10 +322,15 @@ TEST(VectorSerializationTest, VectorAnonObject) {
 	vector.push_back(obj);
 
 	v8 expected {
+		// Vector<AmfItem>, 1 element, not fixed
 		0x10, 0x03, 0x00,
+		// empty type name
 		0x01,
+		// object, dynamic, 0 sealed properties, empty class name
 		0x0a, 0x0b, 0x01,
+		// key: "prop"
 		0x09, 0x70, 0x72, 0x6f, 0x70,
+		// value: AmfString "val"
 		0x06, 0x07, 0x76, 0x61, 0x6c, 0x01
 	};
 	isEqual(expected, vector);

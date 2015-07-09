@@ -134,14 +134,23 @@ TEST(ArraySerializationTest, ArrayOfArrays) {
 	outerArray.push_back(array);
 
 	isEqual(v8 {
+		// AMF_ARRAY
 		0x09,
+		// 2 dense elements
 		0x05,
+		// end of associative elements
 		0x01,
+			// first dense element, AMF_ARRAY
 			0x09,
+			// 2 dense elements
 			0x05,
+			// end of associative elements
 			0x01,
+				// AmfInteger 0xbeef
 				0x04, 0x82, 0xfd, 0x6f,
+				// AmfString "foobar"
 				0x06, 0x0d, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72,
+			// second dense element, AMF_ARRAY
 			0x09,
 			0x05,
 			0x01,
