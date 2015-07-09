@@ -457,3 +457,30 @@ TEST(ArrayDeserialization, Utf8VrReference) {
 	deserializesTo(array, data, 0, &ctx);
 	deserializesTo(array, { 0x09, 0x01, 0x00, 0x06, 0x00, 0x01 }, 0, &ctx);
 }
+
+TEST(ArrayDeserialization, ArrayReferenceOrder) {
+	AmfItemPtr ptr((AmfArray()));
+	ptr.as<AmfArray>().associative["x"] = ptr;
+	ptr.as<AmfArray>().insert("y", AmfArray());
+	ptr.as<AmfArray>().push_back(AmfArray());
+	ptr.as<AmfArray>().dense.push_back(ptr);
+
+	v8 data {
+		0x09, 0x05,
+			0x03, 0x78, 0x09, 0x00,
+			0x03, 0x79, 0x09, 0x01, 0x01,
+			0x01,
+			0x09, 0x02,
+			0x09, 0x00,
+	};
+
+	DeserializationContext ctx;
+	auto begin = data.cbegin();
+	AmfItemPtr deserialized = AmfArray::deserializePtr(begin, data.cend(), ctx);
+	AmfArray const & arr = deserialized.as<AmfArray>();
+	ASSERT_EQ(arr.associative.at("x"), deserialized);
+	ASSERT_EQ(arr.at<AmfArray>("y"), AmfArray());
+	ASSERT_EQ(arr.at<AmfArray>(0), AmfArray());
+	ASSERT_EQ(arr.dense.at(1), deserialized);
+	ASSERT_EQ(arr.associative.at("y"), arr.dense.at(0));
+}
