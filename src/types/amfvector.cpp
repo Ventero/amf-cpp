@@ -2,6 +2,7 @@
 
 #include "deserializationcontext.hpp"
 #include "deserializer.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
 
@@ -14,7 +15,12 @@ bool AmfVector<T, typename VectorProperties<T>::type>::operator==(const AmfItem&
 }
 
 template<typename T>
-std::vector<u8> AmfVector<T, typename VectorProperties<T>::type>::serialize() const {
+std::vector<u8> AmfVector<T, typename VectorProperties<T>::type>::serialize(SerializationContext& ctx) const {
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { VectorProperties<T>::marker, u8(index << 1) };
+	ctx.addObject(*this);
+
 	// U29V value
 	std::vector<u8> buf = AmfInteger::asLength(values.size(),
 		VectorProperties<T>::marker);
@@ -76,7 +82,12 @@ bool AmfVector<AmfItem>::operator==(const AmfItem& other) const {
 	return p != nullptr && fixed == p->fixed && type == p->type && values == p->values;
 }
 
-std::vector<u8> AmfVector<AmfItem>::serialize() const {
+std::vector<u8> AmfVector<AmfItem>::serialize(SerializationContext& ctx) const {
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { AMF_VECTOR_OBJECT, u8(index << 1) };
+	ctx.addObject(*this);
+
 	// U29V value, encoding the length
 	std::vector<u8> buf = AmfInteger::asLength(values.size(), AMF_VECTOR_OBJECT);
 
@@ -84,11 +95,11 @@ std::vector<u8> AmfVector<AmfItem>::serialize() const {
 	buf.push_back(fixed ? 0x01 : 0x00);
 
 	// object type name
-	std::vector<u8> typeName = AmfString(type).serializeValue();
+	std::vector<u8> typeName = AmfString(type).serializeValue(ctx);
 	buf.insert(buf.end(), typeName.begin(), typeName.end());
 
 	for (const auto& it : values) {
-		auto s = it->serialize();
+		auto s = it->serialize(ctx);
 		buf.insert(buf.end(), s.begin(), s.end());
 	}
 

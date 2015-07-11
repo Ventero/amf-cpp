@@ -10,6 +10,7 @@
 
 namespace amf {
 
+class SerializationContext;
 class DeserializationContext;
 
 template<typename T>
@@ -56,7 +57,7 @@ public:
 		return values.at(index);
 	}
 
-	std::vector<u8> serialize() const;
+	std::vector<u8> serialize(SerializationContext& ctx) const;
 	static AmfVector<T> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
 	std::vector<T> values;
@@ -69,7 +70,7 @@ public:
 	AmfVector(std::string type, bool fixed = false) : type(type), fixed(fixed) { }
 
 	bool operator==(const AmfItem& other) const;
-	std::vector<u8> serialize() const;
+	std::vector<u8> serialize(SerializationContext& ctx) const;
 	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 	static AmfVector<AmfItem> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 

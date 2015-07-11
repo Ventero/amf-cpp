@@ -1,6 +1,7 @@
 #include "amfxmldocument.hpp"
 
 #include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfxml.hpp"
 
@@ -11,7 +12,12 @@ bool AmfXmlDocument::operator==(const AmfItem& other) const {
 	return p != nullptr && value == p->value;
 }
 
-std::vector<u8> AmfXmlDocument::serialize() const {
+std::vector<u8> AmfXmlDocument::serialize(SerializationContext& ctx) const {
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { AMF_XMLDOC, u8(index << 1) };
+	ctx.addObject(*this);
+
 	// Encode the type marker + length.
 	std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_XMLDOC);
 

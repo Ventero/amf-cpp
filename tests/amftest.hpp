@@ -5,6 +5,7 @@
 
 #include "amf.hpp"
 #include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 
 #include "types/amfitem.hpp"
 
@@ -16,15 +17,26 @@ static inline void isEqual(const std::vector<u8>& expected, const v8& serialized
 		<< ", got " << serialized.size();
 }
 
-static inline void isEqual(const std::vector<u8>& expected, const AmfItem& value) {
-	v8 serialized = value.serialize();
+static inline void isEqual(
+	const std::vector<u8>& expected,
+	const AmfItem& value,
+	SerializationContext * ctx = nullptr) {
+
+	std::unique_ptr<SerializationContext> dummy;
+	if (!ctx) {
+		dummy.reset(new SerializationContext());
+		ctx = dummy.get();
+	}
+
+	v8 serialized = value.serialize(*ctx);
 	isEqual(expected, serialized);
 }
 
 template<typename T>
 void deserialize(const T& expected, const v8& data, int expectedLeft = 0,
 		DeserializationContext* ctx = nullptr) {
-	SCOPED_TRACE(::testing::PrintToString(expected) + " = " + ::testing::PrintToString(data));
+	SerializationContext sctx;
+	SCOPED_TRACE(::testing::PrintToString(expected.serialize(sctx)) + " = " + ::testing::PrintToString(data));
 
 	std::unique_ptr<DeserializationContext> dummy;
 	if (!ctx) {

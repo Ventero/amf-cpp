@@ -64,6 +64,15 @@ TEST(ByteArraySerializationTest, ExplicitVectorCtor) {
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, AmfByteArray(values));
 }
 
+TEST(ByteArraySerializationTest, ObjectReferences) {
+	SerializationContext ctx;
+	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, AmfByteArray {v8 {1, 2, 3}}, &ctx);
+	isEqual({0x0c, 0x00}, AmfByteArray {v8 {1, 2, 3}}, &ctx);
+	isEqual({0x0c, 0x07, 0x04, 0x05, 0x06}, AmfByteArray {v8 {4, 5, 6}}, &ctx);
+	isEqual({0x0c, 0x00}, AmfByteArray {v8 {1, 2, 3}}, &ctx);
+	isEqual({0x0c, 0x02}, AmfByteArray {v8 {4, 5, 6}}, &ctx);
+}
+
 TEST(ByteArrayEquality, SimpleValues) {
 	AmfByteArray b1(v8 { 1, 2, 3 });
 	AmfByteArray b2(v8 { 1, 2, 3 });

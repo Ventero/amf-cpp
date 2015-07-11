@@ -11,6 +11,7 @@
 
 namespace amf {
 
+class SerializationContext;
 class DeserializationContext;
 
 class AmfObject : public AmfItem {
@@ -20,7 +21,7 @@ public:
 		traits(className, dynamic, externalizable) { }
 
 	bool operator==(const AmfItem& other) const;
-	std::vector<u8> serialize() const;
+	std::vector<u8> serialize(SerializationContext& ctx) const;
 
 	template<class T>
 	void addSealedProperty(std::string name, const T& value) {

@@ -152,11 +152,70 @@ TEST(ArraySerializationTest, ArrayOfArrays) {
 				0x06, 0x0d, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72,
 			// second dense element, AMF_ARRAY
 			0x09,
-			0x05,
-			0x01,
-				0x04, 0x82, 0xfd, 0x6f,
-				0x06, 0x0d, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72
+			// reference to array with index 1
+			0x02
 	}, outerArray);
+}
+
+TEST(ArraySerializationTest, SelfReference) {
+	SerializationContext ctx;
+	AmfItemPtr ptr((AmfArray()));
+	ptr.as<AmfArray>().associative["x"] = ptr;
+	ptr.as<AmfArray>().dense.push_back(ptr);
+
+	isEqual(v8 {
+		0x09, 0x03,
+			0x03, 0x78,
+			0x09, 0x00,
+			0x01,
+			0x09, 0x00,
+	}, ptr.as<AmfArray>(), &ctx);
+}
+
+TEST(ArraySerializationTest, ArrayReference) {
+	SerializationContext ctx;
+	AmfArray arr;
+	AmfArray inner;
+	inner.insert("x", AmfNull());
+	arr.push_back(inner);
+	arr.push_back(inner);
+
+	isEqual(v8 {
+		0x09, 0x05,
+			0x01,
+			0x09, 0x01, 0x03, 0x78, 0x01, 0x01,
+			0x09, 0x02
+	}, arr, &ctx);
+}
+
+TEST(ArraySerializationTest, ArrayReferenceOrder) {
+	SerializationContext ctx;
+	AmfItemPtr ptr((AmfArray()));
+	ptr.as<AmfArray>().associative["x"] = ptr;
+	ptr.as<AmfArray>().insert("y", AmfArray());
+	ptr.as<AmfArray>().push_back(AmfArray());
+	ptr.as<AmfArray>().dense.push_back(ptr);
+
+	isEqual(v8 {
+		0x09, 0x05,
+			0x03, 0x78, 0x09, 0x00,
+			0x03, 0x79, 0x09, 0x01, 0x01,
+			0x01,
+			0x09, 0x02,
+			0x09, 0x00,
+	}, ptr.as<AmfArray>(), &ctx);
+}
+
+TEST(ArraySerializationTest, Utf8VrReference) {
+	SerializationContext ctx;
+	AmfArray array;
+	array.insert("x", AmfString("x"));
+
+	isEqual(v8 { 0x09, 0x01, 0x03, 0x78, 0x06, 0x00, 0x01 }, array, &ctx);
+	isEqual(v8 { 0x09, 0x00 }, array, &ctx);
+
+	array.push_back(AmfUndefined());
+	isEqual(v8 { 0x09, 0x03, 0x00, 0x06, 0x00, 0x01, 0x00 }, array, &ctx);
 }
 
 TEST(ArrayMember, Modify) {

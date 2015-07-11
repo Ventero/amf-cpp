@@ -82,6 +82,32 @@ TEST(XmlDocumentSerializationTest, MultiByteLengthString) {
 	}, val);
 }
 
+TEST(XmlDocumentSerializationTest, SerializationCache) {
+	SerializationContext ctx;
+	isEqual(v8 { 0x07, 0x01 }, AmfXmlDocument("").serialize(ctx));
+	isEqual(v8 { 0x07, 0x07, 0x66, 0x6f, 0x6f }, AmfXmlDocument("foo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x00 }, AmfXmlDocument("").serialize(ctx));
+	isEqual(v8 { 0x07, 0x02 }, AmfXmlDocument("foo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x07, 0x67, 0x6f, 0x6f }, AmfXmlDocument("goo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x00 }, AmfXmlDocument("").serialize(ctx));
+	isEqual(v8 { 0x07, 0x02 }, AmfXmlDocument("foo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x04 }, AmfXmlDocument("goo").serialize(ctx));
+}
+
+TEST(XmlDocumentSerializationTest, SerializationCacheNotShared) {
+	SerializationContext ctx;
+	isEqual(v8 { 0x07, 0x01 }, AmfXmlDocument("").serialize(ctx));
+	isEqual(v8 { 0x07, 0x07, 0x66, 0x6f, 0x6f }, AmfXmlDocument("foo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x00 }, AmfXmlDocument("").serialize(ctx));
+	isEqual(v8 { 0x07, 0x02 }, AmfXmlDocument("foo").serialize(ctx));
+	isEqual(v8 { 0x0b, 0x07, 0x67, 0x6f, 0x6f }, AmfXml("goo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x00 }, AmfXmlDocument("").serialize(ctx));
+	isEqual(v8 { 0x07, 0x02 }, AmfXmlDocument("foo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x07, 0x67, 0x6f, 0x6f }, AmfXmlDocument("goo").serialize(ctx));
+	isEqual(v8 { 0x06, 0x07, 0x66, 0x6f, 0x6f }, AmfString("foo").serialize(ctx));
+	isEqual(v8 { 0x06, 0x07, 0x64, 0x6f, 0x6f }, AmfString("doo").serialize(ctx));
+	isEqual(v8 { 0x07, 0x07, 0x64, 0x6f, 0x6f }, AmfXmlDocument("doo").serialize(ctx));
+}
 TEST(XmlDocumentEquality, SimpleValues) {
 	AmfXmlDocument x1;
 	AmfXmlDocument x2("");

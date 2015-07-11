@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "amf.hpp"
+#include "serializationcontext.hpp"
 
 namespace amf {
 
@@ -18,9 +19,10 @@ public:
 	Serializer& operator<<(const AmfItem& item);
 
 	const std::vector<u8> & data() const { return buf; }
-	void clear() { buf.clear(); }
+	void clear() { buf.clear(); ctx.clear(); }
 
 private:
+	SerializationContext ctx;
 	std::vector<u8> buf;
 };
 

@@ -1,6 +1,7 @@
 #include "amfstring.hpp"
 
 #include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 
 namespace amf {
@@ -10,20 +11,26 @@ bool AmfString::operator==(const AmfItem& other) const {
 	return p != nullptr && value == p->value;
 }
 
-std::vector<u8> AmfString::serialize() const {
+std::vector<u8> AmfString::serialize(SerializationContext& ctx) const {
 	// AmfString = string-marker UTF-8-vr
 	std::vector<u8> buf { AMF_STRING };
 
 	// Get the UTF-8-vr and append.
-	std::vector<u8> value = serializeValue();
+	std::vector<u8> value = serializeValue(ctx);
 	buf.insert(buf.end(), value.begin(), value.end());
 
 	return buf;
 }
 
-std::vector<u8> AmfString::serializeValue() const {
+std::vector<u8> AmfString::serializeValue(SerializationContext& ctx) const {
+	// UTF-8-empty should not be cached.
 	if (value.empty())
 		return std::vector<u8> { 0x01 };
+
+	int index = ctx.getIndex(value);
+	if (index != -1)
+		return std::vector<u8> { u8(index << 1) };
+	ctx.addString(value);
 
 	// UTF-8-vr = U29S-value *(UTF8-char)
 	// U29S-value encodes the length of the following string

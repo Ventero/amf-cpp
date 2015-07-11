@@ -2,9 +2,11 @@
 
 #include "amf.hpp"
 #include "serializer.hpp"
+#include "types/amfarray.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfnull.hpp"
+#include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
 
 TEST(SerializerTest, SingleValue) {
@@ -68,4 +70,43 @@ TEST(SerializerTest, MultipleMixedValues) {
 		0x01
 	};
 	ASSERT_EQ(expected, s.data());
+}
+
+TEST(SerializerTest, SerializationContext) {
+	Serializer s;
+	AmfString str("foo");
+	AmfArray arr;
+	AmfObject obj("foo", true, false);
+	AmfObject obj2("foo", true, false);
+	obj2.addDynamicProperty("x", AmfNull());
+
+	s << str << arr << str << arr << obj << obj2 << obj;
+	v8 expected {
+		0x06, 0x07, 0x66, 0x6f, 0x6f,
+		0x09, 0x01, 0x01,
+		0x06, 0x00,
+		0x09, 0x00,
+		0x0a, 0x0b, 0x00, 0x01,
+		0x0a, 0x01, 0x03, 0x78, 0x01, 0x01,
+		0x0a, 0x02,
+	};
+	ASSERT_EQ(expected, s.data());
+}
+
+TEST(SerializerTest, SerializationContextClear) {
+	Serializer s;
+	AmfString str("foo");
+
+	s << str;
+	v8 data = { 0x06, 0x07, 0x66, 0x6f, 0x6f };
+	ASSERT_EQ(data, s.data());
+	s << str;
+	data = v8 { 0x06, 0x07, 0x66, 0x6f, 0x6f, 0x06, 0x00 };
+	ASSERT_EQ(data, s.data());
+
+	s.clear();
+
+	s << str;
+	data = { 0x06, 0x07, 0x66, 0x6f, 0x6f };
+	ASSERT_EQ(data, s.data());
 }

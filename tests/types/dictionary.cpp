@@ -192,6 +192,7 @@ TEST(DictionarySerializationTest, NumberAsStringKeys) {
 }
 
 TEST(DictionarySerializationTest, MultipleKeys) {
+	SerializationContext ctx;
 	AmfDictionary d(true, false);
 	d.insert(AmfInteger(3), AmfBool(false));
 	d.insert(AmfInteger(-16384), AmfString("foo"));
@@ -209,7 +210,7 @@ TEST(DictionarySerializationTest, MultipleKeys) {
 			0x06, 0x0D, 0x2D, 0x31, 0x36, 0x33, 0x38, 0x34,
 			0x06, 0x07, 0x66, 0x6F, 0x6F
 		}
-	}, d.serialize());
+	}, d.serialize(ctx));
 }
 
 TEST(DictionarySerializationTest, Clear) {
@@ -234,8 +235,9 @@ TEST(DictionarySerializationTest, Clear) {
 }
 
 TEST(DictionarySerializationTest, ComplexObjectKeys) {
+	SerializationContext ctx;
 	AmfDictionary d(false);
-	d.insert(AmfArray(), AmfArray());
+	d.insert(AmfArray(), AmfDictionary(false));
 	d.insert(AmfArray(std::vector<AmfInteger> { 1 }), AmfObject("", true, false));
 
 	consistsOf(std::vector<v8> {
@@ -244,15 +246,15 @@ TEST(DictionarySerializationTest, ComplexObjectKeys) {
 			0x05, // 2 elements
 			0x00  // no weak keys
 		},
-		{ // [] = []
+		{ // [] = {}
 			0x09, 0x01, 0x01, // empty array
-			0x09, 0x01, 0x01 // empty array
+			0x11, 0x01, 0x00 // empty dictionary
 		},
 		{ // [1] = {}
 			0x09, 0x03, 0x01, 0x04, 0x01, // AmfArray [1]
 			0x0a, 0x0b, 0x01, 0x01 // empty dynamic anonymous object
 		}
-	}, d.serialize());
+	}, d.serialize(ctx));
 
 
 	AmfObject obj("foo", true, false);
@@ -283,8 +285,9 @@ TEST(DictionarySerializationTest, ComplexObjectKeys) {
 }
 
 TEST(DictionarySerializationTest, NumberAsStringsDoesntAffectObjects) {
+	SerializationContext ctx;
 	AmfDictionary d(true);
-	d.insert(AmfArray(), AmfArray());
+	d.insert(AmfArray(), AmfDictionary(false));
 	d.insert(AmfArray(std::vector<AmfInteger> { 1 }), AmfObject("", true, false));
 
 	consistsOf(std::vector<v8> {
@@ -293,15 +296,15 @@ TEST(DictionarySerializationTest, NumberAsStringsDoesntAffectObjects) {
 			0x05, // 2 elements
 			0x00  // no weak keys
 		},
-		{ // [] = []
+		{ // [] = {}
 			0x09, 0x01, 0x01, // empty array
-			0x09, 0x01, 0x01 // empty array
+			0x11, 0x01, 0x00 // empty array
 		},
 		{ // [1] = {}
 			0x09, 0x03, 0x01, 0x04, 0x01, // AmfArray [1]
 			0x0a, 0x0b, 0x01, 0x01 // empty dynamic anonymous object
 		}
-	}, d.serialize());
+	}, d.serialize(ctx));
 
 
 	AmfObject obj("foo", true, false);
@@ -332,13 +335,14 @@ TEST(DictionarySerializationTest, NumberAsStringsDoesntAffectObjects) {
 }
 
 TEST(DictionarySerializationTest, MultiByteLength) {
+	SerializationContext ctx;
 	AmfDictionary d(true, false);
 	for(int i = 0; i < 300; ++i)
 		d.insert(AmfInteger(i), AmfInteger(i));
 
 	// for simplicity, only test header and total length
 	v8 expected { 0x11, 0x84, 0x59, 0x00 };
-	v8 actual(d.serialize());
+	v8 actual(d.serialize(ctx));
 	v8 header(actual.begin(), actual.begin() + 4);
 
 	ASSERT_EQ(2166, actual.size());
@@ -378,6 +382,69 @@ TEST(DictionarySerializationTest, ToggleAsString) {
 		0x02,
 		0x04, 0x03
 	}, d);
+}
+
+TEST(DictionarySerializationTest, SelfReference) {
+	AmfItemPtr ptr(AmfDictionary(false, false));
+	ptr.as<AmfDictionary>().values[AmfItemPtr(AmfString("x"))] = ptr;
+
+	SerializationContext ctx;
+	isEqual({
+		0x11,
+		0x03,
+		0x00,
+		0x06, 0x03, 0x78,
+		0x11, 0x00
+	}, ptr->serialize(ctx));
+}
+
+TEST(DictionarySerializationTest, ReferenceMembers) {
+	AmfDictionary d(false, false);
+	d.insert(AmfArray(), AmfDictionary(false, false));
+	d.insert(AmfDictionary(false, false), AmfArray());
+
+	// Since serialization order is not mandated, we have two possible outcomes
+	// when serializing the dictionary.
+	v8 data1 {
+		0x11, 0x05, 0x00,
+		0x09, 0x01, 0x01, 0x11, 0x01, 0x00,
+		0x11, 0x04, 0x09, 0x02
+	};
+	v8 data2 {
+		0x11, 0x05, 0x00,
+		0x11, 0x01, 0x00, 0x09, 0x01, 0x01,
+		0x09, 0x04, 0x11, 0x02
+	};
+
+	SerializationContext ctx;
+	auto s = d.serialize(ctx);
+	ASSERT_TRUE(s == data1 || s == data2);
+}
+
+TEST(DictionarySerializationTest, DifferentPropertiesNoReference) {
+	AmfDictionary d(false, false);
+	AmfDictionary d2(true, false);
+	AmfDictionary d3(true, true);
+
+	d.insert(AmfBool(true), AmfUndefined());
+	d2.insert(AmfBool(true), AmfUndefined());
+	d3.insert(AmfBool(true), AmfUndefined());
+
+	SerializationContext ctx;
+	isEqual({ 0x11, 0x03, 0x00, 0x03, 0x00 }, d.serialize(ctx));
+	isEqual({
+		0x11, 0x03, 0x00,
+		0x06, 0x09, 0x74, 0x72, 0x75, 0x65,
+		0x00
+	}, d2.serialize(ctx));
+	isEqual({
+		0x11, 0x03, 0x01,
+		0x06, 0x00,
+		0x00
+	}, d3.serialize(ctx));
+	isEqual({ 0x11, 0x00 }, d.serialize(ctx));
+	isEqual({ 0x11, 0x02 }, d2.serialize(ctx));
+	isEqual({ 0x11, 0x04 }, d3.serialize(ctx));
 }
 
 TEST(DictionaryEquality, EmptyDictionary) {

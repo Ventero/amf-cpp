@@ -9,6 +9,7 @@
 
 namespace amf {
 
+class SerializationContext;
 class DeserializationContext;
 
 // this needs to be a long long to ensure no overflow
@@ -24,7 +25,7 @@ public:
 	AmfDate(std::chrono::system_clock::time_point date);
 
 	bool operator==(const AmfItem& other) const;
-	std::vector<u8> serialize() const;
+	std::vector<u8> serialize(SerializationContext& ctx) const;
 	static AmfDate deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
 	long long value;

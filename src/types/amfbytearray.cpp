@@ -1,6 +1,7 @@
 #include "amfbytearray.hpp"
 
 #include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 
 namespace amf {
@@ -10,10 +11,15 @@ bool AmfByteArray::operator==(const AmfItem& other) const {
 	return p != nullptr && value == p->value;
 }
 
-std::vector<u8> AmfByteArray::serialize() const {
-	std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_BYTEARRAY);
+std::vector<u8> AmfByteArray::serialize(SerializationContext& ctx) const {
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { AMF_BYTEARRAY, u8(index << 1) };
+	ctx.addObject(*this);
 
+	std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_BYTEARRAY);
 	buf.insert(buf.end(), value.begin(), value.end());
+
 	return buf;
 }
 

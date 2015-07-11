@@ -9,6 +9,7 @@
 
 namespace amf {
 
+class SerializationContext;
 class DeserializationContext;
 
 struct AmfDictionaryHash {
@@ -39,7 +40,7 @@ public:
 		values.clear();
 	}
 
-	std::vector<u8> serialize() const;
+	std::vector<u8> serialize(SerializationContext & ctx) const;
 	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 	static AmfDictionary deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
 
@@ -60,7 +61,7 @@ private:
 
 	// Flash Player doesn't support deserializing booleans and number types
 	// (AmfInteger/AmfDouble), so we may have to serialize them as strings
-	v8 serializeKey(const AmfItemPtr& key) const;
+	v8 serializeKey(const AmfItemPtr& key, SerializationContext& ctx) const;
 };
 
 } // namespace amf

@@ -2,6 +2,7 @@
 
 #include "deserializationcontext.hpp"
 #include "deserializer.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
 
@@ -19,6 +20,7 @@ bool AmfObject::operator==(const AmfItem& other) const {
 	if (traits.dynamic && dynamicProperties != p->dynamicProperties)
 		return false;
 
+	// TODO: only compare properties that are in attributes?
 	if (sealedProperties != p->sealedProperties)
 		return false;
 
@@ -28,7 +30,7 @@ bool AmfObject::operator==(const AmfItem& other) const {
 	return true;
 }
 
-std::vector<u8> AmfObject::serialize() const {
+std::vector<u8> AmfObject::serialize(SerializationContext& ctx) const {
 	/* AmfObject is defined as
 	 * object-marker
 	 * (
@@ -38,14 +40,19 @@ std::vector<u8> AmfObject::serialize() const {
 	 *   (U29O-traits class-name *(UTF-8-vr) *(value-type) *(dynamic-member))
 	 * )
 	 */
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { AMF_OBJECT, u8(index << 1) };
+	ctx.addObject(*this);
 
 	std::vector<u8> buf = { AMF_OBJECT };
 
 	AmfString className(traits.className);
 	// serialized class name as UTF-8-vr
-	std::vector<u8> name(className.serializeValue());
+	std::vector<u8> name(className.serializeValue(ctx));
 
 	if (traits.externalizable) {
+		// TODO: ref?
 		// U29O-traits-ext = 0b0111 = 0x07
 		buf.push_back(0x07);
 		// class-name
@@ -58,26 +65,34 @@ std::vector<u8> AmfObject::serialize() const {
 		return buf;
 	}
 
-	// U29-traits = 0b0011 = 0x03
-	size_t traitMarker = traits.attributes.size() << 4 | 0x03;
-	// dynamic marker = 0b1000 = 0x08
-	if (traits.dynamic) traitMarker |= 0x08;
+	// TODO: what about externalizable?
+	int trait_index = ctx.getIndex(traits);
+	if (trait_index != -1) {
+		buf.push_back(u8((trait_index << 2) | 1));
+	} else {
+		ctx.addTraits(traits);
 
-	std::vector<u8> marker(AmfInteger(traitMarker).serialize());
-	buf.insert(buf.end(), marker.begin() + 1, marker.end());
+		// U29-traits = 0b0011 = 0x03
+		size_t traitMarker = traits.attributes.size() << 4 | 0x03;
+		// dynamic marker = 0b1000 = 0x08
+		if (traits.dynamic) traitMarker |= 0x08;
 
-	// class-name
-	buf.insert(buf.end(), name.begin(), name.end());
+		std::vector<u8> marker(AmfInteger(traitMarker).serialize(ctx));
+		buf.insert(buf.end(), marker.begin() + 1, marker.end());
 
-	// sealed property names = *(UTF-8-vr)
-	for (const std::string& attribute : traits.attributes) {
-		std::vector<u8> attr(AmfString(attribute).serializeValue());
-		buf.insert(buf.end(), attr.begin(), attr.end());
+		// class-name
+		buf.insert(buf.end(), name.begin(), name.end());
+
+		// sealed property names = *(UTF-8-vr)
+		for (const std::string& attribute : traits.attributes) {
+			std::vector<u8> attr(AmfString(attribute).serializeValue(ctx));
+			buf.insert(buf.end(), attr.begin(), attr.end());
+		}
 	}
 
 	// sealed property values = *(value-type)
 	for (const std::string& attribute : traits.attributes) {
-		auto s = sealedProperties.at(attribute)->serialize();
+		auto s = sealedProperties.at(attribute)->serialize(ctx);
 		buf.insert(buf.end(), s.begin(), s.end());
 	}
 
@@ -87,10 +102,10 @@ std::vector<u8> AmfObject::serialize() const {
 		// dynamic-members = UTF-8-vr value-type
 		for (const auto& it : dynamicProperties) {
 			AmfString attribute(it.first);
-			const std::vector<u8> name(attribute.serializeValue());
+			const std::vector<u8> name(attribute.serializeValue(ctx));
 			buf.insert(buf.end(), name.begin(), name.end());
 
-			auto s = it.second->serialize();
+			auto s = it.second->serialize(ctx);
 			buf.insert(buf.end(), s.begin(), s.end());
 		}
 

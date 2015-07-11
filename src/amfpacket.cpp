@@ -2,6 +2,7 @@
 
 #include "deserializationcontext.hpp"
 #include "deserializer.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfnull.hpp"
 
 namespace amf {
@@ -12,9 +13,9 @@ bool PacketHeader::operator==(const AmfItem& other) const {
 		name == p->name && value == p->value;
 }
 
-v8 PacketHeader::serialize() const {
+v8 PacketHeader::serialize(SerializationContext& ctx) const {
 	v8 buf;
-	v8 value_data = value->serialize();
+	v8 value_data = value->serialize(ctx);
 	buf.reserve(2 + name.size() + 1 + 5 + value_data.size());
 	// Strings in AMF packets are always serialized as AMF0 UTF-8, i.e.
 	// U16 length (in network order) U8* value
@@ -76,9 +77,9 @@ bool PacketMessage::operator==(const AmfItem& other) const {
 		value == p->value;
 }
 
-v8 PacketMessage::serialize() const {
+v8 PacketMessage::serialize(SerializationContext& ctx) const {
 	v8 buf;
-	v8 value_data = value->serialize();
+	v8 value_data = value->serialize(ctx);
 	buf.reserve(2 + target.size() + 2 + response.size() + 5 + value_data.size());
 
 	v8 target_length = network_bytes<uint16_t>(target.size());
@@ -139,7 +140,7 @@ bool AmfPacket::operator==(const AmfItem& other) const {
 	return p != nullptr && headers == p->headers && messages == p->messages;
 }
 
-v8 AmfPacket::serialize() const {
+v8 AmfPacket::serialize(SerializationContext& ctx) const {
 	if (headers.size() >= 65536)
 		throw std::length_error("AmfPacket::serialize too many headers");
 
@@ -153,14 +154,14 @@ v8 AmfPacket::serialize() const {
 	v8 header_count = network_bytes<uint16_t>(headers.size());
 	buf.insert(buf.end(), header_count.begin(), header_count.end());
 	for (const PacketHeader& header : headers) {
-		const v8& val = header.serialize();
+		const v8& val = header.serialize(ctx);
 		buf.insert(buf.end(), val.begin(), val.end());
 	}
 
 	v8 message_count = network_bytes<uint16_t>(messages.size());
 	buf.insert(buf.end(), message_count.begin(), message_count.end());
 	for (const PacketMessage& message : messages) {
-		const v8& val = message.serialize();
+		const v8& val = message.serialize(ctx);
 		buf.insert(buf.end(), val.begin(), val.end());
 	}
 

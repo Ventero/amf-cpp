@@ -6,6 +6,7 @@
 
 #include "deserializationcontext.hpp"
 #include "deserializer.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfbool.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
@@ -14,7 +15,10 @@
 namespace amf {
 
 size_t AmfDictionaryHash::operator()(const AmfItemPtr& val) const {
-	auto s = val->serialize();
+	// TODO: use new context here?
+	// TODO: maybe use slightly more performant hashing method instead ...
+	SerializationContext ctx;
+	auto s = val->serialize(ctx);
 	return std::hash<std::string>()(std::string(s.begin(), s.end()));
 }
 
@@ -24,15 +28,20 @@ bool AmfDictionary::operator==(const AmfItem& other) const {
 		values == p->values;
 }
 
-std::vector<u8> AmfDictionary::serialize() const {
+std::vector<u8> AmfDictionary::serialize(SerializationContext & ctx) const {
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { AMF_DICTIONARY, u8(index << 1) };
+	ctx.addObject(*this);
+
 	std::vector<u8> buf = AmfInteger::asLength(values.size(), AMF_DICTIONARY);
 
 	buf.push_back(weak ? 0x01 : 0x00);
 
 	for (auto it : values) {
 		// convert key's value to string if necessary
-		auto k = serializeKey(it.first);
-		auto v = it.second->serialize();
+		auto k = serializeKey(it.first, ctx);
+		auto v = it.second->serialize(ctx);
 		buf.insert(buf.end(), k.begin(), k.end());
 		buf.insert(buf.end(), v.begin(), v.end());
 	}
@@ -71,14 +80,14 @@ AmfDictionary AmfDictionary::deserialize(v8::const_iterator& it, v8::const_itera
 	return deserializePtr(it, end, ctx).as<AmfDictionary>();
 }
 
-v8 AmfDictionary::serializeKey(const AmfItemPtr& key) const {
+v8 AmfDictionary::serializeKey(const AmfItemPtr& key, SerializationContext& ctx) const {
 	if (!asString)
-		return key->serialize();
+		return key->serialize(ctx);
 
 	const AmfInteger* intval = key.asPtr<AmfInteger>();
 	if (intval != nullptr) {
 		std::string strval = std::to_string(intval->value);
-		return AmfString(strval).serialize();
+		return AmfString(strval).serialize(ctx);
 	}
 
 	const AmfDouble* doubleval = key.asPtr<AmfDouble>();
@@ -86,14 +95,14 @@ v8 AmfDictionary::serializeKey(const AmfItemPtr& key) const {
 		std::ostringstream str;
 		str << std::setprecision(std::numeric_limits<double>::digits10)
 		    << doubleval->value;
-		return AmfString(str.str()).serialize();
+		return AmfString(str.str()).serialize(ctx);
 	}
 
 	const AmfBool* boolval = key.asPtr<AmfBool>();
 	if (boolval != nullptr)
-		return AmfString(boolval->value ? "true" : "false").serialize();
+		return AmfString(boolval->value ? "true" : "false").serialize(ctx);
 
-	return key->serialize();
+	return key->serialize(ctx);
 }
 
 } // namespace amf

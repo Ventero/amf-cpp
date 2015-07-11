@@ -88,7 +88,8 @@ TEST(PacketTest, MultiByteMessageCount) {
 	for (int i = 0; i < 258; ++i)
 		packet.messages.push_back(message);
 
-	v8 serialized = packet.serialize();
+	SerializationContext ctx;
+	v8 serialized = packet.serialize(ctx);
 	auto it = serialized.begin();
 
 	size_t offset = 6;
@@ -182,7 +183,8 @@ TEST(PacketTest, MultiByteHeaderCount) {
 	for (int i = 0; i < 258; ++i)
 		packet.headers.push_back(header);
 
-	v8 serialized = packet.serialize();
+	SerializationContext ctx;
+	v8 serialized = packet.serialize(ctx);
 	auto it = serialized.begin();
 
 	size_t offset = 4;
@@ -245,14 +247,16 @@ TEST(PacketTest, HeaderAndMessage) {
 
 TEST(PacketTest, TooManyHeaders) {
 	AmfPacket p;
+	SerializationContext ctx;
 	p.headers = std::vector<PacketHeader>(65536, PacketHeader("Foo", false, AmfNull()));
-	ASSERT_THROW(p.serialize(), std::length_error);
+	ASSERT_THROW(p.serialize(ctx), std::length_error);
 }
 
 TEST(PacketTest, TooManyMessages) {
 	AmfPacket p;
+	SerializationContext ctx;
 	p.messages = std::vector<PacketMessage>(65536, PacketMessage("Foo", "", AmfNull()));
-	ASSERT_THROW(p.serialize(), std::length_error);
+	ASSERT_THROW(p.serialize(ctx), std::length_error);
 }
 
 TEST(PacketEquality, Header) {

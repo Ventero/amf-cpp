@@ -41,6 +41,16 @@ TEST(DateSerializationTest, Epoch) {
 	isEqual(expected, date);
 }
 
+TEST(DateSerializationTest, ObjectCache) {
+	SerializationContext ctx;
+	isEqual({ 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22, 0x80 }, AmfDate(136969002755210ll), &ctx);
+	isEqual({ 0x08, 0x00 }, AmfDate(136969002755210ll), &ctx);
+	isEqual({ 0x08, 0x00 }, AmfDate(136969002755210ll), &ctx);
+	isEqual({ 0x08, 0x01, 0x42, 0x71, 0xf7, 0x1f, 0xb0, 0x45, 0x00, 0x00 }, AmfDate(1234567890000ll), &ctx);
+	isEqual({ 0x08, 0x00 }, AmfDate(136969002755210ll), &ctx);
+	isEqual({ 0x08, 0x02 }, AmfDate(1234567890000ll), &ctx);
+}
+
 TEST(DateEquality, SimpleValues) {
 	AmfDate d0(13696900000ll);
 	AmfDate d1(13696900000ll);

@@ -8,6 +8,7 @@
 
 namespace amf {
 
+class SerializationContext;
 class DeserializationContext;
 
 class AmfUndefined : public AmfItem {
@@ -19,7 +20,7 @@ public:
 		return p != nullptr;
 	}
 
-	std::vector<u8> serialize() const {
+	std::vector<u8> serialize(SerializationContext&) const {
 		return std::vector<u8>{ AMF_UNDEFINED };
 	}
 

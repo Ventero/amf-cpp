@@ -348,8 +348,9 @@ TEST(ObjectSerializationTest, Externalizable) {
 
 	auto propNameSerializer = [] (const AmfObject* o) -> v8 {
 		v8 buf;
+		SerializationContext ctx;
 		for (const auto& it : o->dynamicProperties) {
-			v8 s = AmfString(it.first).serialize();
+			v8 s = AmfString(it.first).serialize(ctx);
 			buf.insert(buf.end(), s.begin(), s.end());
 		}
 		return buf;
@@ -379,8 +380,72 @@ TEST(ObjectSerializationTest, Externalizable) {
 }
 
 TEST(ObjectSerializationTest, ExternalizableThrowsWithoutExternalizer) {
+	SerializationContext ctx;
 	AmfObject obj("", true, true);
-	ASSERT_THROW(obj.serialize(), std::bad_function_call);
+	ASSERT_THROW(obj.serialize(ctx), std::bad_function_call);
+}
+
+TEST(ObjectSerialization, PropertyCache) {
+	AmfObject obj("", true, false);
+	AmfObject inner;
+	obj.addDynamicProperty("foo", inner);
+	obj.addSealedProperty("bar", inner);
+
+	SerializationContext ctx;
+	isEqual({
+		0x0a, 0x1b, 0x01,
+		0x07, 0x62, 0x61, 0x72,
+		0x0a, 0x03, 0x01,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x0a, 0x02,
+		0x01
+	}, obj.serialize(ctx));
+}
+
+TEST(ObjectSerialization, TraitRefs) {
+	AmfObject obj("foo", true, false);
+	obj.addDynamicProperty("foo", AmfNull());
+
+	SerializationContext ctx;
+	isEqual({
+		0x0a, 0x0b,
+		0x07, 0x66, 0x6f, 0x6f,
+		0x00,
+		0x01,
+		0x01
+	}, obj.serialize(ctx));
+
+	isEqual(
+		{ 0x0a, 0x01, 0x01 },
+		AmfObject("foo", true, false).serialize(ctx));
+}
+
+TEST(ObjectSerialization, SelfReference) {
+	AmfItemPtr ptr(AmfObject("", true, false));
+	ptr.as<AmfObject>().dynamicProperties["f"] = ptr;
+
+	SerializationContext ctx;
+	isEqual({
+		0x0a, 0x0b, 0x01,
+		0x03, 0x66,
+		0x0a, 0x00,
+		0x01
+	}, ptr->serialize(ctx));
+}
+
+TEST(ObjectSerialization, ReferenceOrder) {
+	AmfObject obj("", true, false);
+	AmfByteArray ba(v8 { 1 });
+	obj.addDynamicProperty("a", ba);
+	obj.addDynamicProperty("b", ba);
+
+	SerializationContext ctx;
+	isEqual({
+		0x0a, 0x0b, 0x01,
+		0x03, 0x61, 0x0c, 0x03, 0x01,
+		0x03, 0x62, 0x0c, 0x02, // 0x00 = the outer object, 0x02 = bytearray
+		0x01
+	}, obj.serialize(ctx));
 }
 
 TEST(ObjectEquality, EmptyObject) {

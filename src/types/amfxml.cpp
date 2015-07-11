@@ -1,6 +1,7 @@
 #include "amfxml.hpp"
 
 #include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 
 namespace amf {
@@ -10,7 +11,12 @@ bool AmfXml::operator==(const AmfItem& other) const {
 	return p != nullptr && value == p->value;
 }
 
-std::vector<u8> AmfXml::serialize() const {
+std::vector<u8> AmfXml::serialize(SerializationContext& ctx) const {
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { AMF_XML, u8(index << 1) };
+	ctx.addObject(*this);
+
 	std::vector<u8> buf = AmfInteger::asLength(value.size(), AMF_XML);
 
 	// the actual data is simply encoded as UTF8-chars

@@ -7,7 +7,7 @@ bool AmfDouble::operator==(const AmfItem& other) const {
 	return p != nullptr && value == p->value;
 }
 
-std::vector<u8> AmfDouble::serialize() const {
+std::vector<u8> AmfDouble::serialize(SerializationContext&) const {
 	std::vector<u8> buf = { AMF_DOUBLE };
 
 	v8 bytes = network_bytes(value);

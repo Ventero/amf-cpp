@@ -1,5 +1,6 @@
 #include "amfinteger.hpp"
 
+#include "serializationcontext.hpp"
 #include "types/amfdouble.hpp"
 
 namespace amf {
@@ -9,13 +10,13 @@ bool AmfInteger::operator==(const AmfItem& other) const {
 	return p != nullptr && value == p->value;
 }
 
-std::vector<u8> AmfInteger::serialize() const {
+std::vector<u8> AmfInteger::serialize(SerializationContext& ctx) const {
 	// According to the spec:
 	// If the value of an unsigned integer (uint) or signed integer (int)
 	// is greater than or equal to 2^28, or if a signed integer (int) is
 	// less than -2^28, it will be serialized using the AMF 3 double type
 	if (value < -0x10000000 || value >= 0x10000000)
-		return AmfDouble(value).serialize();
+		return AmfDouble(value).serialize(ctx);
 
 	if (value >= 0 && value <= 0x7F) {
 		return std::vector<u8> {
@@ -52,7 +53,8 @@ std::vector<u8> AmfInteger::asLength(size_t value, u8 marker) {
 	if (value >= (1 << 27))
 		throw std::invalid_argument("Length outside of valid range for AmfInteger.");
 
-	std::vector<u8> buf = AmfInteger(value << 1 | 1).serialize();
+	SerializationContext ctx;
+	std::vector<u8> buf = AmfInteger(value << 1 | 1).serialize(ctx);
 	buf[0] = marker;
 
 	return buf;

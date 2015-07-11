@@ -29,11 +29,13 @@ enum AmfMarker : u8 {
 	AMF_DICTIONARY
 };
 
+class SerializationContext;
+
 class AmfItem {
 public:
 	virtual ~AmfItem() { };
 
-	virtual std::vector<u8> serialize() const = 0;
+	virtual std::vector<u8> serialize(SerializationContext& ctx) const = 0;
 	virtual bool operator==(const AmfItem&) const = 0;
 	virtual bool operator!=(const AmfItem& other) const {
 		return !(*this == other);

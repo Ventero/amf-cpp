@@ -21,10 +21,10 @@ package{
 		private function dumpValues():void {
 			tf.text = "";
 			var b:ByteArray = new ByteArray();
-			var a:Array = [];
-			a["x"] = "x";
-			b.writeObject(a);
-			b.writeObject(a);
+			var v:Vector.<int> = new <int>[1, 2, 3];
+			var vf:Vector.<int> = new <int>[1, 2, 3];
+			//vf.fixed = true;
+			b.writeObject([v, vf]);
 			dumpByteArray(b);
 		}
 
@@ -51,14 +51,20 @@ package{
 			];
 			*/
 			var data:Array = [
-				0x09, 0x05, 0x01,
-					0x09, 0x01, 0x03, 0x78, 0x06, 0x00, 0x01,
-					0x09, 0x01, 0x00, 0x06, 0x00, 0x01,
+				0x09, 0x09, 0x01, 0x0d, 0x07, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
+				0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0x0e, 0x02, 0x0f, 0x02, 0x10, 0x02
 			];
 			var b:ByteArray = createByteArray(data);
 
 			var o:* = b.readObject();
-			log(o); log(o.length); log(o[0].x); log(o[1].x);
+			log(o); log(o.length);
+			log(o[0]);
+			log(o[1]);
+			log(o[2]);
+			log(o[3]);
+			b.position = 0;
+			b.writeObject(o);
+			dumpByteArray(b);
 		}
 
 		private function testExternalizable():void {

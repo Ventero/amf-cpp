@@ -2,6 +2,7 @@
 
 #include "deserializationcontext.hpp"
 #include "deserializer.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfstring.hpp"
 
@@ -12,7 +13,7 @@ bool AmfArray::operator==(const AmfItem& other) const {
 	return p != nullptr && dense == p->dense && associative == p->associative;
 }
 
-std::vector<u8> AmfArray::serialize() const {
+std::vector<u8> AmfArray::serialize(SerializationContext& ctx) const {
 	/*
 	 * array-marker
 	 * (
@@ -21,13 +22,18 @@ std::vector<u8> AmfArray::serialize() const {
 	 * )
 	 */
 
+	int index = ctx.getIndex(*this);
+	if (index != -1)
+		return std::vector<u8> { AMF_ARRAY, u8(index << 1) };
+	ctx.addObject(*this);
+
 	// U29A-value
 	std::vector<u8> buf = AmfInteger::asLength(dense.size(), AMF_ARRAY);
 
 	// *(assoc-value) = (UTF-8-vr value-type)
 	for (const auto& it : associative) {
-		auto name = AmfString(it.first).serializeValue();
-		auto value = it.second->serialize();
+		auto name = AmfString(it.first).serializeValue(ctx);
+		auto value = it.second->serialize(ctx);
 
 		// UTF-8-vr
 		buf.insert(buf.end(), name.begin(), name.end());
@@ -40,7 +46,7 @@ std::vector<u8> AmfArray::serialize() const {
 
 	// *(value-type)
 	for (const auto& it : dense) {
-		auto s = it->serialize();
+		auto s = it->serialize(ctx);
 		buf.insert(buf.end(), s.begin(), s.end());
 	}
 

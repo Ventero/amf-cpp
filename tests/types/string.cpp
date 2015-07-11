@@ -76,13 +76,47 @@ TEST(StringSerializationTest, Unicode) {
 }
 
 TEST(StringSerializationTest, SerializeValue) {
-	isEqual(v8 { 0x01 }, AmfString("").serializeValue());
-	isEqual(v8 { 0x07, 0x62, 0x61, 0x72 }, AmfString("bar").serializeValue());
-	isEqual(v8 { 0x0D, 0x62, 0x6F, 0x6F, 0x66, 0x61, 0x72 }, AmfString("boofar").serializeValue());
-	isEqual(v8 { 0x07, 0x71, 0x75, 0x78 }, AmfString("qux").serializeValue());
-	isEqual(v8 { 0x07, 0x71, 0x75, 0x7A }, AmfString("quz").serializeValue());
-	isEqual(v8 { 0x09, 0x71, 0x75, 0x75, 0x78 }, AmfString("quux").serializeValue());
-	isEqual(v8 { 0x07, 0x22, 0x27, 0x5C }, AmfString("\"'\\").serializeValue());
+	SerializationContext ctx;
+	isEqual(v8 { 0x07, 0x62, 0x61, 0x72 }, AmfString("bar").serializeValue(ctx));
+	isEqual(v8 { 0x0D, 0x62, 0x6F, 0x6F, 0x66, 0x61, 0x72 }, AmfString("boofar").serializeValue(ctx));
+	isEqual(v8 { 0x07, 0x71, 0x75, 0x78 }, AmfString("qux").serializeValue(ctx));
+	isEqual(v8 { 0x07, 0x71, 0x75, 0x7A }, AmfString("quz").serializeValue(ctx));
+	isEqual(v8 { 0x09, 0x71, 0x75, 0x75, 0x78 }, AmfString("quux").serializeValue(ctx));
+}
+
+TEST(StringSerializationTest, SerializeValueCache) {
+	SerializationContext ctx;
+	isEqual(v8 { 0x07, 0x62, 0x61, 0x72 }, AmfString("bar").serializeValue(ctx));
+	isEqual(v8 { 0x0D, 0x62, 0x6F, 0x6F, 0x66, 0x61, 0x72 }, AmfString("boofar").serializeValue(ctx));
+	isEqual(v8 { 0x07, 0x71, 0x75, 0x78 }, AmfString("qux").serializeValue(ctx));
+	isEqual(v8 { 0x00 }, AmfString("bar").serializeValue(ctx));
+	isEqual(v8 { 0x04 }, AmfString("qux").serializeValue(ctx));
+	isEqual(v8 { 0x06, 0x02 }, AmfString("boofar").serialize(ctx));
+}
+
+TEST(StringSerializationTest, EmtpyStringNotCached) {
+	SerializationContext ctx;
+	isEqual(v8 { 0x01 }, AmfString("").serializeValue(ctx));
+	isEqual(v8 { 0x01 }, AmfString("").serializeValue(ctx));
+	isEqual(v8 { 0x07, 0x62, 0x61, 0x72 }, AmfString("bar").serializeValue(ctx));
+	isEqual(v8 { 0x00 }, AmfString("bar").serializeValue(ctx));
+}
+
+TEST(StringSerialization, Utf8VrCached) {
+	SerializationContext ctx;
+	AmfObject obj("foo", true, false);
+	obj.addDynamicProperty("bar", AmfString("qux"));
+
+	isEqual(v8 {
+		0x0a, 0x0b, 0x07, 0x66, 0x6f, 0x6f,
+		0x07, 0x62, 0x61, 0x72,
+		0x06, 0x07, 0x71, 0x75, 0x78,
+		0x01
+	}, obj.serialize(ctx));
+
+	isEqual(v8 { 0x06, 0x00 }, AmfString("foo").serialize(ctx));
+	isEqual(v8 { 0x06, 0x02 }, AmfString("bar").serialize(ctx));
+	isEqual(v8 { 0x06, 0x04 }, AmfString("qux").serialize(ctx));
 }
 
 TEST(StringEquality, SimpleValues) {
@@ -223,7 +257,7 @@ TEST(StringDeserialization, EmtpyStringNotCached) {
 	deserializesTo("bar", { 0x06, 0x00 }, 0, &ctx);
 }
 
-TEST(StringDeserialization, Utf8Cached) {
+TEST(StringDeserialization, Utf8VrCached) {
 	DeserializationContext ctx;
 	AmfObject obj("foo", true, false);
 	obj.addDynamicProperty("bar", AmfString("qux"));
