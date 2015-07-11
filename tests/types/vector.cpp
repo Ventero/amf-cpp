@@ -916,7 +916,7 @@ TEST(VectorDeserialization, VectorNumberInvalidMarker) {
 template<typename T>
 static void deserializeTo(const AmfVector<T>& expected, v8 data, int left = 0,
 	DeserializationContext* ctx = nullptr) {
-	// deserialize uses Deserializer::deserilaize, which gives an
+	// deserialize uses Deserializer::deserialize, which gives an
 	// AmfVector<AmfItem>, so we have to compare against that
 	auto vi = dynamic_cast<const AmfVector<AmfItem>&>(expected);
 	deserialize(vi, data, left, ctx);
@@ -1018,7 +1018,6 @@ TEST(VectorDeserialization, VectorIntVector) {
 	deserializeTo(v, data, 0);
 }
 
-
 TEST(VectorDeserialization, VectorItemObjectCache) {
 	DeserializationContext ctx;
 
@@ -1084,5 +1083,23 @@ TEST(VectorDeserialization, SelfReferenceConcreteType) {
 	AmfVector<AmfVector<AmfItem>> v = AmfVector<AmfVector<AmfItem>>::deserialize(it, data.cend(), ctx);
 	EXPECT_EQ(v.values.at(0).get(), v.at(0).values.at(0).get());
 	EXPECT_EQ(v.values.at(0).get(), v.at(0).values.at(0).as<AmfVector<AmfItem>>().values.at(0).get());
+}
 
+TEST(VectorDeserialization, OtherVectorTypeReference) {
+	v8 data {
+		0x09, 0x09, 0x01,
+			0x0d, 0x07, 0x00,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x02,
+				0x00, 0x00, 0x00, 0x03,
+			0x0e, 0x02,
+			0x0f, 0x02,
+			0x10, 0x02,
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+
+	// TODO: flash accepts this, implicitly turns the vector references into Vector<int>.
+	ASSERT_THROW(AmfArray::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
