@@ -659,3 +659,27 @@ TEST(DictionaryDeserialization, SelfReference) {
 	const AmfItemPtr & inner2 = inner.as<AmfDictionary>().values.at(key);
 	EXPECT_EQ(ptr.get(), inner2.get());
 }
+
+TEST(DictionaryDeserialization, SelfReference2) {
+	v8 data {
+		0x11,
+		0x05,
+		0x00,
+			0x00,
+			0x11, 0x00,
+			0x11, 0x00,
+			0x00
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfItemPtr ptr = AmfDictionary::deserializePtr(it, data.cend(), ctx);
+	AmfDictionary & d = ptr.as<AmfDictionary>();
+
+	const AmfItemPtr& inner = d.values.at(AmfItemPtr(AmfUndefined()));
+	EXPECT_EQ(ptr.get(), inner.get());
+
+	// TODO: segfault due to AmfDictionaryHash
+	// const AmfItemPtr& inner2 = d.values.at(ptr);
+	// EXPECT_EQ(AmfUndefined(), inner2.as<AmfUndefined>());
+}
