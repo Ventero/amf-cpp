@@ -10,7 +10,9 @@
 #include "types/amfbool.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
+#include "types/amfnull.hpp"
 #include "types/amfstring.hpp"
+#include "types/amfundefined.hpp"
 
 namespace amf {
 
@@ -101,6 +103,14 @@ v8 AmfDictionary::serializeKey(const AmfItemPtr& key, SerializationContext& ctx)
 	const AmfBool* boolval = key.asPtr<AmfBool>();
 	if (boolval != nullptr)
 		return AmfString(boolval->value ? "true" : "false").serialize(ctx);
+
+	const AmfUndefined* undefinedval = key.asPtr<AmfUndefined>();
+	if (undefinedval != nullptr)
+		return AmfString("undefined").serialize(ctx);
+
+	const AmfNull* nullval = key.asPtr<AmfNull>();
+	if (nullval != nullptr)
+		return AmfString("null").serialize(ctx);
 
 	return key->serialize(ctx);
 }

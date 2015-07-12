@@ -191,6 +191,36 @@ TEST(DictionarySerializationTest, NumberAsStringKeys) {
 	}, d);
 }
 
+TEST(DictionarySerializationTest, NullKeys) {
+	AmfDictionary n(false, false);
+	n.insert(AmfNull(), AmfNull());
+	isEqual(v8 {
+		0x11, 0x03, 0x00, 0x01, 0x01
+	}, n);
+
+	n.asString = true;
+
+	isEqual(v8 {
+		0x11, 0x03, 0x00, 0x06, 0x09, 0x6e, 0x75, 0x6c, 0x6c, 0x01
+	}, n);
+}
+
+TEST(DictionarySerializationTest, UndefinedKeys) {
+	AmfDictionary d(false, false);
+	d.insert(AmfUndefined(), AmfUndefined());
+	isEqual(v8 {
+		0x11, 0x03, 0x00, 0x00, 0x00
+	}, d);
+
+	d.asString = true;
+
+	isEqual(v8 {
+		0x11, 0x03, 0x00,
+		0x06, 0x13, 0x75, 0x6e, 0x64, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x64,
+		0x00
+	}, d);
+}
+
 TEST(DictionarySerializationTest, MultipleKeys) {
 	SerializationContext ctx;
 	AmfDictionary d(true, false);
