@@ -713,3 +713,18 @@ TEST(DictionaryDeserialization, SelfReference2) {
 	// const AmfItemPtr& inner2 = d.values.at(ptr);
 	// EXPECT_EQ(AmfUndefined(), inner2.as<AmfUndefined>());
 }
+
+// Broken due to AmfDictionaryHash recursing
+TEST(DictionaryDeserialization, DISABLED_SelfReference3) {
+	v8 data {
+		0x11, 0x05, 0x00,
+		0x11, 0x00,
+		0x11, 0x00,
+		0x11, 0x00,
+		0x00
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfItemPtr ptr = AmfDictionary::deserializePtr(it, data.cend(), ctx);
+}

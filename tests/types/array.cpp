@@ -299,6 +299,21 @@ TEST(ArrayEquality, MixedTypes) {
 	EXPECT_NE(a0, v2);
 }
 
+// Stack overflow when comparing ptr and ptr2
+// should use ecmascript equality semantics instead (reference comparison
+// for object types, value comparison for primitives)?
+TEST(ArrayEquality, DISABLED_SelfReference) {
+	AmfItemPtr ptr((AmfArray()));
+	ptr.as<AmfArray>().dense.push_back(ptr);
+
+	EXPECT_EQ(ptr, ptr);
+
+	AmfItemPtr ptr2((AmfArray()));
+	ptr2.as<AmfArray>().dense.push_back(ptr2);
+
+	EXPECT_EQ(ptr, ptr2);
+}
+
 static void deserializesTo(AmfArray value, const v8& data, int left = 0,
 	DeserializationContext* ctx = nullptr) {
 	deserialize(value, data, left, ctx);
