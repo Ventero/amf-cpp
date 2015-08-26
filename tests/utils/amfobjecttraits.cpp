@@ -7,7 +7,7 @@ TEST(AmfObjectTraitsTest, Construction) {
 	EXPECT_EQ("foo", obj.className);
 	EXPECT_EQ(true, obj.dynamic);
 	EXPECT_EQ(false, obj.externalizable);
-	EXPECT_EQ(std::set<std::string>(), obj.attributes);
+	EXPECT_EQ(std::vector<std::string>(), obj.getAttriutes());
 }
 
 TEST(AmfObjectTraitsTest, Equality) {
@@ -25,13 +25,13 @@ TEST(AmfObjectTraitsTest, Equality) {
 	EXPECT_EQ(obj1, obj1e);
 
 	// Verify attributes are also compared.
-	obj1.attributes.insert("attr");
+	obj1.addAttribute("attr");
 	EXPECT_NE(obj1, obj1e);
 
-	obj1e.attributes.insert("attr");
+	obj1e.addAttribute("attr");
 	EXPECT_EQ(obj1, obj1e);
 
 	// Verify attributes can't be duplicated.
-	obj1.attributes.insert("attr");
+	obj1.addAttribute("attr");
 	EXPECT_EQ(obj1, obj1e);
 }

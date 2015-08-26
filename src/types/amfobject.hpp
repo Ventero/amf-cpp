@@ -25,7 +25,7 @@ public:
 
 	template<class T>
 	void addSealedProperty(std::string name, const T& value) {
-		traits.attributes.insert(name);
+		traits.addAttribute(name);
 		sealedProperties[name] = AmfItemPtr(new T(value));
 	}
 
@@ -36,8 +36,7 @@ public:
 
 	template<class T>
 	T& getSealedProperty(std::string name) {
-		auto it = traits.attributes.find(name);
-		if (it == traits.attributes.end())
+		if (!traits.isAttributeExists(name))
 			throw std::out_of_range("AmfObject::getSealedProperty");
 
 		return sealedProperties.at(name).as<T>();
