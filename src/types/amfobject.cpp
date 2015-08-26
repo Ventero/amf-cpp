@@ -73,7 +73,7 @@ std::vector<u8> AmfObject::serialize(SerializationContext& ctx) const {
 		ctx.addTraits(traits);
 
 		// U29-traits = 0b0011 = 0x03
-		size_t traitMarker = traits.attributes.size() << 4 | 0x03;
+		size_t traitMarker = traits.getAttriutes().size() << 4 | 0x03;
 		// dynamic marker = 0b1000 = 0x08
 		if (traits.dynamic) traitMarker |= 0x08;
 
@@ -84,14 +84,14 @@ std::vector<u8> AmfObject::serialize(SerializationContext& ctx) const {
 		buf.insert(buf.end(), name.begin(), name.end());
 
 		// sealed property names = *(UTF-8-vr)
-		for (const std::string& attribute : traits.attributes) {
+		for (const std::string& attribute : traits.getAttriutes()) {
 			std::vector<u8> attr(AmfString(attribute).serializeValue(ctx));
 			buf.insert(buf.end(), attr.begin(), attr.end());
 		}
 	}
 
 	// sealed property values = *(value-type)
-	for (const std::string& attribute : traits.attributes) {
+	for (const std::string& attribute : traits.getAttriutes()) {
 		auto s = sealedProperties.at(attribute)->serialize(ctx);
 		buf.insert(buf.end(), s.begin(), s.end());
 	}
@@ -141,7 +141,7 @@ AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator 
 			traits.className = AmfString::deserializeValue(it, end, ctx);
 			int numSealed = type >> 4;
 			for (int i = 0; i < numSealed; ++i)
-				traits.attributes.push_back(AmfString::deserializeValue(it, end, ctx));
+				traits.addAttribute(AmfString::deserializeValue(it, end, ctx));
 		}
 
 		ctx.addTraits(traits);
@@ -156,7 +156,7 @@ AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator 
 		return ptr;
 	}
 
-	for (auto name : traits.attributes) {
+	for (auto name : traits.getAttriutes()) {
 		AmfItemPtr val = Deserializer::deserialize(it, end, ctx);
 		ret.sealedProperties[name] = val;
 	}
