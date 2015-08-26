@@ -23,10 +23,25 @@ public:
 		return !(*this == other);
 	}
 
+	void addAttribute(const std::string & attr) {
+		if (!isAttributeExists(attr)) {
+			attributes.push_back(attr);
+		}
+	}
+	
+	const std::vector<std::string> & getAttriutes() const {
+		return attributes;
+	}
+	bool isAttributeExists(const std::string & attr) {
+		return std::find(attributes.begin(), attributes.end(), attr) != attributes.end();
+	}
 	std::string className;
-	std::vector<std::string> attributes;
+	
 	bool dynamic;
 	bool externalizable;
+private:
+	std::vector<std::string> attributes;
+
 };
 
 } // namespace amf
