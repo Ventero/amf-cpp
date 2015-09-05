@@ -36,7 +36,7 @@ public:
 
 	template<class T>
 	T& getSealedProperty(std::string name) {
-		if (!traits.isAttributeExists(name))
+		if (!traits.hasAttribute(name))
 			throw std::out_of_range("AmfObject::getSealedProperty");
 
 		return sealedProperties.at(name).as<T>();

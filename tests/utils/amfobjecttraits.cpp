@@ -7,7 +7,7 @@ TEST(AmfObjectTraitsTest, Construction) {
 	EXPECT_EQ("foo", obj.className);
 	EXPECT_EQ(true, obj.dynamic);
 	EXPECT_EQ(false, obj.externalizable);
-	EXPECT_EQ(std::vector<std::string>(), obj.getAttriutes());
+	EXPECT_EQ(std::vector<std::string>(), obj.attributes);
 }
 
 TEST(AmfObjectTraitsTest, Equality) {

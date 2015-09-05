@@ -653,18 +653,101 @@ TEST(ObjectDeserialization, SealedDynamicProps) {
 	deserialize(obj, data);
 }
 
+TEST(ObjectDeserialization, MultipleSealedProperties) {
+	AmfObject obj("", false, false);
+	obj.addSealedProperty("b", AmfBool(false));
+	obj.addSealedProperty("a", AmfBool(true));
+
+	v8 data {
+		0x0a, 0x23, 0x01,
+		0x03, 0x62, 0x03, 0x61,
+		0x02, 0x03
+	};
+	deserialize(obj, data);
+}
+
+TEST(ObjectDeserialization, DuplicateSealedProperties) {
+	AmfObject obj("", false, false);
+	obj.addSealedProperty("b", AmfBool(true));
+
+	v8 data {
+		0x0a, 0x23, 0x01,
+		0x03, 0x62, 0x03, 0x62,
+		0x02, 0x03
+	};
+
+	auto it = data.cbegin();
+	DeserializationContext ctx;
+	AmfObject o = AmfObject::deserialize(it, data.cend(), ctx);
+
+	// Objects should *not* compare equal, since the deserialized object's
+	// traits contain *two* (identical) attribute names.
+	EXPECT_NE(o, obj);
+	EXPECT_EQ(o.getSealedProperty<AmfBool>("b").value, true);
+	EXPECT_EQ(it, data.cend());
+}
+
+TEST(ObjectDeserialization, MultipleSealedPropertiesTraitsReference) {
+	AmfObject obj("", false, false);
+	obj.addSealedProperty("b", AmfBool(false));
+	obj.addSealedProperty("a", AmfBool(true));
+
+	v8 data {
+		0x0a, 0x23, 0x01,
+		0x03, 0x62, 0x03, 0x61,
+		0x02, 0x03
+	};
+	DeserializationContext ctx;
+	deserialize(obj, data, 0, &ctx);
+
+	v8 data_ref {
+		0x0a, 0x01,
+		0x02, 0x03
+	};
+	deserialize(obj, data_ref, 0, &ctx);
+}
+
+TEST(ObjectDeserialization, DuplicateSealedPropertiesTraitsReference) {
+	AmfObject obj("", false, false);
+	obj.addSealedProperty("b", AmfBool(true));
+
+	v8 data {
+		0x0a, 0x23, 0x01,
+		0x03, 0x62, 0x03, 0x62,
+		0x02, 0x03
+	};
+
+	auto it = data.cbegin();
+	DeserializationContext ctx;
+	AmfObject o1 = AmfObject::deserialize(it, data.cend(), ctx);
+
+	// Objects should *not* compare equal, since the deserialized object's
+	// traits contain *two* (identical) attribute names.
+	EXPECT_NE(o1, obj);
+	EXPECT_EQ(o1.getSealedProperty<AmfBool>("b").value, true);
+	EXPECT_EQ(it, data.cend());
+
+	// Test with traits reference.
+	v8 data_ref {
+		0x0a, 0x01,
+		0x02, 0x03
+	};
+	deserialize(o1, data_ref, 0, &ctx);
+}
 TEST(ObjectDeserialization, MultipleProperties) {
 	AmfObject obj("", true, false);
 	obj.addDynamicProperty("1", AmfInteger(1));
 	obj.addDynamicProperty("2", AmfInteger(2));
 	obj.addDynamicProperty("3", AmfInteger(3));
+	obj.addSealedProperty("zz", AmfString("zz"));
 	obj.addSealedProperty("a", AmfByteArray(v8 { 1, 2, 3}));
 	obj.addSealedProperty("b", AmfArray());
 	obj.addSealedProperty("c", AmfBool(false));
 
 	v8 data {
-		0x0a, 0x3b, 0x01,
-		0x03, 0x61, 0x03, 0x62, 0x03, 0x63,
+		0x0a, 0x4b, 0x01,
+		0x05, 0x7a, 0x7a, 0x03, 0x61, 0x03, 0x62, 0x03, 0x63,
+		0x06, 0x05, 0x7a, 0x7a,
 		0x0c, 0x07, 0x01, 0x02, 0x03,
 		0x09, 0x01, 0x01,
 		0x02,
