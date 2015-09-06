@@ -521,6 +521,38 @@ TEST(ArrayDeserialization, SelfReference) {
 	EXPECT_EQ(4, ref.at<AmfInteger>(3));
 }
 
+TEST(ArrayDeserialization, ArraySelfReferenceStackOverflow) {
+	v8 data {
+		0x09, 0x05, 0x01,
+		0x0a, 0x03, 0x01,
+		0x09, 0x00,
+	};
+
+	// Flash chokes with a stack overflow on this one.
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	AmfItemPtr ptr = AmfArray::deserializePtr(it, data.cend(), ctx);
+
+	AmfArray & d = ptr.as<AmfArray>();
+
+	AmfObject empty("", false, false);
+	EXPECT_EQ(empty, d.at<AmfObject>(0));
+	EXPECT_EQ(ptr.get(), d.dense.at(1).get());
+}
+
+TEST(ArrayDeserialization, ArraySelfReferenceInvalidType) {
+	v8 data {
+		0x09, 0x05, 0x01,
+		0x0a, 0x03, 0x01,
+		// object-typed reference to array
+		0x0a, 0x00,
+	};
+
+	DeserializationContext ctx;
+	auto it = data.cbegin();
+	ASSERT_THROW(AmfArray::deserialize(it, data.cend(), ctx), std::invalid_argument);
+}
+
 TEST(ArrayDeserialization, Utf8VrReference) {
 	v8 data { 0x09, 0x01, 0x03, 0x78, 0x06, 0x00, 0x01 };
 
