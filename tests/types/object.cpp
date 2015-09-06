@@ -448,6 +448,27 @@ TEST(ObjectSerialization, ReferenceOrder) {
 	}, obj.serialize(ctx));
 }
 
+TEST(ObjectSerialization, DuplicateSealedProperties) {
+	// Deserialize an object with a duplicate sealed property name.
+	v8 data {
+		0x0a, 0x23, 0x01,
+		0x03, 0x62, 0x03, 0x62,
+		0x02, 0x03
+	};
+
+	auto it = data.cbegin();
+	DeserializationContext ctx;
+	AmfObject o = AmfObject::deserialize(it, data.cend(), ctx);
+
+	// Serialize it again, verify the attribute name is only contained once and
+	// the value is the last occurence.
+	isEqual({
+		0x0a, 0x13, 0x01,
+		0x03, 0x62,
+		0x03
+	}, o);
+}
+
 TEST(ObjectEquality, EmptyObject) {
 	AmfObject o1, o2;
 	EXPECT_EQ(o1, o2);
@@ -683,6 +704,7 @@ TEST(ObjectDeserialization, DuplicateSealedProperties) {
 	// Objects should *not* compare equal, since the deserialized object's
 	// traits contain *two* (identical) attribute names.
 	EXPECT_NE(o, obj);
+	// Check that the last value is kept.
 	EXPECT_EQ(o.getSealedProperty<AmfBool>("b").value, true);
 	EXPECT_EQ(it, data.cend());
 }
@@ -734,6 +756,7 @@ TEST(ObjectDeserialization, DuplicateSealedPropertiesTraitsReference) {
 	};
 	deserialize(o1, data_ref, 0, &ctx);
 }
+
 TEST(ObjectDeserialization, MultipleProperties) {
 	AmfObject obj("", true, false);
 	obj.addDynamicProperty("1", AmfInteger(1));
