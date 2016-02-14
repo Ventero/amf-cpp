@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<application xmlns="http://ns.adobe.com/air/application/3.2">
+	<id>airtest</id>
+	<filename>airtest</filename>
+	<name>airtest</name>
+	<versionNumber>0.0.0</versionNumber>
+	<initialWindow>
+		<content>airtest.swf</content>
+		<autoOrients>false</autoOrients>
+		<fullScreen>false</fullScreen>
+		<visible>false</visible>
+		<renderMode>direct</renderMode>
+	</initialWindow>
+	<supportedProfiles>extendedDesktop</supportedProfiles>
+</application>

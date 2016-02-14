@@ -10,7 +10,8 @@ package{
 		private var tf:TextField;
 		public function flashtest() {
 			tf = new TextField();
-			tf.width = tf.height = 450;
+			tf.width = stage.stageWidth;
+			tf.height = stage.stageHeight;
 			tf.wordWrap = true;
 			addChild(tf);
 
@@ -21,10 +22,11 @@ package{
 		private function dumpValues():void {
 			tf.text = "";
 			var b:ByteArray = new ByteArray();
-			var v:Vector.<int> = new <int>[1, 2, 3];
-			var vf:Vector.<int> = new <int>[1, 2, 3];
-			//vf.fixed = true;
-			b.writeObject([v, vf]);
+
+			var a:Array = [];
+			a.push(a);
+
+			b.writeObject(a);
 			dumpByteArray(b);
 		}
 
@@ -33,36 +35,14 @@ package{
 		}
 
 		private function readValues():void {
-			/*
 			var data:Array = [
-				0x11, 0x07, 0x00,
-					0x0a, 0x0b, 0x01,
-						0x07, 0x62, 0x61, 0x72,
-						0x04, 0x01,
-						0x01,
-					0x06, 0x07, 0x66, 0x6f, 0x6f,
-					0x0a, 0x0b, 0x01,
-						0x07, 0x62, 0x61, 0x72,
-						0x04, 0x02,
-						0x01,
-					0x06, 0x07, 0x66, 0x6f, 0x6f,
-					0x06, 0x07, 0x71, 0x75, 0x78,
-					0x0a, 0x00
-			];
-			*/
-			var data:Array = [
-				0x09, 0x09, 0x01, 0x0d, 0x07, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
-				0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0x0e, 0x02, 0x0f, 0x02, 0x10, 0x02
+				0x09, 0x03, 0x01, 0x09, 0x00
 			];
 			var b:ByteArray = createByteArray(data);
 
 			var o:* = b.readObject();
 			log(o); log(o.length);
-			log(o[0]);
-			log(o[1]);
-			log(o[2]);
-			log(o[3]);
-			b.position = 0;
+			b.clear();
 			b.writeObject(o);
 			dumpByteArray(b);
 		}
