@@ -7,7 +7,7 @@ ifneq ($(shell $(CXX) --version | grep clang),)
 	endif
 endif
 
-SRC = $(wildcard src/*.cpp) $(wildcard src/types/*.cpp)
+SRC = $(wildcard src/*.cpp) $(wildcard src/types/*.cpp) $(wildcard src/utils/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 .PHONY: all release debug 32bit clean dist-clean build-test test
