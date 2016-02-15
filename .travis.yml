@@ -5,5 +5,5 @@ os:
 compiler:
   - gcc
   - clang
-script: make && make test
+script: make -j2 && make -j2 test
 sudo: false
