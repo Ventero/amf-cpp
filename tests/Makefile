@@ -29,7 +29,7 @@ GTEST_SRCS = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 all: main
 
 clean:
-	rm -f main $(OBJ) .dep $(PCH).gch
+	rm -f main $(OBJ) .dep $(PCH).gch gtest-all.o gtest_main.o
 
 dist-clean: clean
 	rm -f gtest-all.o gtest_main.o
