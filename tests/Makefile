@@ -7,7 +7,7 @@ ifneq ($(shell $(CXX) --version | grep clang),)
 	endif
 endif
 
-GTEST_DIR = googletest
+GTEST_DIR = googletest/googletest
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.
 CPPFLAGS += -isystem $(GTEST_DIR)/include
