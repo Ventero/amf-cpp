@@ -59,21 +59,9 @@ public:
 		return ptr;
 	}
 
-	int getIndex(const std::string& str) const {
-		auto it = std::find(strings.begin(), strings.end(), str);
-		if (it == strings.end())
-			return -1;
+	int getIndex(const std::string& str) const;
 
-		return it - strings.begin();
-	}
-
-	int getIndex(const AmfObjectTraits& str) const {
-		auto it = std::find(traits.begin(), traits.end(), str);
-		if (it == traits.end())
-			return -1;
-
-		return it - traits.begin();
-	}
+	int getIndex(const AmfObjectTraits& str) const;
 
 	template<typename T>
 	int getIndex(const T & obj) const {
