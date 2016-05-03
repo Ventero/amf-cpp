@@ -11,7 +11,7 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
+class SerializationContext;
 
 template<typename T>
 struct VectorProperties;
@@ -58,7 +58,7 @@ public:
 	}
 
 	std::vector<u8> serialize(SerializationContext& ctx) const;
-	static AmfVector<T> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfVector<T> deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	std::vector<T> values;
 	bool fixed;
@@ -71,8 +71,8 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize(SerializationContext& ctx) const;
-	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
-	static AmfVector<AmfItem> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
+	static AmfVector<AmfItem> deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	template<typename V, typename std::enable_if<std::is_base_of<AmfItem, V>::value, int>::type = 0>
 	AmfVector<V> as() {
@@ -109,12 +109,12 @@ public:
 		return values.at(index).template as<T>();
 	}
 
-	static AmfVector<T> deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	static AmfVector<T> deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 		return AmfVector<AmfItem>::deserialize(it, end, ctx).as<T>();
 	}
 
 private:
-	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 };
 
 } // namespace amf

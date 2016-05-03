@@ -10,7 +10,7 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
+class SerializationContext;
 
 // this needs to be a long long to ensure no overflow
 namespace {
@@ -26,7 +26,7 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize(SerializationContext& ctx) const;
-	static AmfDate deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfDate deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	long long value;
 };

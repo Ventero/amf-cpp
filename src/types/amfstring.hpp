@@ -9,7 +9,7 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
+class SerializationContext;
 
 class AmfString : public AmfItem {
 public:
@@ -21,8 +21,8 @@ public:
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize(SerializationContext& ctx) const;
 	std::vector<u8> serializeValue(SerializationContext& ctx) const;
-	static AmfString deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
-	static std::string deserializeValue(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfString deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
+	static std::string deserializeValue(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	std::string value;
 };

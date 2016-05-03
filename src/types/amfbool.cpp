@@ -8,7 +8,7 @@ bool AmfBool::operator==(const AmfItem& other) const {
 	return p != nullptr && value == p->value;
 }
 
-AmfBool AmfBool::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+AmfBool AmfBool::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext&) {
 	if (it == end)
 		throw std::invalid_argument("AmfBool: End of iterator");
 

@@ -60,7 +60,7 @@ std::vector<u8> AmfInteger::asLength(size_t value, u8 marker) {
 	return buf;
 }
 
-AmfInteger AmfInteger::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+AmfInteger AmfInteger::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext&) {
 	if (it == end || *it++ != AMF_INTEGER)
 		throw std::invalid_argument("AmfInteger: Invalid type marker");
 

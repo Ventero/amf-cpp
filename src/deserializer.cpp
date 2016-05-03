@@ -21,12 +21,12 @@ namespace amf {
 
 std::map<std::string, ExternalDeserializerFunction> Deserializer::externalDeserializers({ });
 
-AmfItemPtr Deserializer::deserialize(v8 data, DeserializationContext& ctx) {
+AmfItemPtr Deserializer::deserialize(v8 data, SerializationContext& ctx) {
 	auto it = data.cbegin();
 	return deserialize(it, data.cend(), ctx);
 }
 
-AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfItemPtr Deserializer::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end)
 		throw std::out_of_range("Deserializer::deserialize end of input");
 

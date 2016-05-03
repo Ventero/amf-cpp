@@ -15,7 +15,7 @@ std::vector<u8> AmfDouble::serialize(SerializationContext&) const {
 	return buf;
 }
 
-AmfDouble AmfDouble::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&) {
+AmfDouble AmfDouble::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext&) {
 	if (it == end || *it++ != AMF_DOUBLE)
 		throw std::invalid_argument("AmfDouble: Invalid type marker");
 

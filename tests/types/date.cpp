@@ -89,7 +89,7 @@ TEST(DateEquality, MixedType) {
 }
 
 static void deserializesTo(long long expected, const v8& data, int left = 0,
-	DeserializationContext* ctx = nullptr) {
+	SerializationContext* ctx = nullptr) {
 	deserialize(AmfDate(expected), data, left, ctx);
 }
 
@@ -105,7 +105,7 @@ TEST(DateDeserialization, Values) {
 }
 
 TEST(DateDeserialization, ObjectCache) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserializesTo(136969002755210ll, { 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22, 0x80 }, 0, &ctx);
 	deserializesTo(136969002755210ll, { 0x08, 0x00 }, 0, &ctx);
 	deserializesTo(136969002755210ll, { 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22, 0x80 }, 0, &ctx);
@@ -120,6 +120,6 @@ TEST(DateDeserialization, ObjectCache) {
 TEST(DateDeserialization, NotEnoughBytes) {
 	v8 data = { 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22 };
 	auto it = data.cbegin();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	ASSERT_THROW(AmfDate::deserialize(it, data.cend(), ctx), std::out_of_range);
 }

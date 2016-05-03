@@ -11,7 +11,7 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
+class SerializationContext;
 
 class AmfArray : public AmfItem {
 public:
@@ -68,8 +68,8 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize(SerializationContext& ctx) const;
-	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
-	static AmfArray deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
+	static AmfArray deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	std::vector<AmfItemPtr> dense;
 	std::map<std::string, AmfItemPtr> associative;

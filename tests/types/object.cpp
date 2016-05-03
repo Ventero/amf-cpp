@@ -457,7 +457,7 @@ TEST(ObjectSerialization, DuplicateSealedProperties) {
 	};
 
 	auto it = data.cbegin();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	AmfObject o = AmfObject::deserialize(it, data.cend(), ctx);
 
 	// Serialize it again, verify the attribute name is only contained once and
@@ -698,7 +698,7 @@ TEST(ObjectDeserialization, DuplicateSealedProperties) {
 	};
 
 	auto it = data.cbegin();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	AmfObject o = AmfObject::deserialize(it, data.cend(), ctx);
 
 	// Objects should *not* compare equal, since the deserialized object's
@@ -719,7 +719,7 @@ TEST(ObjectDeserialization, MultipleSealedPropertiesTraitsReference) {
 		0x03, 0x62, 0x03, 0x61,
 		0x02, 0x03
 	};
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserialize(obj, data, 0, &ctx);
 
 	v8 data_ref {
@@ -740,7 +740,7 @@ TEST(ObjectDeserialization, DuplicateSealedPropertiesTraitsReference) {
 	};
 
 	auto it = data.cbegin();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	AmfObject o1 = AmfObject::deserialize(it, data.cend(), ctx);
 
 	// Objects should *not* compare equal, since the deserialized object's
@@ -796,7 +796,7 @@ TEST(ObjectDeserialization, TraitsSetProperly) {
 	auto it = data.cbegin();
 	AmfObject obj;
 	ASSERT_NO_THROW({
-		DeserializationContext ctx;
+		SerializationContext ctx;
 		obj = AmfObject::deserialize(it, data.cend(), ctx);
 	});
 
@@ -834,7 +834,7 @@ TEST(ObjectDeserialization, PropertyCache) {
 }
 
 TEST(ObjectDeserialization, Context) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	AmfObject obj("", true, false);
 	AmfObject obj2("", false, false);
 
@@ -929,7 +929,7 @@ TEST(ObjectDeserialization, ComplexNestedObject) {
 }
 
 TEST(ObjectDeserialization, Externalizable) {
-	auto ext = [] (v8::const_iterator&, v8::const_iterator, DeserializationContext&) -> AmfObject {
+	auto ext = [] (v8::const_iterator&, v8::const_iterator, SerializationContext&) -> AmfObject {
 		return AmfObject("foobar", true, false);
 	};
 	Deserializer::externalDeserializers["asd"] = ext;
@@ -939,7 +939,7 @@ TEST(ObjectDeserialization, Externalizable) {
 }
 
 TEST(ObjectDeserialization, ExternalizableFromData) {
-	auto ext = [] (v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) -> AmfObject {
+	auto ext = [] (v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) -> AmfObject {
 		AmfString className = AmfString::deserializeValue(it, end, ctx);
 		return AmfObject(className, false, false);
 	};
@@ -959,7 +959,7 @@ TEST(ObjectDeserialization, MissingExternalDeserializer) {
 		0x07, 0x61, 0x73, 0x64,
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	ASSERT_THROW(AmfObject::deserialize(it, data.cend(), ctx), std::out_of_range);
 }
@@ -967,7 +967,7 @@ TEST(ObjectDeserialization, MissingExternalDeserializer) {
 TEST(ObjectDeserialization, ExternalizableInContext) {
 	std::string name("foo");
 	// first time this is called, it returns AmfObject("foo"), afterwards AmfObject("bar");
-	auto ext = [&name] (v8::const_iterator&, v8::const_iterator, DeserializationContext&) -> AmfObject {
+	auto ext = [&name] (v8::const_iterator&, v8::const_iterator, SerializationContext&) -> AmfObject {
 		auto ret = AmfObject(name, false, false);
 		name = "bar";
 		return ret;
@@ -975,7 +975,7 @@ TEST(ObjectDeserialization, ExternalizableInContext) {
 
 	Deserializer::externalDeserializers["asd"] = ext;
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserialize(AmfObject("foo", false, false), { 0x0a, 0x07, 0x07, 0x61, 0x73, 0x64 }, 0, &ctx);
 	deserialize(AmfObject("foo", false, false), { 0x0a, 0x00 }, 0, &ctx);
 	deserialize(AmfObject("bar", false, false), { 0x0a, 0x07, 0x07, 0x61, 0x73, 0x64 }, 0, &ctx);
@@ -987,7 +987,7 @@ TEST(ObjectDeserialization, TraitRefs) {
 	AmfObject obj("foo", true, false);
 	obj.addDynamicProperty("foo", AmfNull());
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserialize(obj, {
 		0x0a, 0x0b,
 		0x07, 0x66, 0x6f, 0x6f,
@@ -1023,7 +1023,7 @@ TEST(ObjectDeserialization, SelfReference) {
 		0x01
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfItemPtr ptr = AmfObject::deserializePtr(it, data.cend(), ctx);
 	const AmfObject & d = ptr.as<AmfObject>();
@@ -1041,13 +1041,13 @@ TEST(ObjectDeserialization, SelfReferenceIncorrectType) {
 		0x01
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	ASSERT_THROW(AmfObject::deserializePtr(it, data.cend(), ctx), std::invalid_argument);
 }
 
 TEST(ObjectDeserialization, DynamicObjectMissingEndMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	v8 data {
 		0x0a, 0x0b, 0x01, 0x07, 0x66, 0x6f, 0x6f, 0x06, 0x07, 0x62, 0x61, 0x72
 	};
@@ -1060,12 +1060,12 @@ TEST(ObjectDeserialization, EmptyIterator) {
 	v8 data { };
 	auto it = data.cbegin();
 	auto end = data.cend();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	ASSERT_THROW(AmfObject::deserialize(it, end, ctx), std::invalid_argument);
 }
 
 TEST(ObjectDeserialization, InvalidMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	v8 data { 0xff };
 	auto it = data.cbegin();
 	ASSERT_THROW(AmfObject::deserialize(it, data.cend(), ctx), std::invalid_argument);

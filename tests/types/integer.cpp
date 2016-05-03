@@ -217,7 +217,7 @@ TEST(IntegerDeserialization, BytesLeft) {
 }
 
 TEST(IntegerDeserialization, NotEnoughBytes) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data = { 0x04 };
 	auto it = data.cbegin();

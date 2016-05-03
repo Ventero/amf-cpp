@@ -132,7 +132,7 @@ TEST(XmlEquality, MixedTypes) {
 }
 
 static void deserializesTo(const char* expected, const v8& data, int left = 0,
-	DeserializationContext* ctx = nullptr) {
+	SerializationContext* ctx = nullptr) {
 	deserialize(AmfXml(expected), data, left, ctx);
 }
 
@@ -203,7 +203,7 @@ TEST(XmlDeserialization, MultiByteLengthString) {
 }
 
 TEST(XmlDeserialization, ObjectReference) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserializesTo("foo", v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f }, 0, &ctx);
 	deserializesTo("foo", v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f, 0x6f }, 1, &ctx);
 	deserializesTo("foo", v8 { 0x0b, 0x00 }, 0, &ctx);

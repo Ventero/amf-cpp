@@ -14,18 +14,24 @@ class SerializationContext {
 public:
 	SerializationContext() { }
 
-	void clear() {
-		strings.clear();
-		traits.clear();
-		objects.clear();
-	}
+	void clear();
 
 	void addString(const std::string& str) {
+		if (str.empty()) return;
+
 		strings.push_back(str);
+	}
+
+	const std::string & getString(size_t index) const {
+		return strings.at(index);
 	}
 
 	void addTraits(const AmfObjectTraits& trait) {
 		traits.push_back(trait);
+	}
+
+	const AmfObjectTraits & getTraits(size_t index) const {
+		return traits.at(index);
 	}
 
 	template<typename T>
@@ -33,7 +39,27 @@ public:
 		objects.emplace_back(new T(obj));
 	}
 
-	int getIndex(const std::string& str) {
+	template<typename T>
+	const T & getObject(size_t index) const {
+		AmfItemPtr ptr = getPointer<T>(index);
+		return ptr.as<T>();
+	}
+
+	void addPointer(const AmfItemPtr & ptr) {
+		objects.push_back(ptr);
+	}
+
+	template<typename T>
+	AmfItemPtr getPointer(size_t index) const {
+		const AmfItemPtr & ptr = objects.at(index);
+
+		if (ptr.asPtr<T>() == nullptr)
+			throw std::invalid_argument("SerializationContext::getPointer wrong type");
+
+		return ptr;
+	}
+
+	int getIndex(const std::string& str) const {
 		auto it = std::find(strings.begin(), strings.end(), str);
 		if (it == strings.end())
 			return -1;
@@ -41,7 +67,7 @@ public:
 		return it - strings.begin();
 	}
 
-	int getIndex(const AmfObjectTraits& str) {
+	int getIndex(const AmfObjectTraits& str) const {
 		auto it = std::find(traits.begin(), traits.end(), str);
 		if (it == traits.end())
 			return -1;

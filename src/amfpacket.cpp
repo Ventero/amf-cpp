@@ -1,6 +1,5 @@
 #include "amfpacket.hpp"
 
-#include "deserializationcontext.hpp"
 #include "deserializer.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfnull.hpp"
@@ -37,7 +36,7 @@ v8 PacketHeader::serialize(SerializationContext& ctx) const {
 	return buf;
 }
 
-PacketHeader PacketHeader::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+PacketHeader PacketHeader::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	uint16_t name_len = read_network<uint16_t>(it, end);
 
 	// Check for enough bytes for name and must understand flag.
@@ -98,7 +97,7 @@ v8 PacketMessage::serialize(SerializationContext& ctx) const {
 	return buf;
 }
 
-PacketMessage PacketMessage::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+PacketMessage PacketMessage::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	uint16_t target_len = read_network<uint16_t>(it, end);
 	if (end - it < target_len)
 		throw std::out_of_range("Not enough bytes for PacketMessage");
@@ -168,7 +167,7 @@ v8 AmfPacket::serialize(SerializationContext& ctx) const {
 	return buf;
 }
 
-AmfPacket AmfPacket::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfPacket AmfPacket::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	// 2 bytes required for version, header count and message count each.
 	if (end - it < 2 + 2 + 2)
 		throw std::out_of_range("Not enough bytes for AmfPacket");

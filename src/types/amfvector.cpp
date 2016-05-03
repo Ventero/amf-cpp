@@ -1,6 +1,5 @@
 #include "amfvector.hpp"
 
-#include "deserializationcontext.hpp"
 #include "deserializer.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
@@ -41,7 +40,7 @@ std::vector<u8> AmfVector<T, typename VectorProperties<T>::type>::serialize(Seri
 
 template<typename T>
 AmfVector<T> AmfVector<T, typename VectorProperties<T>::type>::deserialize(
-	v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != VectorProperties<T>::marker)
 		throw std::invalid_argument("AmfVector: Invalid type marker");
 
@@ -107,7 +106,7 @@ std::vector<u8> AmfVector<AmfItem>::serialize(SerializationContext& ctx) const {
 }
 
 AmfItemPtr AmfVector<AmfItem>::deserializePtr(
-	v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != AMF_VECTOR_OBJECT)
 		throw std::invalid_argument("AmfVector<Object>: Invalid type marker");
 
@@ -135,7 +134,7 @@ AmfItemPtr AmfVector<AmfItem>::deserializePtr(
 }
 
 AmfVector<AmfItem> AmfVector<AmfItem>::deserialize(
-	v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+	v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	return deserializePtr(it, end, ctx).as<AmfVector<AmfItem>>();
 }
 

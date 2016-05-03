@@ -668,7 +668,7 @@ TEST(DictionaryDeserialization, InvalidWeakKeysMarker) {
 }
 
 TEST(DictionaryDeserialization, NotEnoughBytes) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data = { 0x11 };
 	auto it = data.cbegin();
@@ -684,7 +684,7 @@ TEST(DictionaryDeserialization, NotEnoughBytes) {
 }
 
 TEST(DictionaryDeserialization, InvalidMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	v8 data = { 0x10, 0x01, 0x00 };
 	auto it = data.cbegin();
 	ASSERT_THROW(AmfDictionary::deserialize(it, data.cend(), ctx), std::invalid_argument);
@@ -699,7 +699,7 @@ TEST(DictionaryDeserialization, SelfReference) {
 		0x11, 0x00
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfItemPtr ptr = AmfDictionary::deserializePtr(it, data.cend(), ctx);
 	AmfDictionary & d = ptr.as<AmfDictionary>();
@@ -723,7 +723,7 @@ TEST(DictionaryDeserialization, SelfReference2) {
 			0x00
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfItemPtr ptr = AmfDictionary::deserializePtr(it, data.cend(), ctx);
 	AmfDictionary & d = ptr.as<AmfDictionary>();
@@ -763,7 +763,7 @@ TEST(DictionaryDeserialization, DISABLED_SelfReference3) {
 		0x00
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfItemPtr ptr = AmfDictionary::deserializePtr(it, data.cend(), ctx);
 }

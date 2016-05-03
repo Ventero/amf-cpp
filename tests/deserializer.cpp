@@ -1,7 +1,7 @@
 #include "amftest.hpp"
 
 #include "deserializer.hpp"
-#include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 
 #include "types/amfarray.hpp"
 #include "types/amfbool.hpp"
@@ -31,7 +31,7 @@ static void deserializesTo(const T& expected, v8 data, int left = 0) {
 		ASSERT_EQ(expected, i);
 		T j = *d.deserialize(data).asPtr<T>();
 		ASSERT_EQ(expected, j);
-		DeserializationContext ctx;
+		SerializationContext ctx;
 		T k = Deserializer::deserialize(data, ctx).as<T>();
 		ASSERT_EQ(expected, k);
 	} catch(std::exception& e) {

@@ -317,7 +317,7 @@ TEST(PacketEquality, MixedTypes) {
 
 template<typename T>
 static void deserializesTo(T value, const v8& data, int left = 0,
-	DeserializationContext* ctx = nullptr) {
+	SerializationContext* ctx = nullptr) {
 	deserialize(value, data, left, ctx);
 }
 
@@ -636,7 +636,7 @@ TEST(PacketDeserialization, FlexMessage) {
 }
 
 TEST(PacketDeserialization, InvalidVersion) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data {
 		0x00, 0x04, // invalid version 4
@@ -655,7 +655,7 @@ TEST(PacketDeserialization, InvalidVersion) {
 }
 
 TEST(PacketDeserialization, NotEnoughData) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data { };
 	auto it = data.cbegin();
@@ -758,7 +758,7 @@ TEST(HeaderDeserialization, UnknownValueLength) {
 }
 
 TEST(HeaderDeserialization, NotEnoughData) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data {
 		0x00, 0x03, // name length: 3
@@ -835,7 +835,7 @@ TEST(HeaderDeserialization, NotEnoughData) {
 }
 
 TEST(HeaderDeserialization, InvalidTypeMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	v8 data = {
 		0x00, 0x03, // name length: 3
 		0x66, 0x6f, 0x6f, // "foo"
@@ -849,7 +849,7 @@ TEST(HeaderDeserialization, InvalidTypeMarker) {
 }
 
 TEST(HeaderDeserialization, InvalidValueMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	v8 data = {
 		0x00, 0x03, // name length: 3
 		0x66, 0x6f, 0x6f, // "foo"
@@ -919,7 +919,7 @@ TEST(MessageDeserialization, UnknownValueLength) {
 }
 
 TEST(MessageDeserialization, NotEnoughData) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data {
 		0x00 // partial target length
@@ -1020,7 +1020,7 @@ TEST(MessageDeserialization, NotEnoughData) {
 }
 
 TEST(MessageDeserialization, InvalidTypeMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	v8 data = {
 		0x00, 0x03, // length: 3
 		0x66, 0x6f, 0x6f, // "foo"
@@ -1035,7 +1035,7 @@ TEST(MessageDeserialization, InvalidTypeMarker) {
 }
 
 TEST(MessageDeserialization, InvalidValueMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	v8 data = {
 		0x00, 0x03, // length: 3
 		0x66, 0x6f, 0x6f, // "foo"

@@ -4,7 +4,6 @@
 #include "gtest/gtest.h"
 
 #include "amf.hpp"
-#include "deserializationcontext.hpp"
 #include "serializationcontext.hpp"
 
 #include "types/amfitem.hpp"
@@ -34,13 +33,13 @@ static inline void isEqual(
 
 template<typename T>
 void deserialize(const T& expected, const v8& data, int expectedLeft = 0,
-		DeserializationContext* ctx = nullptr) {
+		SerializationContext* ctx = nullptr) {
 	SerializationContext sctx;
 	SCOPED_TRACE(::testing::PrintToString(expected.serialize(sctx)) + " = " + ::testing::PrintToString(data));
 
-	std::unique_ptr<DeserializationContext> dummy;
+	std::unique_ptr<SerializationContext> dummy;
 	if (!ctx) {
-		dummy.reset(new DeserializationContext());
+		dummy.reset(new SerializationContext());
 		ctx = dummy.get();
 	}
 

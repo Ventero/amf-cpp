@@ -1,6 +1,5 @@
 #include "amfstring.hpp"
 
-#include "deserializationcontext.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 
@@ -45,14 +44,14 @@ std::vector<u8> AmfString::serializeValue(SerializationContext& ctx) const {
 	return buf;
 }
 
-AmfString AmfString::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfString AmfString::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != AMF_STRING)
 		throw std::invalid_argument("AmfString: Invalid type marker");
 
 	return AmfString(deserializeValue(it, end, ctx));
 }
 
-std::string AmfString::deserializeValue(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+std::string AmfString::deserializeValue(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	int type = AmfInteger::deserializeValue(it, end);
 	if ((type & 0x01) == 0)
 		return ctx.getString(type >> 1);

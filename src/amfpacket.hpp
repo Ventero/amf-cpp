@@ -10,7 +10,6 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
 
 enum Amf0Marker : u8 {
 	AVMPLUS_OBJECT = 0x11
@@ -24,7 +23,7 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	v8 serialize(SerializationContext& ctx) const;
-	static PacketHeader deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static PacketHeader deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	template<typename T>
 	T& getValue() {
@@ -46,7 +45,7 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	v8 serialize(SerializationContext& ctx) const;
-	static PacketMessage deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static PacketMessage deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	template<typename T>
 	T& getValue() {
@@ -66,7 +65,7 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	v8 serialize(SerializationContext& ctx) const;
-	static AmfPacket deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfPacket deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	std::vector<PacketHeader> headers;
 	std::vector<PacketMessage> messages;

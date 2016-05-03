@@ -1,6 +1,5 @@
 #include "amfbytearray.hpp"
 
-#include "deserializationcontext.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 
@@ -23,7 +22,7 @@ std::vector<u8> AmfByteArray::serialize(SerializationContext& ctx) const {
 	return buf;
 }
 
-AmfByteArray AmfByteArray::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfByteArray AmfByteArray::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != AMF_BYTEARRAY)
 		throw std::invalid_argument("AmfByteArray: Invalid type marker");
 

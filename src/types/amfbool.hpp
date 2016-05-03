@@ -7,7 +7,7 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
+class SerializationContext;
 
 class AmfBool : public AmfItem {
 public:
@@ -20,7 +20,7 @@ public:
 		return std::vector<u8>{ value ? AMF_TRUE : AMF_FALSE };
 	}
 
-	static AmfBool deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext&);
+	static AmfBool deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext&);
 
 	bool value;
 };

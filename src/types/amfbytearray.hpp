@@ -7,7 +7,7 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
+class SerializationContext;
 
 class AmfByteArray : public AmfItem {
 public:
@@ -28,7 +28,7 @@ public:
 
 	bool operator==(const AmfItem& other) const;
 	std::vector<u8> serialize(SerializationContext& ctx) const;
-	static AmfByteArray deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfByteArray deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	std::vector<u8> value;
 };

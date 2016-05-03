@@ -7,7 +7,7 @@
 #include <string>
 
 #include "amf.hpp"
-#include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 #include "utils/amfitemptr.hpp"
 
 namespace amf {
@@ -15,12 +15,12 @@ namespace amf {
 class AmfObject;
 
 typedef std::function<AmfObject(v8::const_iterator&, v8::const_iterator,
-	DeserializationContext&)> ExternalDeserializerFunction;
+	SerializationContext&)> ExternalDeserializerFunction;
 
 class Deserializer {
 public:
 	Deserializer() : ctx() { }
-	Deserializer(DeserializationContext ctx) : ctx(ctx) { }
+	Deserializer(SerializationContext ctx) : ctx(ctx) { }
 
 	AmfItemPtr deserialize(v8 buf);
 	AmfItemPtr deserialize(v8::const_iterator& it, v8::const_iterator end) {
@@ -29,13 +29,13 @@ public:
 
 	void clearContext() { ctx.clear(); }
 
-	static AmfItemPtr deserialize(v8 data, DeserializationContext& ctx);
-	static AmfItemPtr deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfItemPtr deserialize(v8 data, SerializationContext& ctx);
+	static AmfItemPtr deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	static std::map<std::string, ExternalDeserializerFunction> externalDeserializers;
 
 private:
-	DeserializationContext ctx;
+	SerializationContext ctx;
 };
 
 } // namespace amf

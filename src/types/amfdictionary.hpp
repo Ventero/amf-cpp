@@ -10,7 +10,7 @@
 namespace amf {
 
 class SerializationContext;
-class DeserializationContext;
+class SerializationContext;
 
 struct AmfDictionaryHash {
 	size_t operator()(const AmfItemPtr& val) const;
@@ -41,8 +41,8 @@ public:
 	}
 
 	std::vector<u8> serialize(SerializationContext & ctx) const;
-	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
-	static AmfDictionary deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx);
+	static AmfItemPtr deserializePtr(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
+	static AmfDictionary deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx);
 
 	bool asString;
 	bool weak;

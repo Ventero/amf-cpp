@@ -9,9 +9,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\tests\deserializationcontext.cpp" />
     <ClCompile Include="..\tests\deserializer.cpp" />
     <ClCompile Include="..\tests\packet.cpp" />
+    <ClCompile Include="..\tests\serializationcontext.cpp" />
     <ClCompile Include="..\tests\serializer.cpp" />
     <ClCompile Include="..\tests\types\array.cpp">
       <Filter>types</Filter>

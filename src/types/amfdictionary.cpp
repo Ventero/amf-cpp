@@ -4,7 +4,6 @@
 #include <limits>
 #include <sstream>
 
-#include "deserializationcontext.hpp"
 #include "deserializer.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfbool.hpp"
@@ -51,7 +50,7 @@ std::vector<u8> AmfDictionary::serialize(SerializationContext & ctx) const {
 	return buf;
 }
 
-AmfItemPtr AmfDictionary::deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfItemPtr AmfDictionary::deserializePtr(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != AMF_DICTIONARY)
 		throw std::invalid_argument("AmfDictionary: Invalid type marker");
 
@@ -78,7 +77,7 @@ AmfItemPtr AmfDictionary::deserializePtr(v8::const_iterator& it, v8::const_itera
 	return ptr;
 }
 
-AmfDictionary AmfDictionary::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfDictionary AmfDictionary::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	return deserializePtr(it, end, ctx).as<AmfDictionary>();
 }
 

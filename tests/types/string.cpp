@@ -156,7 +156,7 @@ TEST(StringEquality, MixedTypes) {
 }
 
 static void deserializesTo(const char* value, const v8& data, int left = 0,
-	DeserializationContext* ctx = nullptr) {
+	SerializationContext* ctx = nullptr) {
 	deserialize(AmfString(value), data, left, ctx);
 }
 
@@ -233,14 +233,14 @@ TEST(StringDeserialization, MultiByteLength) {
 TEST(StringDeserialization, EmptyIterator) {
 	v8 empty { };
 	auto begin = empty.cbegin();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	ASSERT_THROW({
 		AmfString::deserialize(begin, empty.cend(), ctx);
 	}, std::invalid_argument);
 }
 
 TEST(StringDeserialization, StringContext) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserializesTo("bar", { 0x06, 0x07, 0x62, 0x61, 0x72 }, 0, &ctx);
 	deserializesTo("bar", { 0x06, 0x00 }, 0, &ctx);
 	deserializesTo("foobar", { 0x06, 0x0D, 0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72 }, 0, &ctx);
@@ -251,14 +251,14 @@ TEST(StringDeserialization, StringContext) {
 }
 
 TEST(StringDeserialization, EmtpyStringNotCached) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserializesTo("", { 0x06, 0x01 }, 0, &ctx);
 	deserializesTo("bar", { 0x06, 0x07, 0x62, 0x61, 0x72 }, 0, &ctx);
 	deserializesTo("bar", { 0x06, 0x00 }, 0, &ctx);
 }
 
 TEST(StringDeserialization, Utf8VrCached) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	AmfObject obj("foo", true, false);
 	obj.addDynamicProperty("bar", AmfString("qux"));
 	deserialize(obj, {

@@ -603,8 +603,8 @@ TEST(VectorType, VectorAmfSubclassConstructible) {
 }
 
 TEST(VectorType, VectorNonAmfSubclassNotConstructible) {
-	static_assert(!std::is_constructible<AmfVector<DeserializationContext>, std::vector<DeserializationContext>, std::string>::value,
-		"AmfVector<DeserializationContext> should not be constructible");
+	static_assert(!std::is_constructible<AmfVector<SerializationContext>, std::vector<SerializationContext>, std::string>::value,
+		"AmfVector<SerializationContext> should not be constructible");
 
 	SUCCEED();
 
@@ -932,7 +932,7 @@ TEST(VectorDeserialization, VectorDouble) {
 }
 
 TEST(VectorDeserialization, VectorNumberObjectCache) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	deserialize(AmfVector<int>({}, false), { 0x0d, 0x01, 0x00 }, 0, &ctx);
 	deserialize(AmfVector<int>({}, false), { 0x0d, 0x00 }, 0, &ctx);
@@ -947,7 +947,7 @@ TEST(VectorDeserialization, VectorNumberEmptyIterator) {
 	v8 data { };
 	auto it = data.cbegin();
 	auto end = data.cend();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	EXPECT_THROW(AmfVector<int>::deserialize(it, end, ctx), std::invalid_argument);
 	EXPECT_EQ(it, end);
 	EXPECT_THROW(AmfVector<unsigned int>::deserialize(it, end, ctx), std::invalid_argument);
@@ -957,7 +957,7 @@ TEST(VectorDeserialization, VectorNumberEmptyIterator) {
 }
 
 TEST(VectorDeserialization, VectorIntNotEnoughData) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data { 0x0d };
 	auto it = data.cbegin();
@@ -977,7 +977,7 @@ TEST(VectorDeserialization, VectorIntNotEnoughData) {
 }
 
 TEST(VectorDeserialization, VectorUintNotEnoughData) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data { 0x0e };
 	auto it = data.cbegin();
@@ -997,7 +997,7 @@ TEST(VectorDeserialization, VectorUintNotEnoughData) {
 }
 
 TEST(VectorDeserialization, VectorDoubleNotEnoughData) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data { 0x0f };
 	auto it = data.cbegin();
@@ -1017,7 +1017,7 @@ TEST(VectorDeserialization, VectorDoubleNotEnoughData) {
 }
 
 TEST(VectorDeserialization, VectorNumberInvalidMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data { 0x0d, 0x01, 0x00 };
 	auto it = data.cbegin();
@@ -1043,14 +1043,14 @@ TEST(VectorDeserialization, VectorNumberInvalidMarker) {
 
 template<typename T>
 static void deserializeTo(const AmfVector<T>& expected, v8 data, int left = 0,
-	DeserializationContext* ctx = nullptr) {
+	SerializationContext* ctx = nullptr) {
 	// deserialize uses Deserializer::deserialize, which gives an
 	// AmfVector<AmfItem>, so we have to compare against that
 	auto vi = dynamic_cast<const AmfVector<AmfItem>&>(expected);
 	deserialize(vi, data, left, ctx);
 
 	// also compare against actual AmfVector<T>
-	DeserializationContext newCtx;
+	SerializationContext newCtx;
 	if (!ctx) ctx = &newCtx;
 	auto it = data.cbegin();
 	ASSERT_NO_THROW({
@@ -1147,7 +1147,7 @@ TEST(VectorDeserialization, VectorIntVector) {
 }
 
 TEST(VectorDeserialization, VectorItemObjectCache) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	deserialize(AmfVector<AmfInteger>({1}, "", false),
 		{ 0x10, 0x03, 0x00, 0x01, 0x04, 0x01 }, 0, &ctx);
@@ -1161,7 +1161,7 @@ TEST(VectorDeserialization, VectorItemEmptyIterator) {
 	v8 data { };
 	auto it = data.cbegin();
 	auto end = data.cend();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	EXPECT_THROW(AmfVector<AmfItem>::deserialize(it, end, ctx), std::invalid_argument);
 	EXPECT_EQ(it, end);
 	EXPECT_THROW(AmfVector<AmfBool>::deserialize(it, end, ctx), std::invalid_argument);
@@ -1169,7 +1169,7 @@ TEST(VectorDeserialization, VectorItemEmptyIterator) {
 }
 
 TEST(VectorDeserialization, VectorObjectInvalidMarker) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data { 0x11, 0x01, 0x00 };
 	auto it = data.cbegin();
@@ -1187,7 +1187,7 @@ TEST(VectorDeserialization, SelfReference) {
 		0x10, 0x03, 0x00, 0x01, 0x10, 0x00
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfItemPtr ptr = AmfVector<AmfItem>::deserializePtr(it, data.cend(), ctx);
 	AmfVector<AmfItem> & d = ptr.as<AmfVector<AmfItem>>();
@@ -1206,7 +1206,7 @@ TEST(VectorDeserialization, SelfReferenceConcreteType) {
 		0x10, 0x03, 0x00, 0x01, 0x10, 0x00
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfVector<AmfVector<AmfItem>> v = AmfVector<AmfVector<AmfItem>>::deserialize(it, data.cend(), ctx);
 	EXPECT_EQ(v.values.at(0).get(), v.at(0).values.at(0).get());
@@ -1225,7 +1225,7 @@ TEST(VectorDeserialization, OtherVectorTypeReference) {
 			0x10, 0x02,
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 
 	// TODO: flash accepts this, implicitly turns the vector references into Vector<int>.

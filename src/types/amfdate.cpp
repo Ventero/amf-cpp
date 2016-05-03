@@ -1,6 +1,5 @@
 #include "amfdate.hpp"
 
-#include "deserializationcontext.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
@@ -37,7 +36,7 @@ std::vector<u8> AmfDate::serialize(SerializationContext& ctx) const {
 	return buf;
 }
 
-AmfDate AmfDate::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfDate AmfDate::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != AMF_DATE)
 		throw std::invalid_argument("AmfDate: Invalid type marker");
 

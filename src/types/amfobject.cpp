@@ -1,6 +1,5 @@
 #include "amfobject.hpp"
 
-#include "deserializationcontext.hpp"
 #include "deserializer.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
@@ -121,7 +120,7 @@ std::vector<u8> AmfObject::serialize(SerializationContext& ctx) const {
 	return buf;
 }
 
-AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != AMF_OBJECT)
 		throw std::invalid_argument("AmfObject: Invalid type marker");
 
@@ -182,7 +181,7 @@ AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator 
 	return ptr;
 }
 
-AmfObject AmfObject::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfObject AmfObject::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	return deserializePtr(it, end, ctx).as<AmfObject>();
 }
 

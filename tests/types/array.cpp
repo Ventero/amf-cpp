@@ -311,11 +311,11 @@ TEST(ArrayEquality, DISABLED_SelfReference) {
 	AmfItemPtr ptr2((AmfArray()));
 	ptr2.as<AmfArray>().dense.push_back(ptr2);
 
-	EXPECT_EQ(ptr, ptr2);
+	EXPECT_NE(ptr, ptr2);
 }
 
 static void deserializesTo(AmfArray value, const v8& data, int left = 0,
-	DeserializationContext* ctx = nullptr) {
+	SerializationContext* ctx = nullptr) {
 	deserialize(value, data, left, ctx);
 }
 
@@ -437,7 +437,7 @@ TEST(ArrayDeserialization, ArrayOfArrays) {
 }
 
 TEST(ArrayDeserialization, ObjectCache) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserializesTo(AmfArray(), { 0x09, 0x01, 0x01 }, 0, &ctx);
 	deserializesTo(AmfArray(), { 0x09, 0x00, 0x01 }, 1, &ctx);
 
@@ -465,7 +465,7 @@ TEST(ArrayDeserialization, ReferenceIndexOrder) {
 
 
 TEST(ArrayDeserialization, NotEnoughBytes) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 
 	v8 data = { 0x09 };
 	auto it = data.cbegin();
@@ -483,7 +483,7 @@ TEST(ArrayDeserialization, NotEnoughBytes) {
 TEST(ArrayDeserialization, InvalidMarker) {
 	v8 data = { 0x0a };
 	auto it = data.cbegin();
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	ASSERT_THROW(AmfArray::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
 
@@ -503,7 +503,7 @@ TEST(ArrayDeserialization, SelfReference) {
 	};
 
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfItemPtr ptr = AmfArray::deserializePtr(it, data.cend(), ctx);
 	AmfArray & d = ptr.as<AmfArray>();
@@ -529,7 +529,7 @@ TEST(ArrayDeserialization, ArraySelfReferenceStackOverflow) {
 	};
 
 	// Flash chokes with a stack overflow on this one.
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	AmfItemPtr ptr = AmfArray::deserializePtr(it, data.cend(), ctx);
 
@@ -548,7 +548,7 @@ TEST(ArrayDeserialization, ArraySelfReferenceInvalidType) {
 		0x0a, 0x00,
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto it = data.cbegin();
 	ASSERT_THROW(AmfArray::deserialize(it, data.cend(), ctx), std::invalid_argument);
 }
@@ -559,7 +559,7 @@ TEST(ArrayDeserialization, Utf8VrReference) {
 	AmfArray array;
 	array.insert("x", AmfString("x"));
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserializesTo(array, data, 0, &ctx);
 	deserializesTo(array, { 0x09, 0x01, 0x00, 0x06, 0x00, 0x01 }, 0, &ctx);
 }
@@ -580,7 +580,7 @@ TEST(ArrayDeserialization, ArrayReferenceOrder) {
 			0x09, 0x00,
 	};
 
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	auto begin = data.cbegin();
 	AmfItemPtr deserialized = AmfArray::deserializePtr(begin, data.cend(), ctx);
 	AmfArray const & arr = deserialized.as<AmfArray>();

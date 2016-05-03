@@ -1,12 +1,12 @@
 #include "amftest.hpp"
 
-#include "deserializationcontext.hpp"
+#include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfnull.hpp"
 #include "types/amfdouble.hpp"
 
-TEST(DeserializationContext, String) {
-	DeserializationContext ctx;
+TEST(SerializationContext, String) {
+	SerializationContext ctx;
 
 	ASSERT_THROW(ctx.getString(0), std::out_of_range);
 	ASSERT_THROW(ctx.getString(1), std::out_of_range);
@@ -21,8 +21,8 @@ TEST(DeserializationContext, String) {
 	ASSERT_THROW(ctx.getString(2), std::out_of_range);
 }
 
-TEST(DeserializationContext, ObjectTraits) {
-	DeserializationContext ctx;
+TEST(SerializationContext, ObjectTraits) {
+	SerializationContext ctx;
 
 	ASSERT_THROW(ctx.getTraits(0), std::out_of_range);
 	ASSERT_THROW(ctx.getTraits(1), std::out_of_range);
@@ -39,8 +39,8 @@ TEST(DeserializationContext, ObjectTraits) {
 	ASSERT_THROW(ctx.getTraits(2), std::out_of_range);
 }
 
-TEST(DeserializationContext, Item) {
-	DeserializationContext ctx;
+TEST(SerializationContext, Item) {
+	SerializationContext ctx;
 
 	// Verify no objects are stored yet.
 	ASSERT_THROW(ctx.getObject<AmfNull>(0), std::out_of_range);
@@ -61,8 +61,8 @@ TEST(DeserializationContext, Item) {
 	ASSERT_EQ(AmfInteger(17), ctx.getObject<AmfInteger>(1));
 }
 
-TEST(DeserializationContext, Pointer) {
-	DeserializationContext ctx;
+TEST(SerializationContext, Pointer) {
+	SerializationContext ctx;
 
 	ASSERT_THROW(ctx.getPointer<AmfInteger>(0), std::out_of_range);
 
@@ -82,8 +82,8 @@ TEST(DeserializationContext, Pointer) {
 	ASSERT_THROW(ctx.getObject<AmfDouble>(1), std::invalid_argument);
 }
 
-TEST(DeserializationContext, Clear) {
-	DeserializationContext ctx;
+TEST(SerializationContext, Clear) {
+	SerializationContext ctx;
 
 	// Verify the context is initially empty.
 	ASSERT_THROW(ctx.getString(0), std::out_of_range);

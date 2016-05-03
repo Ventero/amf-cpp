@@ -95,7 +95,7 @@ TEST(ByteArrayEquality, MixedTypes) {
 }
 
 static void deserializesTo(const v8& expected, const v8& data, int left = 0,
-	DeserializationContext* ctx = nullptr) {
+	SerializationContext* ctx = nullptr) {
 	deserialize(AmfByteArray(expected), data, left, ctx);
 }
 
@@ -146,7 +146,7 @@ TEST(ByteArrayDeserialization, MultiByteLengthMarker) {
 }
 
 TEST(ByteArrayDeserialization, ObjectReferences) {
-	DeserializationContext ctx;
+	SerializationContext ctx;
 	deserializesTo({1, 2, 3}, {0x0c, 0x07, 0x01, 0x02, 0x03}, 0, &ctx);
 	deserializesTo({1, 2, 3}, {0x0c, 0x00}, 0, &ctx);
 	deserializesTo({4, 5, 6}, {0x0c, 0x07, 0x04, 0x05, 0x06}, 0, &ctx);

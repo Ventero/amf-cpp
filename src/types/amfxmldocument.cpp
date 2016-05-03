@@ -1,6 +1,5 @@
 #include "amfxmldocument.hpp"
 
-#include "deserializationcontext.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfxml.hpp"
@@ -28,7 +27,7 @@ std::vector<u8> AmfXmlDocument::serialize(SerializationContext& ctx) const {
 	return buf;
 }
 
-AmfXmlDocument AmfXmlDocument::deserialize(v8::const_iterator& it, v8::const_iterator end, DeserializationContext& ctx) {
+AmfXmlDocument AmfXmlDocument::deserialize(v8::const_iterator& it, v8::const_iterator end, SerializationContext& ctx) {
 	if (it == end || *it++ != AMF_XMLDOC)
 		throw std::invalid_argument("AmfXmlDocument: Invalid type marker");
 
