@@ -11,13 +11,13 @@
 #define amf_localtime(res, time) localtime_r(time, res)
 #endif
 
-TEST(DateSerializationTest, FromLongLong) {
+TEST(DateSerialization, FromLongLong) {
 	AmfDate date(136969002755210ll);
 	v8 expected { 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22, 0x80 };
 	isEqual(expected, date);
 }
 
-TEST(DateSerializationTest, FromTm) {
+TEST(DateSerialization, FromTm) {
 	std::time_t time = 1234567890;
 	std::tm res;
 	amf_localtime(&res, &time);
@@ -26,7 +26,7 @@ TEST(DateSerializationTest, FromTm) {
 	isEqual(expected, date);
 }
 
-TEST(DateSerializationTest, FromTimePoint) {
+TEST(DateSerialization, FromTimePoint) {
 	std::chrono::seconds s(1500000000);
 	std::chrono::system_clock::time_point time(s);
 	AmfDate date(time);
@@ -34,14 +34,14 @@ TEST(DateSerializationTest, FromTimePoint) {
 	isEqual(expected, date);
 }
 
-TEST(DateSerializationTest, Epoch) {
+TEST(DateSerialization, Epoch) {
 	std::chrono::system_clock::time_point time;
 	AmfDate date(time);
 	v8 expected { 0x08, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	isEqual(expected, date);
 }
 
-TEST(DateSerializationTest, ObjectCache) {
+TEST(DateSerialization, ObjectCache) {
 	SerializationContext ctx;
 	isEqual({ 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22, 0x80 }, AmfDate(136969002755210ll), &ctx);
 	isEqual({ 0x08, 0x00 }, AmfDate(136969002755210ll), &ctx);
@@ -93,7 +93,7 @@ static void deserializesTo(long long expected, const v8& data, int left = 0,
 	deserialize(AmfDate(expected), data, left, ctx);
 }
 
-TEST(DateDeserializationTest, Values) {
+TEST(DateDeserialization, Values) {
 	deserializesTo(136969002755210ll, { 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49,
 		0x22, 0x80 });
 	deserializesTo(1234567890000ll, { 0x08, 0x01, 0x42, 0x71, 0xf7, 0x1f, 0xb0, 0x45,
@@ -104,7 +104,7 @@ TEST(DateDeserializationTest, Values) {
 		0x22, 0x80, 0x90 }, 1);
 }
 
-TEST(DateDeserializationTest, ObjectCache) {
+TEST(DateDeserialization, ObjectCache) {
 	DeserializationContext ctx;
 	deserializesTo(136969002755210ll, { 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22, 0x80 }, 0, &ctx);
 	deserializesTo(136969002755210ll, { 0x08, 0x00 }, 0, &ctx);
@@ -117,7 +117,7 @@ TEST(DateDeserializationTest, ObjectCache) {
 	deserializesTo(1234567890000ll,   { 0x08, 0x04 }, 0, &ctx);
 }
 
-TEST(DateDeserializationTest, NotEnoughBytes) {
+TEST(DateDeserialization, NotEnoughBytes) {
 	v8 data = { 0x08, 0x01, 0x42, 0xdf, 0x24, 0xa5, 0x30, 0x49, 0x22 };
 	auto it = data.cbegin();
 	DeserializationContext ctx;

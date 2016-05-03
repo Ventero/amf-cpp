@@ -9,7 +9,7 @@
 #include "types/amfobject.hpp"
 #include "types/amfstring.hpp"
 
-TEST(SerializerTest, SingleValue) {
+TEST(Serializer, SingleValue) {
 	Serializer s;
 	s << AmfInteger(0xffffffe);
 
@@ -17,7 +17,7 @@ TEST(SerializerTest, SingleValue) {
 	ASSERT_EQ(expected, s.data());
 }
 
-TEST(SerializerTest, Clear) {
+TEST(Serializer, Clear) {
 	Serializer s;
 	s << AmfDouble(0.5);
 	s.clear();
@@ -29,7 +29,7 @@ TEST(SerializerTest, Clear) {
 	ASSERT_EQ(expected, s.data());
 }
 
-TEST(SerializerTest, MultipleDoubleValues) {
+TEST(Serializer, MultipleDoubleValues) {
 	Serializer s;
 	s << AmfDouble(0.5) << AmfDouble(2.5e+51);
 
@@ -48,7 +48,7 @@ TEST(SerializerTest, MultipleDoubleValues) {
 	ASSERT_EQ(expected, s.data());
 }
 
-TEST(SerializerTest, MultipleStringValues) {
+TEST(Serializer, MultipleStringValues) {
 	Serializer s;
 	s << AmfString("bar") << AmfString("boofar");
 
@@ -59,7 +59,7 @@ TEST(SerializerTest, MultipleStringValues) {
 	ASSERT_EQ(expected, s.data());
 }
 
-TEST(SerializerTest, MultipleMixedValues) {
+TEST(Serializer, MultipleMixedValues) {
 	Serializer s;
 	s << AmfDouble(0.5) << AmfInteger(0x3ff) << AmfString("bar") << AmfNull();
 
@@ -72,7 +72,7 @@ TEST(SerializerTest, MultipleMixedValues) {
 	ASSERT_EQ(expected, s.data());
 }
 
-TEST(SerializerTest, SerializationContext) {
+TEST(Serializer, SerializationContext) {
 	Serializer s;
 	AmfString str("foo");
 	AmfArray arr;
@@ -93,7 +93,7 @@ TEST(SerializerTest, SerializationContext) {
 	ASSERT_EQ(expected, s.data());
 }
 
-TEST(SerializerTest, SerializationContextClear) {
+TEST(Serializer, SerializationContextClear) {
 	Serializer s;
 	AmfString str("foo");
 

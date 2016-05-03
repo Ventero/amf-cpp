@@ -8,7 +8,7 @@
 #include "types/amfinteger.hpp"
 #include "types/amfvector.hpp"
 
-TEST(ByteArraySerializationTest, SimpleValues) {
+TEST(ByteArraySerialization, SimpleValues) {
 	AmfByteArray ba(v8 {1, 2, 3});
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, ba);
 
@@ -16,7 +16,7 @@ TEST(ByteArraySerializationTest, SimpleValues) {
 	isEqual({0x0c, 0x09, 0xff, 0xff, 0xff, 0xff}, ba);
 }
 
-TEST(ByteArraySerializationTest, MultiByteLengthMarker) {
+TEST(ByteArraySerialization, MultiByteLengthMarker) {
 	v8 values(300, 0xde);
 	v8 expected = {
 		0x0c, 0x84, 0x59,
@@ -49,22 +49,22 @@ TEST(ByteArraySerializationTest, MultiByteLengthMarker) {
 	isEqual(expected, AmfByteArray(values));
 }
 
-TEST(ByteArraySerializationTest, ExplicitCArrayCtor) {
+TEST(ByteArraySerialization, ExplicitCArrayCtor) {
 	u8 values[] = {1, 2, 3};
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, AmfByteArray(values));
 }
 
-TEST(ByteArraySerializationTest, ExplicitStdArrayCtor) {
+TEST(ByteArraySerialization, ExplicitStdArrayCtor) {
 	std::array<u8, 3> values = {{1, 2, 3}};
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, AmfByteArray(values));
 }
 
-TEST(ByteArraySerializationTest, ExplicitVectorCtor) {
+TEST(ByteArraySerialization, ExplicitVectorCtor) {
 	v8 values = {1, 2, 3};
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, AmfByteArray(values));
 }
 
-TEST(ByteArraySerializationTest, ObjectReferences) {
+TEST(ByteArraySerialization, ObjectReferences) {
 	SerializationContext ctx;
 	isEqual({0x0c, 0x07, 0x01, 0x02, 0x03}, AmfByteArray {v8 {1, 2, 3}}, &ctx);
 	isEqual({0x0c, 0x00}, AmfByteArray {v8 {1, 2, 3}}, &ctx);
@@ -99,12 +99,12 @@ static void deserializesTo(const v8& expected, const v8& data, int left = 0,
 	deserialize(AmfByteArray(expected), data, left, ctx);
 }
 
-TEST(ByteArrayDeserializationTest, Empty) {
+TEST(ByteArrayDeserialization, Empty) {
 	deserializesTo({ }, { 0x0c, 0x01 });
 	deserializesTo({ }, { 0x0c, 0x01, 0x01 }, 1);
 }
 
-TEST(ByteArrayDeserializationTest, SimpleValues) {
+TEST(ByteArrayDeserialization, SimpleValues) {
 	deserializesTo({1, 2, 3}, {0x0c, 0x07, 0x01, 0x02, 0x03});
 	deserializesTo({1, 2, 3}, {0x0c, 0x07, 0x01, 0x02, 0x03, 0x04}, 1);
 	deserializesTo({ 0xff, 0xff, 0xff, 0xff }, {0x0c, 0x09, 0xff, 0xff, 0xff, 0xff});
@@ -112,7 +112,7 @@ TEST(ByteArrayDeserializationTest, SimpleValues) {
 		0xff, 0xff, 0xff}, 3);
 }
 
-TEST(ByteArrayDeserializationTest, MultiByteLengthMarker) {
+TEST(ByteArrayDeserialization, MultiByteLengthMarker) {
 	v8 values(300, 0xde);
 	v8 data = {
 		0x0c, 0x84, 0x59,
@@ -145,7 +145,7 @@ TEST(ByteArrayDeserializationTest, MultiByteLengthMarker) {
 	deserializesTo(values, data);
 }
 
-TEST(ByteArrayDeserializationTest, ObjectReferences) {
+TEST(ByteArrayDeserialization, ObjectReferences) {
 	DeserializationContext ctx;
 	deserializesTo({1, 2, 3}, {0x0c, 0x07, 0x01, 0x02, 0x03}, 0, &ctx);
 	deserializesTo({1, 2, 3}, {0x0c, 0x00}, 0, &ctx);

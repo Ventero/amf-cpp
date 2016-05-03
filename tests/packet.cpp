@@ -11,7 +11,7 @@
 #include "types/amfstring.hpp"
 #include "types/amfundefined.hpp"
 
-TEST(PacketTest, SingleMessage) {
+TEST(Packet, SingleMessage) {
 	AmfPacket packet;
 	packet.messages.emplace_back("com/foo.bar", "/1/", AmfString("hello"));
 
@@ -49,7 +49,7 @@ TEST(PacketTest, SingleMessage) {
 	}, packet);
 }
 
-TEST(PacketTest, MultipleMessages) {
+TEST(Packet, MultipleMessages) {
 	AmfPacket packet;
 	packet.messages.emplace_back("com/foo.bar", "/1/", AmfString("hello"));
 	packet.messages.emplace_back("de/ventero/AmfCpp.test", "/1/onResult", AmfInteger(27));
@@ -81,7 +81,7 @@ TEST(PacketTest, MultipleMessages) {
 	}, packet);
 }
 
-TEST(PacketTest, MultiByteMessageCount) {
+TEST(Packet, MultiByteMessageCount) {
 	AmfPacket packet;
 	PacketMessage message("a.b", "/1", AmfBool(false));
 
@@ -120,7 +120,7 @@ TEST(PacketTest, MultiByteMessageCount) {
 	ASSERT_EQ(3876, serialized.size());
 }
 
-TEST(PacketTest, SingleHeader) {
+TEST(Packet, SingleHeader) {
 	AmfPacket packet;
 	packet.headers.emplace_back("foo", false, AmfBool(false));
 
@@ -152,7 +152,7 @@ TEST(PacketTest, SingleHeader) {
 	}, packet);
 }
 
-TEST(PacketTest, MultipleHeader) {
+TEST(Packet, MultipleHeader) {
 	AmfPacket packet;
 	packet.headers.emplace_back("foo", false, AmfBool(false));
 	packet.headers.emplace_back("barqux", true, AmfDouble(-3.14159));
@@ -176,7 +176,7 @@ TEST(PacketTest, MultipleHeader) {
 	}, packet);
 }
 
-TEST(PacketTest, MultiByteHeaderCount) {
+TEST(Packet, MultiByteHeaderCount) {
 	AmfPacket packet;
 	PacketHeader header("a", false, AmfBool(false));
 
@@ -217,7 +217,7 @@ TEST(PacketTest, MultiByteHeaderCount) {
 	ASSERT_EQ(2586, serialized.size());
 }
 
-TEST(PacketTest, HeaderAndMessage) {
+TEST(Packet, HeaderAndMessage) {
 	AmfPacket packet;
 	packet.headers.emplace_back("Foo", false, AmfString("bar"));
 	packet.messages.emplace_back("de/ventero/Foo.bar", "/1/onResult", AmfArray());
@@ -245,14 +245,14 @@ TEST(PacketTest, HeaderAndMessage) {
 	}, packet);
 }
 
-TEST(PacketTest, TooManyHeaders) {
+TEST(Packet, TooManyHeaders) {
 	AmfPacket p;
 	SerializationContext ctx;
 	p.headers = std::vector<PacketHeader>(65536, PacketHeader("Foo", false, AmfNull()));
 	ASSERT_THROW(p.serialize(ctx), std::length_error);
 }
 
-TEST(PacketTest, TooManyMessages) {
+TEST(Packet, TooManyMessages) {
 	AmfPacket p;
 	SerializationContext ctx;
 	p.messages = std::vector<PacketMessage>(65536, PacketMessage("Foo", "", AmfNull()));

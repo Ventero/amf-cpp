@@ -5,7 +5,7 @@
 #include "types/amfnull.hpp"
 #include "types/amfdouble.hpp"
 
-TEST(DeserializationContextTest, String) {
+TEST(DeserializationContext, String) {
 	DeserializationContext ctx;
 
 	ASSERT_THROW(ctx.getString(0), std::out_of_range);
@@ -21,7 +21,7 @@ TEST(DeserializationContextTest, String) {
 	ASSERT_THROW(ctx.getString(2), std::out_of_range);
 }
 
-TEST(DeserializationContextTest, ObjectTraits) {
+TEST(DeserializationContext, ObjectTraits) {
 	DeserializationContext ctx;
 
 	ASSERT_THROW(ctx.getTraits(0), std::out_of_range);
@@ -39,7 +39,7 @@ TEST(DeserializationContextTest, ObjectTraits) {
 	ASSERT_THROW(ctx.getTraits(2), std::out_of_range);
 }
 
-TEST(DeserializationContextTest, Item) {
+TEST(DeserializationContext, Item) {
 	DeserializationContext ctx;
 
 	// Verify no objects are stored yet.
@@ -82,7 +82,7 @@ TEST(DeserializationContext, Pointer) {
 	ASSERT_THROW(ctx.getObject<AmfDouble>(1), std::invalid_argument);
 }
 
-TEST(DeserializationContextTest, Clear) {
+TEST(DeserializationContext, Clear) {
 	DeserializationContext ctx;
 
 	// Verify the context is initially empty.

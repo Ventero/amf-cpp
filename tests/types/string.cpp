@@ -15,11 +15,11 @@ TEST(AmfString, NullptrCtor) {
 	ASSERT_NO_THROW(AmfString(nullptr));
 }
 
-TEST(StringSerializationTest, EmptyString) {
+TEST(StringSerialization, EmptyString) {
 	isEqual(v8 { 0x06, 0x01 }, "");
 }
 
-TEST(StringSerializationTest, Ascii) {
+TEST(StringSerialization, Ascii) {
 	isEqual(v8 { 0x06, 0x07, 0x62, 0x61, 0x72 }, "bar");
 	isEqual(v8 { 0x06, 0x0D, 0x62, 0x6F, 0x6F, 0x66, 0x61, 0x72 }, "boofar");
 	isEqual(v8 { 0x06, 0x07, 0x71, 0x75, 0x78 }, "qux");
@@ -59,12 +59,12 @@ TEST(StringSerialization, MultiByteLength) {
 		           0x61, 0x61, 0x61, 0x61, 0x61, 0x61 }, std::string(300, 'a').c_str());
 }
 
-TEST(StringSerializationTest, Umlaute) {
+TEST(StringSerialization, Umlaute) {
 	isEqual(v8 { 0x06, 0x17, 0xC3, 0xBC, 0x6D, 0x6C, 0xC3, 0xA4, 0xC3, 0xBC, 0x74,
 		           0xC3, 0xAB }, "ümläütë");
 }
 
-TEST(StringSerializationTest, Unicode) {
+TEST(StringSerialization, Unicode) {
 	isEqual(v8 { 0x06, 0x29, 0xC4, 0xA7, 0xC4, 0xB8, 0xC3, 0xB0, 0x40, 0xC3, 0xBE,
 		           0xC3, 0xA6, 0xC4, 0xB8, 0xC5, 0xBF, 0xE2, 0x80, 0x9C, 0xC3, 0xB0
 		         }, "ħĸð@þæĸſ“ð");
@@ -75,7 +75,7 @@ TEST(StringSerializationTest, Unicode) {
 		           0xC4, 0xA7 }, "”]²³¶ŧ↓øħ”“łµæðµ→³øħ");
 }
 
-TEST(StringSerializationTest, SerializeValue) {
+TEST(StringSerialization, SerializeValue) {
 	SerializationContext ctx;
 	isEqual(v8 { 0x07, 0x62, 0x61, 0x72 }, AmfString("bar").serializeValue(ctx));
 	isEqual(v8 { 0x0D, 0x62, 0x6F, 0x6F, 0x66, 0x61, 0x72 }, AmfString("boofar").serializeValue(ctx));
@@ -84,7 +84,7 @@ TEST(StringSerializationTest, SerializeValue) {
 	isEqual(v8 { 0x09, 0x71, 0x75, 0x75, 0x78 }, AmfString("quux").serializeValue(ctx));
 }
 
-TEST(StringSerializationTest, SerializeValueCache) {
+TEST(StringSerialization, SerializeValueCache) {
 	SerializationContext ctx;
 	isEqual(v8 { 0x07, 0x62, 0x61, 0x72 }, AmfString("bar").serializeValue(ctx));
 	isEqual(v8 { 0x0D, 0x62, 0x6F, 0x6F, 0x66, 0x61, 0x72 }, AmfString("boofar").serializeValue(ctx));
@@ -94,7 +94,7 @@ TEST(StringSerializationTest, SerializeValueCache) {
 	isEqual(v8 { 0x06, 0x02 }, AmfString("boofar").serialize(ctx));
 }
 
-TEST(StringSerializationTest, EmtpyStringNotCached) {
+TEST(StringSerialization, EmtpyStringNotCached) {
 	SerializationContext ctx;
 	isEqual(v8 { 0x01 }, AmfString("").serializeValue(ctx));
 	isEqual(v8 { 0x01 }, AmfString("").serializeValue(ctx));

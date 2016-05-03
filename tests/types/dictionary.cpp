@@ -46,14 +46,14 @@ static void consistsOf(std::vector<v8> parts, const v8& data) {
 	ASSERT_TRUE(parts.empty());
 }
 
-TEST(DictionarySerializationTest, EmptyDictionary) {
+TEST(DictionarySerialization, EmptyDictionary) {
 	isEqual(v8 { 0x11, 0x01, 0x00 }, AmfDictionary(false, false));
 	isEqual(v8 { 0x11, 0x01, 0x00 }, AmfDictionary(true, false));
 	isEqual(v8 { 0x11, 0x01, 0x01 }, AmfDictionary(false, true));
 	isEqual(v8 { 0x11, 0x01, 0x01 }, AmfDictionary(true, true));
 }
 
-TEST(DictionarySerializationTest, IntegerKeys) {
+TEST(DictionarySerialization, IntegerKeys) {
 	AmfDictionary d(false, false);
 	d.insert(AmfInteger(3), AmfBool(false));
 
@@ -76,7 +76,7 @@ TEST(DictionarySerializationTest, IntegerKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, BooleanKeys) {
+TEST(DictionarySerialization, BooleanKeys) {
 	AmfDictionary d(false, false);
 	d.insert(AmfBool(true), AmfBool(false));
 
@@ -99,7 +99,7 @@ TEST(DictionarySerializationTest, BooleanKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, NumberKeys) {
+TEST(DictionarySerialization, NumberKeys) {
 	AmfDictionary d(false, true);
 	d.insert(AmfDouble(-0.5), AmfInteger(3));
 	isEqual(v8 {
@@ -121,7 +121,7 @@ TEST(DictionarySerializationTest, NumberKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, IntegerAsStringKeys) {
+TEST(DictionarySerialization, IntegerAsStringKeys) {
 	AmfDictionary d(true, false);
 	d.insert(AmfInteger(3), AmfBool(false));
 
@@ -144,7 +144,7 @@ TEST(DictionarySerializationTest, IntegerAsStringKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, BooleanAsStringKeys) {
+TEST(DictionarySerialization, BooleanAsStringKeys) {
 	AmfDictionary d(true, false);
 	d.insert(AmfBool(true), AmfBool(false));
 
@@ -167,7 +167,7 @@ TEST(DictionarySerializationTest, BooleanAsStringKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, NumberAsStringKeys) {
+TEST(DictionarySerialization, NumberAsStringKeys) {
 	AmfDictionary d(true, true);
 	d.insert(AmfDouble(-0.5), AmfInteger(3));
 	isEqual(v8 {
@@ -191,7 +191,7 @@ TEST(DictionarySerializationTest, NumberAsStringKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, NullKeys) {
+TEST(DictionarySerialization, NullKeys) {
 	AmfDictionary n(false, false);
 	n.insert(AmfNull(), AmfNull());
 	isEqual(v8 {
@@ -205,7 +205,7 @@ TEST(DictionarySerializationTest, NullKeys) {
 	}, n);
 }
 
-TEST(DictionarySerializationTest, UndefinedKeys) {
+TEST(DictionarySerialization, UndefinedKeys) {
 	AmfDictionary d(false, false);
 	d.insert(AmfUndefined(), AmfUndefined());
 	isEqual(v8 {
@@ -221,7 +221,7 @@ TEST(DictionarySerializationTest, UndefinedKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, MultipleKeys) {
+TEST(DictionarySerialization, MultipleKeys) {
 	SerializationContext ctx;
 	AmfDictionary d(true, false);
 	d.insert(AmfInteger(3), AmfBool(false));
@@ -243,7 +243,7 @@ TEST(DictionarySerializationTest, MultipleKeys) {
 	}, d.serialize(ctx));
 }
 
-TEST(DictionarySerializationTest, Clear) {
+TEST(DictionarySerialization, Clear) {
 	AmfDictionary d(false, true);
 	d.insert(AmfBool(true), AmfInteger(17));
 	d.clear();
@@ -264,7 +264,7 @@ TEST(DictionarySerializationTest, Clear) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, ComplexObjectKeys) {
+TEST(DictionarySerialization, ComplexObjectKeys) {
 	SerializationContext ctx;
 	AmfDictionary d(false);
 	d.insert(AmfArray(), AmfDictionary(false));
@@ -314,7 +314,7 @@ TEST(DictionarySerializationTest, ComplexObjectKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, NumberAsStringsDoesntAffectObjects) {
+TEST(DictionarySerialization, NumberAsStringsDoesntAffectObjects) {
 	SerializationContext ctx;
 	AmfDictionary d(true);
 	d.insert(AmfArray(), AmfDictionary(false));
@@ -364,7 +364,7 @@ TEST(DictionarySerializationTest, NumberAsStringsDoesntAffectObjects) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, MultiByteLength) {
+TEST(DictionarySerialization, MultiByteLength) {
 	SerializationContext ctx;
 	AmfDictionary d(true, false);
 	for(int i = 0; i < 300; ++i)
@@ -379,7 +379,7 @@ TEST(DictionarySerializationTest, MultiByteLength) {
 	ASSERT_EQ(expected, header);
 }
 
-TEST(DictionarySerializationTest, OverwriteKeys) {
+TEST(DictionarySerialization, OverwriteKeys) {
 	AmfDictionary d(true, false);
 	d.insert(AmfBool(false), AmfInteger(3));
 
@@ -397,7 +397,7 @@ TEST(DictionarySerializationTest, OverwriteKeys) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, ToggleAsString) {
+TEST(DictionarySerialization, ToggleAsString) {
 	AmfDictionary d(true, false);
 	d.insert(AmfBool(false), AmfInteger(3));
 	isEqual({
@@ -414,7 +414,7 @@ TEST(DictionarySerializationTest, ToggleAsString) {
 	}, d);
 }
 
-TEST(DictionarySerializationTest, SelfReference) {
+TEST(DictionarySerialization, SelfReference) {
 	AmfItemPtr ptr(AmfDictionary(false, false));
 	ptr.as<AmfDictionary>().values[AmfItemPtr(AmfString("x"))] = ptr;
 
@@ -428,7 +428,7 @@ TEST(DictionarySerializationTest, SelfReference) {
 	}, ptr->serialize(ctx));
 }
 
-TEST(DictionarySerializationTest, ReferenceMembers) {
+TEST(DictionarySerialization, ReferenceMembers) {
 	AmfDictionary d(false, false);
 	d.insert(AmfArray(), AmfDictionary(false, false));
 	d.insert(AmfDictionary(false, false), AmfArray());
@@ -451,7 +451,7 @@ TEST(DictionarySerializationTest, ReferenceMembers) {
 	ASSERT_TRUE(s == data1 || s == data2);
 }
 
-TEST(DictionarySerializationTest, DifferentPropertiesNoReference) {
+TEST(DictionarySerialization, DifferentPropertiesNoReference) {
 	AmfDictionary d(false, false);
 	AmfDictionary d2(true, false);
 	AmfDictionary d3(true, true);

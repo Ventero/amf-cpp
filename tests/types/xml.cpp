@@ -5,7 +5,7 @@
 #include "types/amfxml.hpp"
 #include "types/amfxmldocument.hpp"
 
-TEST(XmlSerializationTest, EmptyXmlString) {
+TEST(XmlSerialization, EmptyXmlString) {
 	AmfXml val;
 
 	v8 expected { 0x0b, 0x01 };
@@ -15,7 +15,7 @@ TEST(XmlSerializationTest, EmptyXmlString) {
 	isEqual(expected, val);
 }
 
-TEST(XmlSerializationTest, XmlString) {
+TEST(XmlSerialization, XmlString) {
 	AmfXml val("<asd><foo bar='asd'>qux</foo><boo/></asd>");
 
 	isEqual(v8 {
@@ -28,7 +28,7 @@ TEST(XmlSerializationTest, XmlString) {
 	}, val);
 }
 
-TEST(XmlSerializationTest, UnicodeXmlString) {
+TEST(XmlSerialization, UnicodeXmlString) {
 	AmfXml val("<foo>ħĸð@þæĸſ“ð</foo>");
 
 	isEqual(v8 {
@@ -41,7 +41,7 @@ TEST(XmlSerializationTest, UnicodeXmlString) {
  }, val);
 }
 
-TEST(XmlSerializationTest, MultiByteLengthString) {
+TEST(XmlSerialization, MultiByteLengthString) {
 	AmfXml val("<foo>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 		         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 		         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -81,7 +81,7 @@ TEST(XmlSerializationTest, MultiByteLengthString) {
 	}, val);
 }
 
-TEST(XmlSerializationTest, SerializationCache) {
+TEST(XmlSerialization, SerializationCache) {
 	SerializationContext ctx;
 	isEqual(v8 { 0x0b, 0x01 }, AmfXml("").serialize(ctx));
 	isEqual(v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f }, AmfXml("foo").serialize(ctx));
@@ -93,7 +93,7 @@ TEST(XmlSerializationTest, SerializationCache) {
 	isEqual(v8 { 0x0b, 0x04 }, AmfXml("goo").serialize(ctx));
 }
 
-TEST(XmlSerializationTest, SerializationCacheNotShared) {
+TEST(XmlSerialization, SerializationCacheNotShared) {
 	SerializationContext ctx;
 	isEqual(v8 { 0x0b, 0x01 }, AmfXml("").serialize(ctx));
 	isEqual(v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f }, AmfXml("foo").serialize(ctx));
@@ -136,7 +136,7 @@ static void deserializesTo(const char* expected, const v8& data, int left = 0,
 	deserialize(AmfXml(expected), data, left, ctx);
 }
 
-TEST(XmlDeserializationTest, SimpleValues) {
+TEST(XmlDeserialization, SimpleValues) {
 	deserializesTo("", v8 { 0x0b, 0x01 });
 	deserializesTo("foo", v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f });
 	deserializesTo("foo", v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f, 0x6f }, 1);
@@ -149,7 +149,7 @@ TEST(XmlDeserializationTest, SimpleValues) {
 	});
 }
 
-TEST(XmlDeserializationTest, UnicodeXmlString) {
+TEST(XmlDeserialization, UnicodeXmlString) {
 	deserializesTo("<foo>ħĸð@þæĸſ“ð</foo>", v8 {
 		0x0b, 0x3f,
 		0x3c, 0x66, 0x6f, 0x6f, 0x3e,
@@ -159,7 +159,7 @@ TEST(XmlDeserializationTest, UnicodeXmlString) {
 	});
 }
 
-TEST(XmlDeserializationTest, MultiByteLengthString) {
+TEST(XmlDeserialization, MultiByteLengthString) {
 	std::string val(
 		"<foo>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 		"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -202,7 +202,7 @@ TEST(XmlDeserializationTest, MultiByteLengthString) {
 	deserializesTo(val.c_str(), data, 1);
 }
 
-TEST(XmlDeserializationTest, ObjectReference) {
+TEST(XmlDeserialization, ObjectReference) {
 	DeserializationContext ctx;
 	deserializesTo("foo", v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f }, 0, &ctx);
 	deserializesTo("foo", v8 { 0x0b, 0x07, 0x66, 0x6f, 0x6f, 0x6f }, 1, &ctx);

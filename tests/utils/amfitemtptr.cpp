@@ -4,7 +4,7 @@
 #include "types/amfinteger.hpp"
 #include "utils/amfitemptr.hpp"
 
-TEST(AmfItemPtrTest, Construction) {
+TEST(AmfItemPtr, Construction) {
 	AmfItemPtr empty;
 	EXPECT_EQ(nullptr, empty.get());
 
@@ -21,7 +21,7 @@ TEST(AmfItemPtrTest, Construction) {
 	EXPECT_EQ(ip, ptr.get());
 }
 
-TEST(AmfItemPtrTest, AsReference) {
+TEST(AmfItemPtr, AsReference) {
 	AmfItemPtr ptr(new AmfInteger(33));
 
 	EXPECT_EQ(AmfInteger(33), ptr.as<AmfInteger>());
@@ -33,7 +33,7 @@ TEST(AmfItemPtrTest, AsReference) {
 	EXPECT_THROW(cptr.as<AmfInteger>(), std::bad_cast);
 }
 
-TEST(AmfItemPtrTest, AsPointer) {
+TEST(AmfItemPtr, AsPointer) {
 	AmfInteger * ip = new AmfInteger(12);
 	AmfItemPtr ptr(ip);
 	EXPECT_EQ(ip, ptr.asPtr<AmfInteger>());
@@ -46,7 +46,7 @@ TEST(AmfItemPtrTest, AsPointer) {
 	EXPECT_EQ(nullptr, cptr.asPtr<AmfInteger>());
 }
 
-TEST(AmfItemPtrTest, Equality) {
+TEST(AmfItemPtr, Equality) {
 	AmfItemPtr i1(new AmfInteger(12));
 	AmfItemPtr i2(new AmfInteger(12));
 	AmfItemPtr d1(new AmfDouble(12.0));

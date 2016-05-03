@@ -2,7 +2,7 @@
 
 #include "utils/amfobjecttraits.hpp"
 
-TEST(AmfObjectTraitsTest, Construction) {
+TEST(AmfObjectTraits, Construction) {
 	AmfObjectTraits obj("foo", true, false);
 	EXPECT_EQ("foo", obj.className);
 	EXPECT_EQ(true, obj.dynamic);
@@ -10,7 +10,7 @@ TEST(AmfObjectTraitsTest, Construction) {
 	EXPECT_EQ(std::vector<std::string>(), obj.attributes);
 }
 
-TEST(AmfObjectTraitsTest, Equality) {
+TEST(AmfObjectTraits, Equality) {
 	AmfObjectTraits obj1("foo", false, true);
 	AmfObjectTraits obj2("foo", false, false);
 	AmfObjectTraits obj3("foo", true, false);

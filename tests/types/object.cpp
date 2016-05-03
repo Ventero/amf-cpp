@@ -12,7 +12,7 @@
 #include "types/amfstring.hpp"
 #include "types/amfundefined.hpp"
 
-TEST(ObjectSerializationTest, EmptyDynamicAnonymousObject) {
+TEST(ObjectSerialization, EmptyDynamicAnonymousObject) {
 	AmfObject obj("", true, false);
 
 	isEqual(v8 {
@@ -23,7 +23,7 @@ TEST(ObjectSerializationTest, EmptyDynamicAnonymousObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, DynamicAnonymousObject) {
+TEST(ObjectSerialization, DynamicAnonymousObject) {
 	AmfObject obj("", true, false);
 
 	obj.addDynamicProperty("prop", AmfString("val"));
@@ -39,7 +39,7 @@ TEST(ObjectSerializationTest, DynamicAnonymousObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, SealedAnonymousObject) {
+TEST(ObjectSerialization, SealedAnonymousObject) {
 	{
 		SCOPED_TRACE("One property");
 		AmfObject obj("", false, false);
@@ -86,7 +86,7 @@ TEST(ObjectSerializationTest, SealedAnonymousObject) {
 	}
 }
 
-TEST(ObjectSerializationTest, DynamicSealedAnonymousObject) {
+TEST(ObjectSerialization, DynamicSealedAnonymousObject) {
 	AmfObject obj("", true, false);
 
 	obj.addSealedProperty("sealedProp", AmfString("value"));
@@ -112,7 +112,7 @@ TEST(ObjectSerializationTest, DynamicSealedAnonymousObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, SealedNamedObject) {
+TEST(ObjectSerialization, SealedNamedObject) {
 	AmfObject obj("de.ventero.AmfTest", false, false);
 
 	obj.addSealedProperty("sealedProp", AmfString("value"));
@@ -133,7 +133,7 @@ TEST(ObjectSerializationTest, SealedNamedObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, DynamicSealedNamedObject) {
+TEST(ObjectSerialization, DynamicSealedNamedObject) {
 	AmfObject obj("de.ventero.AmfTest", true, false);
 
 	obj.addSealedProperty("sealedProp", AmfDouble(3.14159));
@@ -161,7 +161,7 @@ TEST(ObjectSerializationTest, DynamicSealedNamedObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, EmptySealedAnonymousObject) {
+TEST(ObjectSerialization, EmptySealedAnonymousObject) {
 	AmfObject obj("", false, false);
 
 	isEqual(v8 {
@@ -171,7 +171,7 @@ TEST(ObjectSerializationTest, EmptySealedAnonymousObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, SerializeOnlyPropsInTraits) {
+TEST(ObjectSerialization, SerializeOnlyPropsInTraits) {
 	AmfObject obj("", false, false);
 
 	obj.addSealedProperty("sealedProp", AmfInteger(0x05ffeffe));
@@ -193,7 +193,7 @@ TEST(ObjectSerializationTest, SerializeOnlyPropsInTraits) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, NoDynamicPropOnSealedObject) {
+TEST(ObjectSerialization, NoDynamicPropOnSealedObject) {
 	AmfObject obj;
 	obj.addDynamicProperty("foo", AmfInteger(17));
 
@@ -205,7 +205,7 @@ TEST(ObjectSerializationTest, NoDynamicPropOnSealedObject) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, OverwriteProperties) {
+TEST(ObjectSerialization, OverwriteProperties) {
 	AmfObject o("", true, false);
 	o.addSealedProperty("s", AmfInteger(0));
 	o.addDynamicProperty("d", AmfBool(false));
@@ -235,7 +235,7 @@ TEST(ObjectSerializationTest, OverwriteProperties) {
 	}, o);
 }
 
-TEST(ObjectSerializationTest, NonTraitCtor) {
+TEST(ObjectSerialization, NonTraitCtor) {
 	AmfObject obj;
 	obj.addSealedProperty("sealedProp", AmfInteger(0x7b));
 
@@ -274,7 +274,7 @@ TEST(ObjectSerializationTest, NonTraitCtor) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, OnlySerializeDynamicPropsOnDynamicObjects) {
+TEST(ObjectSerialization, OnlySerializeDynamicPropsOnDynamicObjects) {
 	// non-dynamic object
 	AmfObject obj("", false, false);
 	obj.addDynamicProperty("dynamicProp", AmfString("val"));
@@ -286,7 +286,7 @@ TEST(ObjectSerializationTest, OnlySerializeDynamicPropsOnDynamicObjects) {
 	}, obj);
 }
 
-TEST(ObjectSerializationTest, Externalizable) {
+TEST(ObjectSerialization, Externalizable) {
 	auto externalizer = [] (const AmfObject* o) -> v8 {
 		return v8 { u8(o->sealedProperties.size() * 3) };
 	};
@@ -379,7 +379,7 @@ TEST(ObjectSerializationTest, Externalizable) {
 	}, obj3);
 }
 
-TEST(ObjectSerializationTest, ExternalizableThrowsWithoutExternalizer) {
+TEST(ObjectSerialization, ExternalizableThrowsWithoutExternalizer) {
 	SerializationContext ctx;
 	AmfObject obj("", true, true);
 	ASSERT_THROW(obj.serialize(ctx), std::bad_function_call);

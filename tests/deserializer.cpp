@@ -45,97 +45,97 @@ static void deserializesTo(const T& expected, v8 data, int left = 0) {
 		<< " bytes left";
 }
 
-TEST(DeserializerTest, Undefined) {
+TEST(Deserializer, Undefined) {
 	deserializesTo(AmfUndefined(), { 0x00 });
 	deserializesTo(AmfUndefined(), { 0x00, 0x00 }, 1);
 }
 
-TEST(DeserializerTest, Null) {
+TEST(Deserializer, Null) {
 	deserializesTo(AmfNull(), { 0x01 });
 	deserializesTo(AmfNull(), { 0x01, 0x01 }, 1);
 }
 
-TEST(DeserializerTest, Bool) {
+TEST(Deserializer, Bool) {
 	deserializesTo(AmfBool(false), { 0x02 });
 	deserializesTo(AmfBool(false), { 0x02, 0x02 }, 1);
 	deserializesTo(AmfBool(true), { 0x03 });
 	deserializesTo(AmfBool(true), { 0x03, 0x03 }, 1);
 }
 
-TEST(DeserializerTest, Integer) {
+TEST(Deserializer, Integer) {
 	deserializesTo(AmfInteger(0x7e), { 0x04, 0x7e });
 	deserializesTo(AmfInteger(0x7e), { 0x04, 0x7e, 0x04 }, 1);
 	deserializesTo(AmfInteger(0xffffffe), { 0x04, 0xbf, 0xff, 0xff, 0xfe });
 }
 
-TEST(DeserializerTest, Double) {
+TEST(Deserializer, Double) {
 	deserializesTo(AmfDouble(0.5), { 0x05, 0x3F, 0xE0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
 	deserializesTo(AmfDouble(0.5), { 0x05, 0x3F, 0xE0, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00 }, 3);
 }
 
-TEST(DeserializerTest, String) {
+TEST(Deserializer, String) {
 	deserializesTo(AmfString("foo"), { 0x06, 0x07, 0x66, 0x6f, 0x6f });
 	deserializesTo(AmfString("foo"), { 0x06, 0x07, 0x66, 0x6f, 0x6f, 0x06 }, 1);
 }
 
-TEST(DeserializerTest, XmlDoc) {
+TEST(Deserializer, XmlDoc) {
 	deserializesTo(AmfXmlDocument(""), { 0x07, 0x01 });
 	deserializesTo(AmfXmlDocument(""), { 0x07, 0x01, 0x07 }, 1);
 	deserializesTo(AmfXmlDocument("foo"), { 0x07, 0x07, 0x66, 0x6f, 0x6f });
 }
 
-TEST(DeserializerTest, Date) {
+TEST(Deserializer, Date) {
 	deserializesTo(AmfDate(136969002755210ll), { 0x08, 0x01, 0x42, 0xdf, 0x24,
 		0xa5, 0x30, 0x49, 0x22, 0x80 });
 	deserializesTo(AmfDate(136969002755210ll), { 0x08, 0x01, 0x42, 0xdf, 0x24,
 		0xa5, 0x30, 0x49, 0x22, 0x80, 0x08 }, 1);
 }
 
-TEST(DeserializerTest, Array) {
+TEST(Deserializer, Array) {
 	deserializesTo(AmfArray(), { 0x09, 0x01, 0x01 });
 	deserializesTo(AmfArray(std::vector<AmfInteger> { 1, 2, 3 } ), {
 		0x09, 0x07, 0x01, 0x04, 0x01, 0x04, 0x02, 0x04, 0x03, 0xff }, 1);
 }
 
-TEST(DeserializerTest, Xml) {
+TEST(Deserializer, Xml) {
 	deserializesTo(AmfXml(""), { 0x0b, 0x01 });
 	deserializesTo(AmfXml(""), { 0x0b, 0x01, 0x0b }, 1);
 	deserializesTo(AmfXml("foo"), { 0x0b, 0x07, 0x66, 0x6f, 0x6f });
 }
 
-TEST(DeserializerTest, Object) {
+TEST(Deserializer, Object) {
 	deserializesTo(AmfObject("", false, false), { 0x0a, 0x03, 0x01 });
 	deserializesTo(AmfObject("", true, false), { 0x0a, 0x0b, 0x01, 0x01, 0xff }, 1);
 }
 
-TEST(DeserializerTest, ByteArray) {
+TEST(Deserializer, ByteArray) {
 	deserializesTo(AmfByteArray(v8 { 1, 2, 3 }), { 0x0c, 0x07, 0x01, 0x02, 0x03 });
 	deserializesTo(AmfByteArray(v8 { 1, 2, 3 }), { 0x0c, 0x07, 0x01, 0x02, 0x03, 0x0c }, 1);
 }
 
-TEST(DeserializerTest, VectorInt) {
+TEST(Deserializer, VectorInt) {
 	deserializesTo(AmfVector<int> { { 1 }, false}, { 0x0d, 0x03, 0x00,
 		0x00, 0x00, 0x00, 0x01 });
 	deserializesTo(AmfVector<int> { { 2, 3 }, true}, { 0x0d, 0x05, 0x01,
 		0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0xff }, 1);
 }
 
-TEST(DeserializerTest, VectorUint) {
+TEST(Deserializer, VectorUint) {
 	deserializesTo(AmfVector<unsigned int> { { 1 }, false}, { 0x0e, 0x03, 0x00,
 		0x00, 0x00, 0x00, 0x01 });
 	deserializesTo(AmfVector<unsigned int> { { 2, 3 }, true}, { 0x0e, 0x05, 0x01,
 		0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0xff }, 1);
 }
 
-TEST(DeserializerTest, VectorDouble) {
+TEST(Deserializer, VectorDouble) {
 	deserializesTo(AmfVector<double> { { 0.5 }, false }, { 0x0f, 0x03, 0x00,
 		0x3f, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
 	deserializesTo(AmfVector<double> { { -1.2 }, true }, { 0x0f, 0x03, 0x01,
 		0xbf, 0xf3, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0xff }, 1);
 }
 
-TEST(DeserializerTest, VectorAmfItem) {
+TEST(Deserializer, VectorAmfItem) {
 	AmfVector<AmfInteger> v({1, 2, 3}, "foo", false);
 	// Need to pass a AmfVector<AmfItem> to compare against, as that's what
 	// Deserializer::deserialize returns
@@ -151,7 +151,7 @@ TEST(DeserializerTest, VectorAmfItem) {
 	deserializesTo(vc, data);
 }
 
-TEST(DeserializerTest, InstanceContext) {
+TEST(Deserializer, InstanceContext) {
 	AmfByteArray ba(v8 { 0x1 });
 	v8 data {
 		0x0c, 0x03, 0x01,
@@ -167,7 +167,7 @@ TEST(DeserializerTest, InstanceContext) {
 	ASSERT_EQ(end, it);
 }
 
-TEST(DeserializerTest, ClearContext) {
+TEST(Deserializer, ClearContext) {
 	AmfByteArray ba(v8 { 0x1 });
 	v8 data {
 		0x0c, 0x03, 0x01,
@@ -182,13 +182,13 @@ TEST(DeserializerTest, ClearContext) {
 	ASSERT_THROW(d.deserialize(it, end), std::out_of_range);
 }
 
-TEST(DeserializerTest, UnknownType) {
+TEST(Deserializer, UnknownType) {
 	Deserializer d;
 	ASSERT_THROW(d.deserialize({ AMF_DICTIONARY + 1 }), std::invalid_argument);
 	ASSERT_THROW(d.deserialize({ 0xff }), std::invalid_argument);
 }
 
-TEST(DeserializerTest, IncorrectTypeRef) {
+TEST(Deserializer, IncorrectTypeRef) {
 	Deserializer d;
 	ASSERT_EQ(AmfArray(), d.deserialize(v8 { 0x09, 0x01, 0x01 }).as<AmfArray>());
 	ASSERT_EQ(AmfArray(), d.deserialize(v8 { 0x09, 0x00 }).as<AmfArray>());

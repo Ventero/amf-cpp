@@ -11,13 +11,13 @@
 #include "types/amfundefined.hpp"
 #include "types/amfvector.hpp"
 
-TEST(ArraySerializationTest, EmptyArray) {
+TEST(ArraySerialization, EmptyArray) {
 	AmfArray array;
 
 	isEqual(v8 { 0x09, 0x01, 0x01 }, array);
 }
 
-TEST(ArraySerializationTest, StrictIntArray) {
+TEST(ArraySerialization, StrictIntArray) {
 	AmfInteger v0(0);
 	AmfInteger v1(1);
 	AmfInteger v2(2);
@@ -33,7 +33,7 @@ TEST(ArraySerializationTest, StrictIntArray) {
 	}, array);
 }
 
-TEST(ArraySerializationTest, StrictMixedArray) {
+TEST(ArraySerialization, StrictMixedArray) {
 	AmfInteger v0(0);
 	AmfString v1("value");
 	AmfDouble v2(3.1);
@@ -56,7 +56,7 @@ TEST(ArraySerializationTest, StrictMixedArray) {
 	}, array);
 }
 
-TEST(ArraySerializationTest, AssociativeOnlyArray) {
+TEST(ArraySerialization, AssociativeOnlyArray) {
 	std::map<std::string, AmfInteger> sparse;
 	sparse["bar"] = AmfInteger(17);
 	sparse["foo"] = AmfInteger(0);
@@ -74,7 +74,7 @@ TEST(ArraySerializationTest, AssociativeOnlyArray) {
 	}, array);
 }
 
-TEST(ArraySerializationTest, AssociativeDenseArray) {
+TEST(ArraySerialization, AssociativeDenseArray) {
 	std::map<std::string, AmfInteger> sparse;
 	sparse["sparseVal"] = AmfInteger(0xbeef);
 
@@ -97,7 +97,7 @@ TEST(ArraySerializationTest, AssociativeDenseArray) {
 	}, array);
 }
 
-TEST(ArraySerializationTest, AssociativeDenseArrayUtilityFunctions) {
+TEST(ArraySerialization, AssociativeDenseArrayUtilityFunctions) {
 	AmfInteger v0(0xbeef);
 	AmfString v1("foobar");
 
@@ -121,7 +121,7 @@ TEST(ArraySerializationTest, AssociativeDenseArrayUtilityFunctions) {
 
 }
 
-TEST(ArraySerializationTest, ArrayOfArrays) {
+TEST(ArraySerialization, ArrayOfArrays) {
 	AmfInteger v0(0xbeef);
 	AmfString v1("foobar");
 
@@ -157,7 +157,7 @@ TEST(ArraySerializationTest, ArrayOfArrays) {
 	}, outerArray);
 }
 
-TEST(ArraySerializationTest, SelfReference) {
+TEST(ArraySerialization, SelfReference) {
 	SerializationContext ctx;
 	AmfItemPtr ptr((AmfArray()));
 	ptr.as<AmfArray>().associative["x"] = ptr;
@@ -172,7 +172,7 @@ TEST(ArraySerializationTest, SelfReference) {
 	}, ptr.as<AmfArray>(), &ctx);
 }
 
-TEST(ArraySerializationTest, ArrayReference) {
+TEST(ArraySerialization, ArrayReference) {
 	SerializationContext ctx;
 	AmfArray arr;
 	AmfArray inner;
@@ -188,7 +188,7 @@ TEST(ArraySerializationTest, ArrayReference) {
 	}, arr, &ctx);
 }
 
-TEST(ArraySerializationTest, ArrayReferenceOrder) {
+TEST(ArraySerialization, ArrayReferenceOrder) {
 	SerializationContext ctx;
 	AmfItemPtr ptr((AmfArray()));
 	ptr.as<AmfArray>().associative["x"] = ptr;
@@ -206,7 +206,7 @@ TEST(ArraySerializationTest, ArrayReferenceOrder) {
 	}, ptr.as<AmfArray>(), &ctx);
 }
 
-TEST(ArraySerializationTest, Utf8VrReference) {
+TEST(ArraySerialization, Utf8VrReference) {
 	SerializationContext ctx;
 	AmfArray array;
 	array.insert("x", AmfString("x"));

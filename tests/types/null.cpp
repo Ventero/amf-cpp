@@ -5,7 +5,7 @@
 #include "types/amfnull.hpp"
 #include "types/amfundefined.hpp"
 
-TEST(NullSerializationTest, SimpleValue) {
+TEST(NullSerialization, SimpleValue) {
 	isEqual(v8 { 0x01 }, AmfNull());
 }
 
