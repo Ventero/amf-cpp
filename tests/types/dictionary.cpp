@@ -645,6 +645,28 @@ TEST(DictionaryDeserialization, ObjectsCorrectReferenceOrder) {
 	deserialize(d, data, 0);
 }
 
+TEST(DictionaryDeserialization, InvalidWeakKeysMarker) {
+	// Spec only allows 0x00 and 0x01, but Flash treats everything but 0x00
+	// as 0x01.
+	AmfDictionary d(false, true);
+	d.insert(AmfString("foo"), AmfUndefined());
+
+	v8 data {
+		0x11, // AMF_DICTIONARY
+		0x03, // 1 element
+		0x02,
+			// AmfString "foo" -> AmfUndefined
+			0x06, 0x07, 0x66, 0x6f, 0x6f,
+			0x00
+	};
+	deserialize(d, data, 0);
+
+	v8 data2 {
+		0x11, 0x03, 0xff, 0x06, 0x07, 0x66, 0x6f, 0x6f, 0x00
+	};
+	deserialize(d, data2, 0);
+}
+
 TEST(DictionaryDeserialization, NotEnoughBytes) {
 	DeserializationContext ctx;
 

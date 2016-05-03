@@ -62,7 +62,7 @@ AmfItemPtr AmfDictionary::deserializePtr(v8::const_iterator& it, v8::const_itera
 	if (it == end)
 		throw std::out_of_range("Not enough bytes for AmfDictionary");
 
-	bool weak = (*it++ == 0x01);
+	bool weak = (*it++ != 0x00);
 
 	AmfItemPtr ptr(new AmfDictionary(false, weak));
 	AmfDictionary & dict = ptr.as<AmfDictionary>();
