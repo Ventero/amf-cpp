@@ -145,8 +145,11 @@ AmfItemPtr AmfObject::deserializePtr(v8::const_iterator& it, v8::const_iterator 
 			traits.dynamic = ((type & 0x08) == 0x08);
 			traits.className = AmfString::deserializeValue(it, end, ctx);
 			int numSealed = type >> 4;
-			for (int i = 0; i < numSealed; ++i)
+			for (int i = 0; i < numSealed; ++i) {
+				// Always add all attribute names, even if they're duplicates.
+				// See the comment in amfobjecttraits.hpp
 				traits.attributes.push_back(AmfString::deserializeValue(it, end, ctx));
+			}
 		}
 
 		ctx.addTraits(traits);
