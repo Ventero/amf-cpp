@@ -23,8 +23,12 @@ bool AmfObject::operator==(const AmfItem& other) const {
 	if (sealedProperties != p->sealedProperties)
 		return false;
 
-	if (traits.externalizable && externalizer(this) != p->externalizer(p))
-		return false;
+	// If this is an externalizable object, compare equal when they serialize
+	// to the same data.
+	if (traits.externalizable) {
+		SerializationContext this_ctx, p_ctx;
+		return (externalizer(this, this_ctx) == p->externalizer(p, p_ctx));
+	}
 
 	return true;
 }
@@ -60,7 +64,7 @@ std::vector<u8> AmfObject::serialize(SerializationContext& ctx) const {
 
 		// externalized value = *(U8)
 		// note: this may throw if externalizer is not properly initialized
-		std::vector<u8> externalized(externalizer(this));
+		std::vector<u8> externalized(externalizer(this, ctx));
 		buf.insert(buf.end(), externalized.begin(), externalized.end());
 		return buf;
 	}

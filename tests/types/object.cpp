@@ -287,7 +287,7 @@ TEST(ObjectSerialization, OnlySerializeDynamicPropsOnDynamicObjects) {
 }
 
 TEST(ObjectSerialization, Externalizable) {
-	auto externalizer = [] (const AmfObject* o) -> v8 {
+	auto externalizer = [] (const AmfObject* o, SerializationContext&) -> v8 {
 		return v8 { u8(o->sealedProperties.size() * 3) };
 	};
 
@@ -346,7 +346,7 @@ TEST(ObjectSerialization, Externalizable) {
 		0x09
 	}, obj);
 
-	auto propNameSerializer = [] (const AmfObject* o) -> v8 {
+	auto propNameSerializer = [] (const AmfObject* o, SerializationContext&) -> v8 {
 		v8 buf;
 		SerializationContext ctx;
 		for (const auto& it : o->dynamicProperties) {
@@ -383,6 +383,41 @@ TEST(ObjectSerialization, ExternalizableThrowsWithoutExternalizer) {
 	SerializationContext ctx;
 	AmfObject obj("", true, true);
 	ASSERT_THROW(obj.serialize(ctx), std::bad_function_call);
+}
+
+TEST(ObjectSerialization, ExternalizableSerializationContext) {
+	// Test that the correct SerializationContext is passed to the externalizer.
+	// Construct an array containing two externalizable objects, then verify
+	// that an item we added in the first object is still in the context for
+	// the second object.
+
+	AmfArray array;
+	AmfObject obj1("foo", false, true);
+	obj1.externalizer = [] (const AmfObject*, SerializationContext& ctx) -> v8 {
+		ctx.addString("ext1");
+		return v8 { 0x00 };
+	};
+
+	AmfObject obj2("bar", false, true);
+	obj2.externalizer = [] (const AmfObject*, SerializationContext& ctx) -> v8 {
+		ctx.addString("ext2");
+		return v8 { 0x01 };
+	};
+
+	array.push_back(obj1);
+	array.push_back(obj2);
+
+	SerializationContext ctx;
+	isEqual(v8 {
+		0x09, 0x05, 0x01,
+			0x0a, 0x07, 0x07, 0x66, 0x6f, 0x6f, 0x00,
+			0x0a, 0x07, 0x07, 0x62, 0x61, 0x72, 0x01
+	}, array, &ctx);
+
+	EXPECT_EQ(ctx.getString(0), "foo");
+	EXPECT_EQ(ctx.getString(1), "ext1");
+	EXPECT_EQ(ctx.getString(2), "bar");
+	EXPECT_EQ(ctx.getString(3), "ext2");
 }
 
 TEST(ObjectSerialization, PropertyCache) {
