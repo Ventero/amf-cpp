@@ -9,7 +9,6 @@
 namespace amf {
 
 class SerializationContext;
-class SerializationContext;
 
 class AmfXmlDocument : public AmfItem {
 public:

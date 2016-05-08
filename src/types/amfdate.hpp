@@ -10,7 +10,6 @@
 namespace amf {
 
 class SerializationContext;
-class SerializationContext;
 
 // this needs to be a long long to ensure no overflow
 namespace {

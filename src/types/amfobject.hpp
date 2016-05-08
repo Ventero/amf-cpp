@@ -12,7 +12,6 @@
 namespace amf {
 
 class SerializationContext;
-class SerializationContext;
 
 class AmfObject : public AmfItem {
 public:

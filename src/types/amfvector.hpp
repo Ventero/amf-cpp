@@ -11,7 +11,6 @@
 namespace amf {
 
 class SerializationContext;
-class SerializationContext;
 
 template<typename T>
 struct VectorProperties;

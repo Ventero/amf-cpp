@@ -11,7 +11,6 @@
 namespace amf {
 
 class SerializationContext;
-class SerializationContext;
 
 class AmfArray : public AmfItem {
 public:

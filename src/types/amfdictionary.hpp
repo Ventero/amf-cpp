@@ -10,7 +10,6 @@
 namespace amf {
 
 class SerializationContext;
-class SerializationContext;
 
 struct AmfDictionaryHash {
 	size_t operator()(const AmfItemPtr& val) const;

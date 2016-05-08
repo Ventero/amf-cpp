@@ -7,7 +7,6 @@
 namespace amf {
 
 class SerializationContext;
-class SerializationContext;
 
 class AmfByteArray : public AmfItem {
 public:
