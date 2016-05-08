@@ -57,7 +57,7 @@ public:
 	std::map<std::string, AmfItemPtr> sealedProperties;
 	std::map<std::string, AmfItemPtr> dynamicProperties;
 
-	using Externalizer = std::function<v8(const AmfObject*, SerializationContext& ctx)>;
+	typedef std::function<v8(const AmfObject*, SerializationContext& ctx)> Externalizer;
 	Externalizer externalizer;
 
 private:
