@@ -7,26 +7,47 @@
 #include "deserializer.hpp"
 #include "serializationcontext.hpp"
 #include "types/amfbool.hpp"
+#include "types/amfdate.hpp"
 #include "types/amfdouble.hpp"
 #include "types/amfinteger.hpp"
 #include "types/amfnull.hpp"
 #include "types/amfstring.hpp"
 #include "types/amfundefined.hpp"
+#include "types/amfxml.hpp"
+#include "types/amfxmldocument.hpp"
 
 namespace amf {
 
 size_t AmfDictionaryHash::operator()(const AmfItemPtr& val) const {
-	// TODO: use new context here?
-	// TODO: maybe use slightly more performant hashing method instead ...
-	SerializationContext ctx;
-	auto s = val->serialize(ctx);
-	return std::hash<std::string>()(std::string(s.begin(), s.end()));
+	// If primitive, use value.
+	if (val.asPtr<AmfBool>() != nullptr ||
+		val.asPtr<AmfDate>() != nullptr ||
+		val.asPtr<AmfDouble>() != nullptr ||
+		val.asPtr<AmfInteger>() != nullptr ||
+		val.asPtr<AmfNull>() != nullptr ||
+		val.asPtr<AmfString>() != nullptr ||
+		val.asPtr<AmfUndefined>() != nullptr ||
+		val.asPtr<AmfXml>() != nullptr ||
+		val.asPtr<AmfXmlDocument>() != nullptr)
+	{
+		SerializationContext ctx;
+		auto s = val->serialize(ctx);
+		return std::hash<std::string>()(std::string(s.begin(), s.end()));
+	}
+
+	// Otherwise use reference.
+	return reinterpret_cast<size_t>(val.get());
 }
 
 bool AmfDictionary::operator==(const AmfItem& other) const {
 	const AmfDictionary* p = dynamic_cast<const AmfDictionary*>(&other);
-	return p != nullptr && asString == p->asString && weak == p->weak &&
-		values == p->values;
+	if (p == nullptr)
+		return false;
+
+	if (asString != p->asString || weak != p->weak)
+		return false;
+
+	return (values == p->values);
 }
 
 std::vector<u8> AmfDictionary::serialize(SerializationContext & ctx) const {

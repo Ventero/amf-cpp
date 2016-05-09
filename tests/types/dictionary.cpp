@@ -732,8 +732,7 @@ TEST(DictionaryDeserialization, SelfReference2) {
 	EXPECT_EQ(ptr.get(), inner.get());
 }
 
-TEST(DictionaryDeserialization, DISABLED_SelfReference2b) {
-	// TODO: segfault due to AmfDictionaryHash
+TEST(DictionaryDeserialization, SelfReference2b) {
 	v8 data {
 		0x11,
 		0x05,
@@ -753,8 +752,7 @@ TEST(DictionaryDeserialization, DISABLED_SelfReference2b) {
 	EXPECT_EQ(AmfUndefined(), inner2.as<AmfUndefined>());
 }
 
-// Broken due to AmfDictionaryHash recursing
-TEST(DictionaryDeserialization, DISABLED_SelfReference3) {
+TEST(DictionaryDeserialization, SelfReference3) {
 	v8 data {
 		0x11, 0x05, 0x00,
 		0x11, 0x00,
