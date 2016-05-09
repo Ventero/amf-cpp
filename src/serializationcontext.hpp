@@ -50,7 +50,7 @@ public:
 	}
 
 	template<typename T>
-	AmfItemPtr getPointer(size_t index) const {
+	const AmfItemPtr & getPointer(size_t index) const {
 		const AmfItemPtr & ptr = objects.at(index);
 
 		if (ptr.asPtr<T>() == nullptr)
