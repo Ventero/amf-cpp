@@ -55,47 +55,49 @@ std::vector<u8> AmfObject::serialize(SerializationContext& ctx) const {
 	// serialized class name as UTF-8-vr
 	std::vector<u8> name(className.serializeValue(ctx));
 
-	if (traits.externalizable) {
-		// TODO: ref?
-		// U29O-traits-ext = 0b0111 = 0x07
-		buf.push_back(0x07);
-		// class-name
-		buf.insert(buf.end(), name.begin(), name.end());
+	// ensure we do not serialize duplicate attribute names (see the
+	// comment on traits.attributes in amfobjecttraits.hpp).
+	std::set<std::string> attributes = traits.getUniqueAttributes();
 
+	int trait_index = ctx.getIndex(traits);
+	if (trait_index != -1) {
+		// U29O-traits-ref = 0b..01
+		buf.push_back(u8((trait_index << 2) | 1));
+	} else {
+		ctx.addTraits(traits);
+
+		if (traits.externalizable) {
+			// U29O-traits-ext = 0b0111 = 0x07
+			buf.push_back(0x07);
+			// class-name
+			buf.insert(buf.end(), name.begin(), name.end());
+		} else {
+			// U29-traits = 0b0011 = 0x03
+			size_t traitMarker = attributes.size() << 4 | 0x03;
+			// dynamic marker = 0b1000 = 0x08
+			if (traits.dynamic)
+				traitMarker |= 0x08;
+
+			std::vector<u8> marker(AmfInteger(traitMarker).serialize(ctx));
+			buf.insert(buf.end(), marker.begin() + 1, marker.end());
+
+			// class-name
+			buf.insert(buf.end(), name.begin(), name.end());
+
+			// sealed property names = *(UTF-8-vr)
+			for (const std::string& attribute : attributes) {
+				std::vector<u8> attr(AmfString(attribute).serializeValue(ctx));
+				buf.insert(buf.end(), attr.begin(), attr.end());
+			}
+		}
+	}
+
+	if (traits.externalizable) {
 		// externalized value = *(U8)
 		// note: this may throw if externalizer is not properly initialized
 		std::vector<u8> externalized(externalizer(this, ctx));
 		buf.insert(buf.end(), externalized.begin(), externalized.end());
 		return buf;
-	}
-
-	// ensure we do not serialize duplicate attribute names (see the
-	// comment on traits.attributes in amfobjecttraits.hpp).
-	std::set<std::string> attributes = traits.getUniqueAttributes();
-
-	// TODO: what about externalizable?
-	int trait_index = ctx.getIndex(traits);
-	if (trait_index != -1) {
-		buf.push_back(u8((trait_index << 2) | 1));
-	} else {
-		ctx.addTraits(traits);
-
-		// U29-traits = 0b0011 = 0x03
-		size_t traitMarker = attributes.size() << 4 | 0x03;
-		// dynamic marker = 0b1000 = 0x08
-		if (traits.dynamic) traitMarker |= 0x08;
-
-		std::vector<u8> marker(AmfInteger(traitMarker).serialize(ctx));
-		buf.insert(buf.end(), marker.begin() + 1, marker.end());
-
-		// class-name
-		buf.insert(buf.end(), name.begin(), name.end());
-
-		// sealed property names = *(UTF-8-vr)
-		for (const std::string& attribute : attributes) {
-			std::vector<u8> attr(AmfString(attribute).serializeValue(ctx));
-			buf.insert(buf.end(), attr.begin(), attr.end());
-		}
 	}
 
 	// sealed property values = *(value-type)

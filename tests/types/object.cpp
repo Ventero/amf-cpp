@@ -455,6 +455,41 @@ TEST(ObjectSerialization, TraitRefs) {
 		AmfObject("foo", true, false).serialize(ctx));
 }
 
+TEST(ObjectSerialization, ExternalizableTraitsReference) {
+	AmfArray array;
+	AmfObject obj1("Foo", false, true);
+	obj1.externalizer = [] (const AmfObject*, SerializationContext&) -> v8 {
+		return v8 { 0x66, 0x6f, 0x6f };
+	};
+	AmfObject obj2("Foo", false, true);
+	obj2.externalizer = [] (const AmfObject*, SerializationContext&) -> v8 {
+		return v8 { 0x62, 0x61, 0x72 };
+	};
+
+	array.push_back(obj1);
+	array.push_back(obj1);
+	array.push_back(obj2);
+
+	v8 data {
+		// Array with 3 dense entries
+		0x09, 0x07, 0x01,
+		// Externalizable object
+		0x0a, 0x07,
+			// Name: "Foo"
+			0x07, 0x46, 0x6f, 0x6f,
+			// Serialized bytes: "foo"
+			0x66, 0x6f, 0x6f,
+		// Reference to first object
+		0x0a, 0x02,
+		// Object with traits reference to first traits
+		0x0a, 0x01,
+			// Serialized bytes: "bar"
+			0x62, 0x61, 0x72
+	};
+
+	isEqual(data, array);
+}
+
 TEST(ObjectSerialization, SelfReference) {
 	AmfItemPtr ptr(AmfObject("", true, false));
 	ptr.as<AmfObject>().dynamicProperties["f"] = ptr;
