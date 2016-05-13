@@ -39,12 +39,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)/tests/googletest/include;$(SolutionDir)/tests/googletest;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/tests/googletest/googletest/include;$(SolutionDir)/tests/googletest/googletest;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)/$(ProjectName)/$(Configuration)/</OutDir>
     <IntDir>$(ProjectDir)/$(ProjectName)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)/tests/googletest/include;$(SolutionDir)/tests/googletest;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/tests/googletest/googletest/include;$(SolutionDir)/tests/googletest/googletest;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)/$(ProjectName)/$(Configuration)/</OutDir>
     <IntDir>$(ProjectDir)/$(ProjectName)/$(Configuration)/</IntDir>
   </PropertyGroup>
@@ -75,31 +75,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest-death-test.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest-message.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest-param-test.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest-printers.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest-spi.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest-test-part.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest-typed-test.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest_pred_impl.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\gtest_prod.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-death-test-internal.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-filepath.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-internal.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-linked_ptr.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-param-util-generated.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-param-util.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-port.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-string.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-tuple.h" />
-    <ClInclude Include="..\tests\googletest\include\gtest\internal\gtest-type-util.h" />
-    <ClInclude Include="..\tests\googletest\src\gtest-internal-inl.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest-death-test.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest-message.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest-param-test.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest-printers.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest-spi.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest-test-part.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest-typed-test.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest_pred_impl.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\gtest_prod.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-death-test-internal.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-filepath.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-internal.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-linked_ptr.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-param-util-generated.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-param-util.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-port.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-string.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-tuple.h" />
+    <ClInclude Include="..\tests\googletest\googletest\include\gtest\internal\gtest-type-util.h" />
+    <ClInclude Include="..\tests\googletest\googletest\src\gtest-internal-inl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\tests\googletest\src\gtest-all.cc" />
-    <ClCompile Include="..\tests\googletest\src\gtest_main.cc" />
+    <ClCompile Include="..\tests\googletest\googletest\src\gtest-all.cc" />
+    <ClCompile Include="..\tests\googletest\googletest\src\gtest_main.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

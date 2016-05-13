@@ -12,6 +12,7 @@
     <ClInclude Include="..\src\amf.hpp" />
     <ClInclude Include="..\src\amfpacket.hpp" />
     <ClInclude Include="..\src\deserializer.hpp" />
+    <ClInclude Include="..\src\serializationcontext.hpp" />
     <ClInclude Include="..\src\serializer.hpp" />
     <ClInclude Include="..\src\types\amfarray.hpp">
       <Filter>types</Filter>
@@ -68,6 +69,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\amfpacket.cpp" />
     <ClCompile Include="..\src\deserializer.cpp" />
+    <ClCompile Include="..\src\serializationcontext.cpp" />
     <ClCompile Include="..\src\serializer.cpp" />
     <ClCompile Include="..\src\types\amfarray.cpp">
       <Filter>types</Filter>
